@@ -11,6 +11,10 @@ spring:
                 dialect: org.hibernate.dialect.PostgreSQLDialect
                 format_sql: true
         show-sql: false
+    security:
+        user:
+            name: admin
+            password: admin
 rsa:
     private-key: classpath:certs/private.pem
     public-key: classpath:certs/public.pem

@@ -9,25 +9,24 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Square {
 
-    private int x;
-    private int y;
+    private int row;
+    private int column;
     private String colour;
-
 
     private Piece piece;
 
-    public Square(int x, int y, boolean squareColor) {
-        this.x = x;
-        this.y = y;
+    public Square(int row, int column, boolean squareColor) {
+        this.row = row;
+        this.column = column;
         this.colour = squareColor ? (WHITE) : (BLACK);
     }
 
-    public int getX() {
-        return x;
+    public int getRow() {
+        return row;
     }
 
-    public int getY() {
-        return y;
+    public int getColumn() {
+        return column;
     }
 
     public String getColour() {

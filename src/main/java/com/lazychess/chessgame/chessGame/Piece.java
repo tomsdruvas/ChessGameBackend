@@ -1,6 +1,5 @@
 package com.lazychess.chessgame.chessGame;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import lombok.NoArgsConstructor;
@@ -9,10 +8,10 @@ import lombok.NoArgsConstructor;
 public abstract class Piece {
 
     private String colour;
-    private int x;
-    private int y;
+    private int row;
+    private int column;
     private Board board;
-    private ArrayList<Square> legalMoves;
+    private List<Square> legalMoves;
 
     public String getColour() {
         return colour;
@@ -22,33 +21,33 @@ public abstract class Piece {
         this.colour = colour;
     }
 
-    public int getX() {
-        return x;
+    public int getRow() {
+        return row;
     }
 
-    public void setX(int x) {
-        this.x = x;
+    public void setRow(int row) {
+        this.row = row;
     }
 
-    public int getY() {
-        return y;
+    public int getColumn() {
+        return column;
     }
 
-    public void setY(int y) {
-        this.y = y;
+    public void setColumn(int column) {
+        this.column = column;
     }
 
     public List<Square> getLegalMoves() {
         return legalMoves;
     }
 
-    public void setLegalMoves(ArrayList<Square> legalMoves) {
+    public void setLegalMoves(List<Square> legalMoves) {
         this.legalMoves = legalMoves;
     }
 
     public void move(Square square) {
-        this.x = square.getX();
-        this.y = square.getY();
+        this.row = square.getRow();
+        this.column = square.getColumn();
     }
 
 }

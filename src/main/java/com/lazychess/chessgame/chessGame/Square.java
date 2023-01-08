@@ -19,6 +19,7 @@ public class Square {
         this.row = row;
         this.column = column;
         this.colour = squareColor ? (WHITE) : (BLACK);
+        this.piece = new EmptyPiece();
     }
 
     public int getRow() {

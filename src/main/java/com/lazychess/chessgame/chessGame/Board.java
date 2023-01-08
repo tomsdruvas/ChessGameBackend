@@ -3,6 +3,9 @@ package com.lazychess.chessgame.chessGame;
 import static com.lazychess.chessgame.chessGame.ChessConstants.BLACK;
 import static com.lazychess.chessgame.chessGame.ChessConstants.WHITE;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public class Board {
 
     private Square[][] squares;
@@ -43,12 +46,12 @@ public class Board {
 
         whiteRook1 = new Rook("White Rook1",7,0,WHITE);
         whiteRook2 = new Rook("White Rook2",7,7,WHITE);
-        whiteKnight1 = new Knight("WN1",7,1,WHITE);
-        whiteKnight2 = new Knight("WN2",7,6,WHITE);
-        whiteBishop1 = new Bishop("WB1",7,2,WHITE);
-        whiteBishop2 = new Bishop("WB2",7,5,WHITE);
-        whiteQueen = new Queen("WQ",7,3,WHITE);
-        whiteKing = new King("WK",7,4,WHITE);
+        whiteKnight1 = new Knight("White Knight1",7,1,WHITE);
+        whiteKnight2 = new Knight("White Knight2",7,6,WHITE);
+        whiteBishop1 = new Bishop("White Bishop1",7,2,WHITE);
+        whiteBishop2 = new Bishop("White Bishop2",7,5,WHITE);
+        whiteQueen = new Queen("White Queen",7,3,WHITE);
+        whiteKing = new King("White King",7,4,WHITE);
 
         whitePawn = new Piece[8];
         for(int i=0;i<8;i++)
@@ -60,8 +63,8 @@ public class Board {
         blackRook2 = new Rook("Black Rook2",0,7,BLACK);
         blackKnight1 = new Knight("Black Knight1",0,1,BLACK);
         blackKnight2 = new Knight("Black Knight2",0,6,BLACK);
-        blackBishop1 = new Bishop("BlackBishop1",0,2,BLACK);
-        blackBishop2 = new Bishop("BlackBishop2",0,5,BLACK);
+        blackBishop1 = new Bishop("Black Bishop1",0,2,BLACK);
+        blackBishop2 = new Bishop("Black Bishop2",0,5,BLACK);
         blackQueen = new Queen("Black Queen",0,3,BLACK);
         blackKing = new King("Black King",0,4,BLACK);
 
@@ -98,5 +101,29 @@ public class Board {
         {
             squares[1][i].setPiece(blackPawn[i]);
         }
+    }
+
+    public Piece getPieceByName(String name) {
+
+        Square square1 = Arrays.stream(squares).flatMap(Arrays::stream)
+            .filter(square -> square.getPiece() != null)
+            .filter(square -> Objects.equals(square.getPiece().getName(), name)).toList().stream().findFirst().orElseThrow();
+
+        return square1.getPiece();
+
+
+    }
+
+    public Square[][] getSquares() {
+        return squares;
+    }
+
+    public void movePiece(int currentColumn, int currentRow, int newColumn, int newRow) {
+        Piece pieceToMove = squares[currentRow][currentColumn].getPiece();
+        pieceToMove.setColumn(newColumn);
+        pieceToMove.setRow(newRow);
+        squares[newRow][newColumn].setPiece(pieceToMove);
+        squares[currentRow][currentColumn].setPiece(new EmptyPiece());
+
     }
 }

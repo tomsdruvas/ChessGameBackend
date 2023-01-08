@@ -7,11 +7,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public abstract class Piece {
 
+    String name;
     private String colour;
     private int row;
     private int column;
     private Board board;
     private List<Square> legalMoves;
+
+    public Piece(String name, int row, int column, String colour) {
+        this.name = name;
+        this.row = row;
+        this.column = column;
+        this.colour = colour;
+    }
 
     public String getColour() {
         return colour;
@@ -41,8 +49,7 @@ public abstract class Piece {
         return legalMoves;
     }
 
-    public void setLegalMoves(List<Square> legalMoves) {
-        this.legalMoves = legalMoves;
+    public void setLegalMoves(Square[][] legalMoves) {
     }
 
     public void move(Square square) {
@@ -50,4 +57,7 @@ public abstract class Piece {
         this.column = square.getColumn();
     }
 
+    public String getName() {
+        return name;
+    }
 }

@@ -11,9 +11,6 @@ public class Bishop extends Piece {
     private ArrayList<Square> legalMoves;
 
     public Bishop(String name, int row, int column, String colour) {
-        this.name = name;
-        this.row = row;
-        this.column = column;
-        this.colour = colour;
+        super(name, row, column, colour);
     }
 }

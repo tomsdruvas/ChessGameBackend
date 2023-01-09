@@ -20,7 +20,7 @@ class ChessGameApplicationTests {
 	void loadChessBoard() {
 		Board board = new Board();
 		Piece whitePawn7 = board.getPieceByName("White Pawn8");
-//		board.movePiece(whitePawn7.getColumn(), whitePawn7.getRow(), 6,5);
+		board.movePiece(whitePawn7.getRow(), whitePawn7.getColumn(),5,6);
 		Piece whiteRook2 = board.getPieceByName("White Rook2");
 		whiteRook2.setLegalMoves(board.getSquares());
 		List<Square> legalMoves = whiteRook2.getLegalMoves();

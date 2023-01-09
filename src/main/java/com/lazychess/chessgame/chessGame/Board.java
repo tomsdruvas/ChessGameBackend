@@ -118,7 +118,7 @@ public class Board {
         return squares;
     }
 
-    public void movePiece(int currentColumn, int currentRow, int newColumn, int newRow) {
+    public void movePiece(int currentRow, int currentColumn, int newRow, int newColumn) {
         Piece pieceToMove = squares[currentRow][currentColumn].getPiece();
         pieceToMove.setColumn(newColumn);
         pieceToMove.setRow(newRow);

@@ -67,15 +67,4 @@ public class Rook extends Piece {
     public List<Square> getLegalMoves() {
         return legalMoves;
     }
-
-    //    public boolean isLegalMove(Square square) {
-//        for (int i = ((this.row == nextRow) ? this.col : this.row); i != d; ((d-i >= 0) ? i++ : i--)) {
-//            piece = (this.row == nextRow) ? board.pieceAt(this.row, i) : board.pieceAt(i, this.col);
-//            if (piece)
-//                return false;
-//        }
-//    }
-
-
-
 }

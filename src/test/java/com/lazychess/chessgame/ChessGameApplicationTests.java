@@ -17,11 +17,24 @@ class ChessGameApplicationTests {
 	}
 
 	@Test
-	void loadChessBoard() {
+	void loadChessBoardForRook() {
 		Board board = new Board();
 		Piece whitePawn7 = board.getPieceByName("White Pawn8");
 		board.movePiece(whitePawn7.getRow(), whitePawn7.getColumn(),5,6);
 		Piece whiteRook2 = board.getPieceByName("White Rook2");
+		whiteRook2.setLegalMoves(board.getSquares());
+		List<Square> legalMoves = whiteRook2.getLegalMoves();
+
+
+	}
+
+	@Test
+	void loadChessBoardForBishop() {
+		Board board = new Board();
+		Piece whitePawn7 = board.getPieceByName("White Pawn7");
+		board.movePiece(whitePawn7.getRow(), whitePawn7.getColumn(),5,6);
+		Piece whiteRook2 = board.getPieceByName("White Bishop2");
+		board.movePiece(6,4,5,4);
 		whiteRook2.setLegalMoves(board.getSquares());
 		List<Square> legalMoves = whiteRook2.getLegalMoves();
 

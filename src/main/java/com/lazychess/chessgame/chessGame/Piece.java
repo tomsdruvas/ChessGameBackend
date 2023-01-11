@@ -12,7 +12,7 @@ public abstract class Piece {
     private int row;
     private int column;
     private Board board;
-    private List<Square> legalMoves;
+    public List<Square> legalMoves;
 
     public Piece(String name, int row, int column, String colour) {
         this.name = name;

@@ -37,7 +37,13 @@ class ChessGameApplicationTests {
 		board.movePiece(6,4,5,4);
 		whiteRook2.setLegalMoves(board.getSquares());
 		List<Square> legalMoves = whiteRook2.getLegalMoves();
+	}
 
-
+	@Test
+	void loadChessBoardForKnight() {
+		Board board = new Board();
+		Piece whiteRook2 = board.getPieceByName("White Knight2");
+		whiteRook2.setLegalMoves(board.getSquares());
+		List<Square> legalMoves = whiteRook2.getLegalMoves();
 	}
 }

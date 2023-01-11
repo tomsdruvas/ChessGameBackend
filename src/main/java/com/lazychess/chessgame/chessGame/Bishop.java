@@ -3,12 +3,9 @@ package com.lazychess.chessgame.chessGame;
 import static com.lazychess.chessgame.chessGame.ChessConstants.EMPTY_PIECE;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 public class Bishop extends Piece {
-
-    private List<Square> legalMoves;
 
     public Bishop(String name, int row, int column, String colour) {
         super(name, row, column, colour);
@@ -38,10 +35,5 @@ public class Bishop extends Piece {
                     return true;
             })
             .toList();
-    }
-
-    @Override
-    public List<Square> getLegalMoves() {
-        return legalMoves;
     }
 }

@@ -1,9 +1,6 @@
 package com.lazychess.chessgame.chessGame;
 
-import static com.lazychess.chessgame.chessGame.ChessConstants.EMPTY_PIECE;
-
 import java.util.Arrays;
-import java.util.Objects;
 
 public class Bishop extends Piece {
 
@@ -14,26 +11,18 @@ public class Bishop extends Piece {
     @Override
     public void setLegalMoves(Square[][] squares) {
         legalMoves = Arrays.stream(squares).flatMap(Arrays::stream)
-            .filter(square -> !(square.getRow()== getPieceRow() || square.getColumn() == getPieceColumn()))
-            .filter(square -> Math.abs(square.getRow() - getPieceRow()) == Math.abs(square.getColumn() - getPieceColumn()))
-            .filter(square -> Objects.equals(square.getPiece().getColour(), EMPTY_PIECE) || !Objects.equals(square.getPiece().getColour(), getColour()))
-            .filter(square -> {
-                int currentRow = getPieceRow();
-                int currentColumn = getPieceColumn();
-
-                int newRow = square.getRow();
-                int newColumn = square.getColumn();
-
-                    int directionX = newRow > currentRow ? 1 : -1;
-                    int directionY = newColumn > currentColumn ? 1 : -1;
-
-                    for(int i = 1; i < Math.abs(newRow-currentRow); ++i) {
-                        if(!Objects.equals(squares[currentRow + i * directionX][currentColumn + i * directionY].getPiece().getColour(), EMPTY_PIECE)) {
-                            return false;
-                        }
-                    }
-                    return true;
-            })
+            .filter(this::rowOrColumnCannotBeTheSame)
+            .filter(this::bishopLegalMoves)
+            .filter(this::filterSquaresWithSameColourPiece)
+            .filter(square -> piecesInTheWayDiagonally(squares, square))
             .toList();
+    }
+
+    private boolean rowOrColumnCannotBeTheSame(Square square) {
+        return !(square.getRow() == getPieceRow() || square.getColumn() == getPieceColumn());
+    }
+
+    private boolean bishopLegalMoves(Square square) {
+        return Math.abs(square.getRow() - getPieceRow()) == Math.abs(square.getColumn() - getPieceColumn());
     }
 }

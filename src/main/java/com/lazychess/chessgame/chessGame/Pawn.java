@@ -26,10 +26,6 @@ public class Pawn extends Piece {
             .toList();
     }
 
-    private boolean filterSquaresWithSameColourPiece(Square square) {
-        return Objects.equals(square.getPiece().getColour(), EMPTY_PIECE) || !Objects.equals(square.getPiece().getColour(), getColour());
-    }
-
     private boolean pawnCannotMoveMoreThanOneSquareAlongTheColumns(Square square) {
         return Math.abs(getPieceColumn() - square.getColumn()) <= 1;
     }

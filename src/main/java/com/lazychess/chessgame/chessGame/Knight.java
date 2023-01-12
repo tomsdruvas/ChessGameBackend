@@ -1,9 +1,6 @@
 package com.lazychess.chessgame.chessGame;
 
-import static com.lazychess.chessgame.chessGame.ChessConstants.EMPTY_PIECE;
-
 import java.util.Arrays;
-import java.util.Objects;
 
 public class Knight extends Piece {
 
@@ -14,9 +11,12 @@ public class Knight extends Piece {
     @Override
     public void setLegalMoves(Square[][] squares) {
         legalMoves = Arrays.stream(squares).flatMap(Arrays::stream)
-            .filter(square -> Objects.equals(square.getPiece().getColour(), EMPTY_PIECE) || !Objects.equals(square.getPiece().getColour(), getColour()))
-            .filter(square -> (Math.abs(getPieceRow()-square.getRow()) == 1 && Math.abs(getPieceColumn()-square.getColumn()) == 2) || (Math.abs(getPieceRow()-square.getRow()) == 2 && Math.abs(getPieceColumn()-square.getColumn()) == 1))
+            .filter(this::filterSquaresWithSameColourPiece)
+            .filter(this::knightCanMoveOneRowTwoColumnsOrOpposite)
                 .toList();
     }
 
+    private boolean knightCanMoveOneRowTwoColumnsOrOpposite(Square square) {
+        return (Math.abs(getPieceRow() - square.getRow()) == 1 && Math.abs(getPieceColumn() - square.getColumn()) == 2) || (Math.abs(getPieceRow() - square.getRow()) == 2 && Math.abs(getPieceColumn() - square.getColumn()) == 1);
+    }
 }

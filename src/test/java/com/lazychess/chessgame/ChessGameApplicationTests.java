@@ -24,14 +24,12 @@ class ChessGameApplicationTests {
 		Piece whiteRook2 = board.getPieceByName("White Rook2");
 		whiteRook2.setLegalMoves(board.getSquares());
 		List<Square> legalMoves = whiteRook2.getLegalMoves();
-
-
 	}
 
 	@Test
 	void loadChessBoardForBishop() {
 		Board board = new Board();
-		board.movePiece(7,4,4,4);
+		board.movePiece(6,7,4,6);
 //		board.movePiece(6,2,5,2);
 	}
 

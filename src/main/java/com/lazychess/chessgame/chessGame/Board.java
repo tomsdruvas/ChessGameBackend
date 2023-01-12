@@ -4,6 +4,7 @@ import static com.lazychess.chessgame.chessGame.ChessConstants.BLACK;
 import static com.lazychess.chessgame.chessGame.ChessConstants.WHITE;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class Board {
@@ -119,14 +120,24 @@ public class Board {
 
     public void movePiece(int currentRow, int currentColumn, int newRow, int newColumn) {
         Piece pieceToMove = squares[currentRow][currentColumn].getPiece();
+        List<Square> legalMoves = pieceToMove.getLegalMoves();
+
+        if(moveLegal(legalMoves, newRow, newColumn)) {
         pieceToMove.setPieceColumn(newColumn);
         pieceToMove.setPieceRow(newRow);
         squares[newRow][newColumn].setPiece(pieceToMove);
         squares[currentRow][currentColumn].setPiece(new EmptyPiece());
         loadPieceLegalMoves();
+        }
     }
 
     private void loadPieceLegalMoves() {
         Arrays.stream(squares).forEach(pieces -> Arrays.stream(pieces).forEach(square -> square.getPiece().setLegalMoves(squares)));
     }
+
+    private boolean moveLegal(List<Square> legalMoves, int newRow, int newColumn) {
+        return legalMoves.stream().anyMatch(square -> square.getRow() == newRow && square.getColumn() == newColumn);
+    }
+
+
 }

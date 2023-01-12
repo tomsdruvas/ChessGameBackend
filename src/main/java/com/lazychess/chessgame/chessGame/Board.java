@@ -24,8 +24,9 @@ public class Board {
 
     public Board() {
         squares = new Square[8][8];
-        this.loadSquares();
-        this.loadPieces();
+        loadSquares();
+        loadPieces();
+        loadPieceLegalMoves();
     }
 
     public void loadSquares() {
@@ -120,10 +121,14 @@ public class Board {
 
     public void movePiece(int currentRow, int currentColumn, int newRow, int newColumn) {
         Piece pieceToMove = squares[currentRow][currentColumn].getPiece();
-        pieceToMove.setColumn(newColumn);
-        pieceToMove.setRow(newRow);
+        pieceToMove.setPieceColumn(newColumn);
+        pieceToMove.setPieceRow(newRow);
         squares[newRow][newColumn].setPiece(pieceToMove);
         squares[currentRow][currentColumn].setPiece(new EmptyPiece());
+        loadPieceLegalMoves();
+    }
 
+    private void loadPieceLegalMoves() {
+        Arrays.stream(squares).forEach(pieces -> Arrays.stream(pieces).forEach(square -> square.getPiece().setLegalMoves(squares)));
     }
 }

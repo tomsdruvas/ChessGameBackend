@@ -14,12 +14,12 @@ public class Bishop extends Piece {
     @Override
     public void setLegalMoves(Square[][] squares) {
         legalMoves = Arrays.stream(squares).flatMap(Arrays::stream)
-            .filter(square -> !(square.getRow()==getRow() || square.getColumn() == getColumn()))
-            .filter(square -> Math.abs(square.getRow() - getRow()) == Math.abs(square.getColumn() - getColumn()))
+            .filter(square -> !(square.getRow()== getPieceRow() || square.getColumn() == getPieceColumn()))
+            .filter(square -> Math.abs(square.getRow() - getPieceRow()) == Math.abs(square.getColumn() - getPieceColumn()))
             .filter(square -> Objects.equals(square.getPiece().getColour(), EMPTY_PIECE) || !Objects.equals(square.getPiece().getColour(), getColour()))
             .filter(square -> {
-                int currentRow = getRow();
-                int currentColumn = getColumn();
+                int currentRow = getPieceRow();
+                int currentColumn = getPieceColumn();
 
                 int newRow = square.getRow();
                 int newColumn = square.getColumn();

@@ -29,19 +29,19 @@ public abstract class Piece {
         this.colour = colour;
     }
 
-    public int getRow() {
+    public int getPieceRow() {
         return row;
     }
 
-    public void setRow(int row) {
+    public void setPieceRow(int row) {
         this.row = row;
     }
 
-    public int getColumn() {
+    public int getPieceColumn() {
         return column;
     }
 
-    public void setColumn(int column) {
+    public void setPieceColumn(int column) {
         this.column = column;
     }
 

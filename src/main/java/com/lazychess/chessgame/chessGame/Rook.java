@@ -15,11 +15,11 @@ public class Rook extends Piece {
     public void setLegalMoves(Square[][] squares) {
 
         legalMoves = Arrays.stream(squares).flatMap(Arrays::stream)
-            .filter(square -> square.getColumn() == getColumn() || square.getRow() == getRow())
+            .filter(square -> square.getColumn() == getPieceColumn() || square.getRow() == getPieceRow())
             .filter(square -> Objects.equals(square.getPiece().getColour(), EMPTY_PIECE) || !Objects.equals(square.getPiece().getColour(), getColour()))
             .filter(square -> {
-                int currentColumn = getColumn();
-                int currentRow = getRow();
+                int currentColumn = getPieceColumn();
+                int currentRow = getPieceRow();
 
                 int newColumn = square.getColumn();
                 int newRow = square.getRow();
@@ -34,7 +34,6 @@ public class Rook extends Piece {
                     }
 
                     for(int x = currentRow + direction; x != newRow; x += direction){
-
                         if(!Objects.equals(squares[x][currentColumn].getPiece().getColour(), EMPTY_PIECE)) {
 
                             return false;

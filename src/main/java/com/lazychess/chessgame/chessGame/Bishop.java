@@ -21,8 +21,4 @@ public class Bishop extends Piece {
     private boolean rowOrColumnCannotBeTheSame(Square square) {
         return !(square.getRow() == getPieceRow() || square.getColumn() == getPieceColumn());
     }
-
-    private boolean bishopLegalMoves(Square square) {
-        return Math.abs(square.getRow() - getPieceRow()) == Math.abs(square.getColumn() - getPieceColumn());
-    }
 }

@@ -31,7 +31,10 @@ class ChessGameApplicationTests {
 	@Test
 	void loadChessBoardForBishop() {
 		Board board = new Board();
-		board.movePiece(6,3,5,4);
+		board.movePiece(6,2,5,2);
+		board.movePiece(6,4,5,4);
+		board.movePiece(6,3,4,4);
+//		board.movePiece(6,2,5,2);
 	}
 
 	@Test

@@ -119,6 +119,15 @@ public abstract class Piece {
         }
         return true;
     }
+
+    public boolean bishopLegalMoves(Square square) {
+        return Math.abs(square.getRow() - getPieceRow()) == Math.abs(square.getColumn() - getPieceColumn());
+    }
+
+    public boolean rookCanMoveToSameColumnOrRow(Square square) {
+        return square.getColumn() == getPieceColumn() || square.getRow() == getPieceRow();
+    }
+
 //    public boolean piecesInTheWayStraight(Square[][] squares, Square square) {
 //        int currentColumn = getPieceColumn();
 //        int currentRow = getPieceRow();

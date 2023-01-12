@@ -111,8 +111,6 @@ public class Board {
             .filter(square -> Objects.equals(square.getPiece().getName(), name)).toList().stream().findFirst().orElseThrow();
 
         return square1.getPiece();
-
-
     }
 
     public Square[][] getSquares() {

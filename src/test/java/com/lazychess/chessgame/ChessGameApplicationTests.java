@@ -31,9 +31,7 @@ class ChessGameApplicationTests {
 	@Test
 	void loadChessBoardForBishop() {
 		Board board = new Board();
-		board.movePiece(6,2,5,2);
-		board.movePiece(6,4,5,4);
-		board.movePiece(6,3,4,4);
+		board.movePiece(7,4,4,4);
 //		board.movePiece(6,2,5,2);
 	}
 
@@ -43,13 +41,5 @@ class ChessGameApplicationTests {
 		Piece whiteRook2 = board.getPieceByName("White Knight2");
 		whiteRook2.setLegalMoves(board.getSquares());
 		List<Square> legalMoves = whiteRook2.getLegalMoves();
-	}
-
-	@Test
-	void testMaths() {
-		double pow = Math.pow(-1, 0);
-		double pow1 = Math.pow(-1, 1);
-
-
 	}
 }

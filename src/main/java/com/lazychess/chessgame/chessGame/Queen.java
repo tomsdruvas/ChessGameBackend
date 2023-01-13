@@ -9,13 +9,16 @@ public class Queen extends Piece {
     }
 
     @Override
-    public void setLegalMoves(Square[][] squares) {
+    public void generateLegalMoves(Square[][] squares) {
         legalMoves = Arrays.stream(squares).flatMap(Arrays::stream)
             .filter(this::filterSquaresWithSameColourPiece)
             .filter(this::queenLegalMoves)
             .filter(square -> checkForPiecesInWay(squares, square))
 
             .toList();
+
+        setLegalMoves(legalMoves);
+
     }
 
     public boolean queenLegalMoves(Square square) {

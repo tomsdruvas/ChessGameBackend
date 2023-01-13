@@ -41,4 +41,8 @@ public class Square {
     public void setPiece(Piece piece) {
         this.piece = piece;
     }
+
+    public void clearPiece() {
+        this.piece = new EmptyPiece();
+    }
 }

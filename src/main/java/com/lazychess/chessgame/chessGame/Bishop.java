@@ -9,13 +9,16 @@ public class Bishop extends Piece {
     }
 
     @Override
-    public void setLegalMoves(Square[][] squares) {
+    public void generateLegalMoves(Square[][] squares) {
         legalMoves = Arrays.stream(squares).flatMap(Arrays::stream)
             .filter(this::rowOrColumnCannotBeTheSame)
             .filter(this::bishopLegalMoves)
             .filter(this::filterSquaresWithSameColourPiece)
             .filter(square -> piecesInTheWayDiagonally(squares, square))
             .toList();
+
+        setLegalMoves(legalMoves);
+
     }
 
     private boolean rowOrColumnCannotBeTheSame(Square square) {

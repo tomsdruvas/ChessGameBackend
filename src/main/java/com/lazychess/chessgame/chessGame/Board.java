@@ -23,6 +23,9 @@ public class Board {
         blackBishop1, blackBishop2,
         blackQueen, blackKing, blackPawn[];
 
+    public Board(boolean instantiate) {
+    }
+
     public Board() {
         squares = new Square[8][8];
         loadSquares();
@@ -122,21 +125,60 @@ public class Board {
         Piece pieceToMove = squares[currentRow][currentColumn].getPiece();
         List<Square> legalMoves = pieceToMove.getLegalMoves();
 
-        if(moveLegal(legalMoves, newRow, newColumn)) {
-        pieceToMove.setPieceColumn(newColumn);
-        pieceToMove.setPieceRow(newRow);
-        squares[newRow][newColumn].setPiece(pieceToMove);
-        squares[currentRow][currentColumn].setPiece(new EmptyPiece());
-        loadPieceLegalMoves();
+        if(isMoveLegal(legalMoves, newRow, newColumn)) {
+            pieceToMove.setPieceColumn(newColumn);
+            pieceToMove.setPieceRow(newRow);
+            squares[newRow][newColumn].setPiece(pieceToMove);
+            squares[currentRow][currentColumn].setPiece(new EmptyPiece());
+            loadPieceLegalMoves();
+
+            List<Square> squaresTheKingIsInDanger = listOfSquaresWhereKingIsInDanger(pieceToMove.getColour());
+
+            if (!squaresTheKingIsInDanger.isEmpty()) {
+                clearLegalMovesOfAllPiecesWhenKingInDanger(pieceToMove.getColour());
+//                setKingsLegalMovesWhenInDanger(pieceToMove.getColour(), squaresTheKingIsInDanger);
+            }
         }
     }
 
     private void loadPieceLegalMoves() {
-        Arrays.stream(squares).forEach(pieces -> Arrays.stream(pieces).forEach(square -> square.getPiece().setLegalMoves(squares)));
+        Arrays.stream(squares).forEach(pieces -> Arrays.stream(pieces).forEach(square -> square.getPiece().generateLegalMoves(squares)));
     }
 
-    private boolean moveLegal(List<Square> legalMoves, int newRow, int newColumn) {
+    private boolean isMoveLegal(List<Square> legalMoves, int newRow, int newColumn) {
         return legalMoves.stream().anyMatch(square -> square.getRow() == newRow && square.getColumn() == newColumn);
+    }
+
+    private List<Square> listOfSquaresWhereKingIsInDanger(String colour) {
+        return Arrays.stream(squares)
+            .flatMap(Arrays::stream)
+            .filter(square -> square.getPiece().getColour().equals(colour))
+            .filter(square -> square.getPiece().getLegalMoves()!=null)
+            .flatMap(square -> square.getPiece().getLegalMoves().stream())
+            .filter(square -> square.getPiece() instanceof King)
+            .toList();
+    }
+
+    private void clearLegalMovesOfAllPiecesWhenKingInDanger(String colour) {
+        Arrays.stream(squares)
+            .flatMap(Arrays::stream)
+            .filter(square -> !square.getPiece().getColour().equals(colour))
+            .filter(square -> square.getPiece().getLegalMoves()!=null)
+            .filter(square -> !(square.getPiece() instanceof King))
+            .forEach(square -> square.getPiece().clearLegalMoves());
+    }
+
+    private void setKingsLegalMovesWhenInDanger(String colour, List<Square> listOfSquaresWhereKingIsInDanger) {
+        Piece kingPiece = Arrays.stream(squares).flatMap(Arrays::stream)
+            .filter(square -> square.getPiece() != null)
+            .filter(square -> !square.getPiece().getColour().equals(colour))
+            .filter(square -> square.getPiece() instanceof King)
+            .toList().stream().findFirst().orElseThrow().getPiece();
+
+        List<Square> kingLegalMoves = kingPiece.getLegalMoves().stream()
+            .filter(square -> !listOfSquaresWhereKingIsInDanger.contains(square)).toList();
+
+        kingPiece.setLegalMoves(kingLegalMoves);
     }
 
 

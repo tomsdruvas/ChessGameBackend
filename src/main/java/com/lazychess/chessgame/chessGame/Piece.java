@@ -2,6 +2,7 @@ package com.lazychess.chessgame.chessGame;
 
 import static com.lazychess.chessgame.chessGame.ChessConstants.EMPTY_PIECE;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -51,7 +52,15 @@ public abstract class Piece {
         return legalMoves;
     }
 
-    public void setLegalMoves(Square[][] legalMoves) {
+    public void generateLegalMoves(Square[][] squares) {
+    }
+
+    public void setLegalMoves(List<Square> legalMoves) {
+        this.legalMoves = legalMoves;
+    }
+
+    public void clearLegalMoves() {
+        this.legalMoves = new ArrayList<Integer>();
     }
 
     public String getName() {

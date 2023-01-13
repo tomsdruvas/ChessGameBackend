@@ -9,12 +9,14 @@ public class King extends Piece {
     }
 
     @Override
-    public void setLegalMoves(Square[][] squares) {
+    public void generateLegalMoves(Square[][] squares) {
 
         legalMoves = Arrays.stream(squares).flatMap(Arrays::stream)
             .filter(this::filterSquaresWithSameColourPiece)
             .filter(this::kingLegalMoves)
             .toList();
+
+        setLegalMoves(legalMoves);
     }
 
     private boolean kingLegalMoves(Square square) {

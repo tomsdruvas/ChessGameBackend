@@ -9,11 +9,14 @@ public class Knight extends Piece {
     }
 
     @Override
-    public void setLegalMoves(Square[][] squares) {
+    public void generateLegalMoves(Square[][] squares) {
         legalMoves = Arrays.stream(squares).flatMap(Arrays::stream)
             .filter(this::filterSquaresWithSameColourPiece)
             .filter(this::knightCanMoveOneRowTwoColumnsOrOpposite)
                 .toList();
+
+        setLegalMoves(legalMoves);
+
     }
 
     private boolean knightCanMoveOneRowTwoColumnsOrOpposite(Square square) {

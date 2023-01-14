@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.collections4.ListUtils;
+
 public class Board {
 
     private Square[][] squares;
@@ -136,7 +138,7 @@ public class Board {
 
             if (!squaresTheKingIsInDanger.isEmpty()) {
                 clearLegalMovesOfAllPiecesWhenKingInDanger(pieceToMove.getColour());
-//                setKingsLegalMovesWhenInDanger(pieceToMove.getColour(), squaresTheKingIsInDanger);
+                setKingsLegalMovesWhenInDanger(pieceToMove.getColour(), squaresTheKingIsInDanger);
             }
         }
     }
@@ -175,11 +177,40 @@ public class Board {
             .filter(square -> square.getPiece() instanceof King)
             .toList().stream().findFirst().orElseThrow().getPiece();
 
-        List<Square> kingLegalMoves = kingPiece.getLegalMoves().stream()
-            .filter(square -> !listOfSquaresWhereKingIsInDanger.contains(square)).toList();
+        List<Square> listOfPossibleMovesByNextPlayer = listOfPossibleMovesByNextPlayer(colour);
+        List<Square> pawnStraightMoves = pawnStraightMoves(colour);
 
-        kingPiece.setLegalMoves(kingLegalMoves);
+        List<Square> listOfPossibleMovesByNextPlayerWithoutPawnStraightMoves = ListUtils.subtract(listOfPossibleMovesByNextPlayer, pawnStraightMoves);
+
+        List<Square> kingLegalMoves = kingPiece.getLegalMoves();
+
+        List<Square> kingLegalMovesWithoutDanger = ListUtils.subtract(kingLegalMoves, listOfPossibleMovesByNextPlayerWithoutPawnStraightMoves);
+
+        kingPiece.setLegalMoves(kingLegalMovesWithoutDanger);
     }
+
+    private List<Square> listOfPossibleMovesByNextPlayer(String colour) {
+        return Arrays.stream(squares)
+            .flatMap(Arrays::stream)
+            .filter(square -> square.getPiece().getColour().equals(colour))
+            .filter(square -> square.getPiece().getLegalMoves()!=null)
+            .flatMap(square -> square.getPiece().getLegalMoves().stream())
+            .toList();
+    }
+
+    private List<Square> pawnStraightMoves(String colour) {
+        return Arrays.stream(squares)
+            .flatMap(Arrays::stream)
+            .map(Square::getPiece)
+            .filter(piece -> piece.getColour().equals(colour))
+            .filter(piece -> piece.getLegalMoves()!=null)
+            .filter(Pawn.class::isInstance)
+            .flatMap(piece -> ((Pawn) piece).getStraightLegalMoves().stream())
+            .toList();
+    }
+    // write a method that find all pawn diagonal moves and exclude them from kings legal moves
+
+
 
 
 }

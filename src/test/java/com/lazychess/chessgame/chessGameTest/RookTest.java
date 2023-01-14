@@ -37,12 +37,14 @@ class RookTest {
     @Test
     void loadChessBoardForKing() {
         Board board = new Board();
+        board.movePiece(7,6,5,5);
         Piece blackKing = board.getSquares()[0][4].getPiece();
         blackKing.setPieceRow(4);
         blackKing.setPieceColumn(7);
         board.getSquares()[4][7].setPiece(blackKing);
         board.getSquares()[0][4].clearPiece();
-        board.movePiece(7,6,5,5);
+        board.movePiece(6,6,5,6);
+
 
 
     }

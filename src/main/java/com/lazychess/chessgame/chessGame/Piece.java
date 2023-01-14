@@ -60,7 +60,8 @@ public abstract class Piece {
     }
 
     public void clearLegalMoves() {
-        this.legalMoves = new ArrayList<Integer>();
+
+        this.legalMoves = new ArrayList<>();
     }
 
     public String getName() {

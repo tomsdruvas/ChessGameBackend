@@ -76,6 +76,21 @@ public class Pawn extends Piece {
         return legalMoves.stream().filter(square -> square.getColumn() == getPieceColumn()).toList();
     }
 
+    public List<Square> getDiagonalLegalMovesToPreventTheKingFromGoingIntoCheckMate(Square[][] squares) {
+        return Arrays.stream(squares).flatMap(Arrays::stream)
+            .filter(this::pawnCannotMoveMoreThanOneSquareAlongTheColumns)
+            .filter(this::pawnCannotMoveMoreThanTwoSquareAlongTheRow)
+            .filter(this::pawnCannotMoveTwoRowsAndOneColumn)
+            .filter(this::pawnCannotMoveMoreThanOneSpaceAfterStartingPosition)
+            .filter(this::pawnCannotMoveBack)
+            .filter(this::getEmptyLegalDiagonalMoves)
+            .toList();
+    }
+
+    private boolean getEmptyLegalDiagonalMoves(Square square) {
+        return square.getColumn() != getPieceColumn() && square.getRow() != getPieceRow();
+    }
+
 
 // test better solution
 //    public void generateLegalMoves(Square[][] squares) {

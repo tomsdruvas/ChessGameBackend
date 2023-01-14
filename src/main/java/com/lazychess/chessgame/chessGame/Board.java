@@ -135,10 +135,10 @@ public class Board {
             loadPieceLegalMoves();
 
             List<Square> squaresTheKingIsInDanger = listOfSquaresWhereKingIsInDanger(pieceToMove.getColour());
+            setKingsLegalMovesWhenInDanger(pieceToMove.getColour());
 
             if (!squaresTheKingIsInDanger.isEmpty()) {
                 clearLegalMovesOfAllPiecesWhenKingInDanger(pieceToMove.getColour());
-                setKingsLegalMovesWhenInDanger(pieceToMove.getColour(), squaresTheKingIsInDanger);
             }
         }
     }
@@ -170,7 +170,7 @@ public class Board {
             .forEach(square -> square.getPiece().clearLegalMoves());
     }
 
-    private void setKingsLegalMovesWhenInDanger(String colour, List<Square> listOfSquaresWhereKingIsInDanger) {
+    private void setKingsLegalMovesWhenInDanger(String colour) {
         Piece kingPiece = Arrays.stream(squares).flatMap(Arrays::stream)
             .filter(square -> square.getPiece() != null)
             .filter(square -> !square.getPiece().getColour().equals(colour))
@@ -179,12 +179,14 @@ public class Board {
 
         List<Square> listOfPossibleMovesByNextPlayer = listOfPossibleMovesByNextPlayer(colour);
         List<Square> pawnStraightMoves = pawnStraightMoves(colour);
+        List<Square> pawnDiagonalLegalMovesWhereKingCannotGo = pawnDiagonalMoves(colour);
 
         List<Square> listOfPossibleMovesByNextPlayerWithoutPawnStraightMoves = ListUtils.subtract(listOfPossibleMovesByNextPlayer, pawnStraightMoves);
+        List<Square> listOfPossibleMovesByNextPlayerWithoutPawnStraightMovesAndWithPawnDiagonalMoves = ListUtils.union(listOfPossibleMovesByNextPlayerWithoutPawnStraightMoves, pawnDiagonalLegalMovesWhereKingCannotGo);
 
         List<Square> kingLegalMoves = kingPiece.getLegalMoves();
 
-        List<Square> kingLegalMovesWithoutDanger = ListUtils.subtract(kingLegalMoves, listOfPossibleMovesByNextPlayerWithoutPawnStraightMoves);
+        List<Square> kingLegalMovesWithoutDanger = ListUtils.subtract(kingLegalMoves, listOfPossibleMovesByNextPlayerWithoutPawnStraightMovesAndWithPawnDiagonalMoves);
 
         kingPiece.setLegalMoves(kingLegalMovesWithoutDanger);
     }
@@ -208,9 +210,15 @@ public class Board {
             .flatMap(piece -> ((Pawn) piece).getStraightLegalMoves().stream())
             .toList();
     }
-    // write a method that find all pawn diagonal moves and exclude them from kings legal moves
 
-
-
-
+    private List<Square> pawnDiagonalMoves(String colour) {
+        return Arrays.stream(squares)
+            .flatMap(Arrays::stream)
+            .map(Square::getPiece)
+            .filter(piece -> piece.getColour().equals(colour))
+            .filter(piece -> piece.getLegalMoves()!=null)
+            .filter(Pawn.class::isInstance)
+            .flatMap(piece -> ((Pawn) piece).getDiagonalLegalMovesToPreventTheKingFromGoingIntoCheckMate(squares).stream())
+            .toList();
+    }
 }

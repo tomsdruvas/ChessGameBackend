@@ -135,10 +135,10 @@ public class Board {
             loadPieceLegalMoves();
 
             List<Square> squaresTheKingIsInDanger = listOfSquaresWhereKingIsInDanger(pieceToMove.getColour());
-            setKingsLegalMovesWhenInDanger(pieceToMove.getColour());
+            setKingsLegalMovesToPreventCheckMate(pieceToMove.getColour());
 
             if (!squaresTheKingIsInDanger.isEmpty()) {
-                clearLegalMovesOfAllPiecesWhenKingInDanger(pieceToMove.getColour());
+                clearLegalMovesOfAllPiecesApartFromKingWhenItIsInDanger(pieceToMove.getColour());
             }
         }
     }
@@ -161,7 +161,7 @@ public class Board {
             .toList();
     }
 
-    private void clearLegalMovesOfAllPiecesWhenKingInDanger(String colour) {
+    private void clearLegalMovesOfAllPiecesApartFromKingWhenItIsInDanger(String colour) {
         Arrays.stream(squares)
             .flatMap(Arrays::stream)
             .filter(square -> !square.getPiece().getColour().equals(colour))
@@ -170,7 +170,7 @@ public class Board {
             .forEach(square -> square.getPiece().clearLegalMoves());
     }
 
-    private void setKingsLegalMovesWhenInDanger(String colour) {
+    private void setKingsLegalMovesToPreventCheckMate(String colour) {
         Piece kingPiece = Arrays.stream(squares).flatMap(Arrays::stream)
             .filter(square -> square.getPiece() != null)
             .filter(square -> !square.getPiece().getColour().equals(colour))

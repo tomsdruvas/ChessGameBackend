@@ -90,36 +90,4 @@ public class Pawn extends Piece {
     private boolean getEmptyLegalDiagonalMoves(Square square) {
         return square.getColumn() != getPieceColumn() && square.getRow() != getPieceRow();
     }
-
-
-// test better solution
-//    public void generateLegalMoves(Square[][] squares) {
-//        legalMoves = Arrays.stream(squares)
-//            .flatMap(Arrays::stream)
-//            .filter(this::isLegalPawnMove)
-//            .toList();
-//    }
-//
-//    private boolean isLegalPawnMove(Square square) {
-//        int moveRow = Math.abs(getPieceRow() - square.getRow());
-//        int moveCol = Math.abs(getPieceColumn() - square.getColumn());
-//        boolean isMovingDiagonally = moveRow == 1 && moveCol == 1;
-//        boolean isTakingPiece = square.getPiece().getColour() != EMPTY_PIECE && isMovingDiagonally;
-//
-//        if (isTakingPiece) {
-//            return true;
-//        }
-//
-//        if (moveCol > 0 || moveRow > 2) {
-//            return false;
-//        }
-//
-//        if (getPieceRow() == 1 && getColour() == BLACK) {
-//            return moveRow <= 2;
-//        } else if (getPieceRow() == 6 && getColour() == WHITE) {
-//            return moveRow <= 2;
-//        } else {
-//            return moveRow == 1;
-//        }
-//    }
 }

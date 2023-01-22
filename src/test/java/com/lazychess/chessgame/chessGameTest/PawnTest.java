@@ -172,4 +172,29 @@ class PawnTest {
             .toList())
             .hasSize(31);
     }
+
+//    @Test
+//    void pawnShouldNotBeAbleToTakeBackwards() {
+//        board.movePiece(6,0,4,0);
+//        board.movePiece(1,1,3,1);
+//        board.movePiece(4,0,3,0);
+//        board.movePiece(1,7,2,7);
+//        board.movePiece(7,0,4,0);
+//        board.movePiece(3,1,4,0);
+//
+//        List<Square> legalMovesWhitePawn = board.getSquares()[4][0].getPiece().getLegalMoves();
+//
+//
+//        assertThat(legalMovesWhitePawn).allSatisfy(square -> {
+//            assertThat(square.getColumn()).isZero();
+//            assertThat(square.getRow()).isEqualTo(5);
+//
+//        }).hasSize(1);
+//
+//        assertThat(Arrays.stream(board.getSquares()).flatMap(Arrays::stream)
+//            .map(Square::getPiece)
+//            .filter(piece -> !Objects.equals(piece.getColour(), EMPTY_PIECE))
+//            .toList())
+//            .hasSize(31);
+//    }
 }

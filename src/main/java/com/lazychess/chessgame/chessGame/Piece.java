@@ -52,6 +52,14 @@ public abstract class Piece {
         return legalMoves;
     }
 
+    public void removeLegalMove(int row, int column) {
+        ArrayList<Square> squareArrayList = new ArrayList<>(legalMoves);
+
+        this.legalMoves = squareArrayList.stream()
+            .filter(square -> !(square.getRow() == row && square.getColumn() == column))
+            .toList();
+    }
+
     public void generateLegalMoves(Square[][] squares) {
     }
 

@@ -4,10 +4,13 @@ package com.lazychess.chessgame.chessGame;
 import static com.lazychess.chessgame.chessGame.ChessConstants.BLACK;
 import static com.lazychess.chessgame.chessGame.ChessConstants.WHITE;
 
+import java.io.Serializable;
+import java.util.Objects;
+
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class Square {
+public class Square implements Serializable {
 
     private int row;
     private int column;
@@ -44,5 +47,17 @@ public class Square {
 
     public void clearPiece() {
         this.piece = new EmptyPiece();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Square square)) return false;
+        return row == square.row && column == square.column && Objects.equals(colour, square.colour);
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
     }
 }

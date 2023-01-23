@@ -2,6 +2,8 @@ package com.lazychess.chessgame.chessGame;
 
 import static com.lazychess.chessgame.chessGame.ChessConstants.EMPTY_PIECE;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -9,7 +11,10 @@ import java.util.Objects;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public abstract class Piece {
+public abstract class Piece implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     String name;
     private String colour;
@@ -146,7 +151,7 @@ public abstract class Piece {
         return square.getColumn() == getPieceColumn() || square.getRow() == getPieceRow();
     }
 
-//    public boolean piecesInTheWayStraight(Square[][] squares, Square square) {
+    //    public boolean piecesInTheWayStraight(Square[][] squares, Square square) {
 //        int currentColumn = getPieceColumn();
 //        int currentRow = getPieceRow();
 //

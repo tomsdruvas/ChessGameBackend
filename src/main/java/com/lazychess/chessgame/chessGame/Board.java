@@ -6,10 +6,11 @@ import static com.lazychess.chessgame.chessGame.ChessConstants.WHITE;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import org.apache.commons.collections4.ListUtils;
+import org.springframework.util.SerializationUtils;
+
+import com.lazychess.chessgame.dto.IllegalMovesDataBean;
 
 public class Board {
 
@@ -144,7 +145,8 @@ public class Board {
                 clearLegalMovesOfAllPiecesApartFromKingWhenItIsInDanger(currentPlayersColour);
             }
             else {
-                removeLegalMovesThatPutKingInDanger(currentPlayersColour);
+                List<IllegalMovesDataBean> illegalMovesDataBeans = removeLegalMovesThatPutKingInDanger(currentPlayersColour);
+                int size = illegalMovesDataBeans.size();
             }
         }
     }
@@ -153,37 +155,54 @@ public class Board {
         Arrays.stream(squares).forEach(pieces -> Arrays.stream(pieces).forEach(square -> square.getPiece().generateLegalMoves(squares)));
     }
 
-    private void removeLegalMovesThatPutKingInDanger(String colour) {
+    private List<IllegalMovesDataBean> removeLegalMovesThatPutKingInDanger(String colour) {
 
-        List<Piece> oppositePlayerPiecesWithLegalMovesThatCanCheckTheKing = Arrays.stream(squares)
+        return Arrays.stream(squares)
             .flatMap(Arrays::stream)
             .map(Square::getPiece)
             .filter(piece -> !piece.getColour().equals(colour))
             .filter(piece -> piece.getLegalMoves() != null)
             .filter(piece -> !piece.getLegalMoves().isEmpty())
-            .filter(piece -> piece.getLegalMoves().stream().noneMatch(square -> {
-                Square[][] cloneOfSquares = squares.clone();
-                cloneOfSquares[square.getRow()][square.getColumn()].setPiece(piece);
-                cloneOfSquares[piece.getPieceRow()][piece.getPieceColumn()].clearPiece();
-                loadPieceLegalMoves(cloneOfSquares);
-                List<Square> listOfSquaresWhereKingIsInDanger = listOfSquaresWhereKingIsInDanger(colour, cloneOfSquares);
-                return !listOfSquaresWhereKingIsInDanger.isEmpty();
-            }))
+            .map(piece -> new IllegalMovesDataBean(
+                piece.getName(),
+                removeLegalMovesIfAffectKing(piece, colour)
+                ))
+            .filter(illegalMovesDataBean -> !illegalMovesDataBean.getIllegalMoves().isEmpty())
             .toList();
+    }
 
-        List<Piece> allPieces = getAllPieces(squares);
+    private List<Square> removeLegalMovesIfAffectKing(Piece piece, String colour) {
 
-        List<Piece> pieceStream = ListUtils.subtract(allPieces, oppositePlayerPiecesWithLegalMovesThatCanCheckTheKing);
+        return piece.getLegalMoves().stream().filter(square -> {
 
-        pieceStream
-            .forEach(piece -> {
-            oppositePlayerPiecesWithLegalMovesThatCanCheckTheKing.forEach(piece1 -> {
-                if(Objects.equals(piece1.getName(), piece.getName())) {
-                    List<Square> pieceLegalMovesWithoutMovesThatPutKingInCheck = ListUtils.subtract(piece.getLegalMoves(), piece1.getLegalMoves());
-                    piece.setLegalMoves(pieceLegalMovesWithoutMovesThatPutKingInCheck);
-                }
-            });
-        });
+            int currentPieceRow = piece.getPieceRow();
+            int currentPieceColumn = piece.getPieceColumn();
+            Piece clearedSquarePiece = SerializationUtils.clone(squares[piece.getPieceRow()][piece.getPieceColumn()].getPiece());
+            Piece movedOnToPiece = SerializationUtils.clone(squares[square.getRow()][square.getColumn()].getPiece());
+
+            squares[square.getRow()][square.getColumn()].setPiece(piece);
+            squares[piece.getPieceRow()][piece.getPieceColumn()].clearPiece();
+            piece.setPieceRow(square.getRow());
+            piece.setPieceColumn(square.getColumn());
+
+            loadPieceLegalMoves(squares);
+            List<Square> listOfSquaresWhereKingIsInDanger = listOfSquaresWhereKingIsInDanger(colour, squares);
+
+            squares[square.getRow()][square.getColumn()].setPiece(movedOnToPiece);
+            squares[clearedSquarePiece.getPieceRow()][clearedSquarePiece.getPieceColumn()].setPiece(clearedSquarePiece);
+            piece.setPieceRow(currentPieceRow);
+            piece.setPieceColumn(currentPieceColumn);
+            loadPieceLegalMoves(squares);
+
+            return !listOfSquaresWhereKingIsInDanger.isEmpty();
+        }).toList();
+
+//        if(!movesToRemove.isEmpty()) {
+//            List<Square> legalMoves = piece.getLegalMoves().stream().filter(o -> !movesToRemove.contains(o)
+//            ).toList();
+//
+//            piece.setLegalMoves(legalMoves);
+//        }
     }
 
     private boolean isMoveLegal(List<Square> legalMoves, int newRow, int newColumn) {

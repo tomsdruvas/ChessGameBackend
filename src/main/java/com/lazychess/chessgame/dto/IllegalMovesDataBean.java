@@ -9,22 +9,14 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class IllegalMovesDataBean {
 
-    private String pieceName;
-    private List<Square> illegalMoves;
+    private final String pieceName;
+    private final List<Square> illegalMoves;
 
     public String getPieceName() {
         return pieceName;
     }
 
-    public void setPieceName(String pieceName) {
-        this.pieceName = pieceName;
-    }
-
     public List<Square> getIllegalMoves() {
         return illegalMoves;
-    }
-
-    public void setIllegalMoves(List<Square> illegalMoves) {
-        this.illegalMoves = illegalMoves;
     }
 }

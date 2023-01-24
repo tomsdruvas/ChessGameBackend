@@ -145,9 +145,11 @@ public class Board {
                 clearLegalMovesOfAllPiecesApartFromKingWhenItIsInDanger(currentPlayersColour);
             }
             else {
-                List<IllegalMovesDataBean> illegalMovesDataBeans = removeLegalMovesThatPutKingInDanger(currentPlayersColour);
-                int size = illegalMovesDataBeans.size();
+                removeLegalMovesThatPutKingInDanger(currentPlayersColour);
             }
+        }
+        else {
+            throw new RuntimeException("That is not a legal move");
         }
     }
 
@@ -155,9 +157,9 @@ public class Board {
         Arrays.stream(squares).forEach(pieces -> Arrays.stream(pieces).forEach(square -> square.getPiece().generateLegalMoves(squares)));
     }
 
-    private List<IllegalMovesDataBean> removeLegalMovesThatPutKingInDanger(String colour) {
+    private void removeLegalMovesThatPutKingInDanger(String colour) {
 
-        return Arrays.stream(squares)
+        List<IllegalMovesDataBean> illegalMovesDataBeans = Arrays.stream(squares)
             .flatMap(Arrays::stream)
             .map(Square::getPiece)
             .filter(piece -> !piece.getColour().equals(colour))
@@ -165,13 +167,20 @@ public class Board {
             .filter(piece -> !piece.getLegalMoves().isEmpty())
             .map(piece -> new IllegalMovesDataBean(
                 piece.getName(),
-                removeLegalMovesIfAffectKing(piece, colour)
-                ))
+                findLegalOwnMovesThatCheckKing(piece, colour)
+            ))
             .filter(illegalMovesDataBean -> !illegalMovesDataBean.getIllegalMoves().isEmpty())
             .toList();
+
+        illegalMovesDataBeans
+            .forEach(illegalMovesDataBean -> getPieceByName(illegalMovesDataBean.getPieceName()).getLegalMoves().forEach(square -> {
+                if(illegalMovesDataBean.getIllegalMoves().contains(square)){
+                    getPieceByName(illegalMovesDataBean.getPieceName()).removeLegalMove(square.getRow(), square.getColumn());
+                }
+            }));
     }
 
-    private List<Square> removeLegalMovesIfAffectKing(Piece piece, String colour) {
+    private List<Square> findLegalOwnMovesThatCheckKing(Piece piece, String colour) {
 
         return piece.getLegalMoves().stream().filter(square -> {
 
@@ -195,14 +204,8 @@ public class Board {
             loadPieceLegalMoves(squares);
 
             return !listOfSquaresWhereKingIsInDanger.isEmpty();
-        }).toList();
-
-//        if(!movesToRemove.isEmpty()) {
-//            List<Square> legalMoves = piece.getLegalMoves().stream().filter(o -> !movesToRemove.contains(o)
-//            ).toList();
-//
-//            piece.setLegalMoves(legalMoves);
-//        }
+        })
+            .toList();
     }
 
     private boolean isMoveLegal(List<Square> legalMoves, int newRow, int newColumn) {

@@ -1,4 +1,4 @@
-package com.lazychess.chessgame.chessGameTest;
+package com.lazychess.chessgame.chessGameMoveITTests;
 
 import static com.lazychess.chessgame.chessGame.ChessConstants.EMPTY_PIECE;
 import static com.lazychess.chessgame.chessGame.ChessConstants.WHITE;

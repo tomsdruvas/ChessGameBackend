@@ -283,11 +283,11 @@ public class Board {
             .toList();
     }
 
-    private List<Piece> getAllPieces(Square[][] squares) {
+    public List<Piece> getAllPieces() {
         return Arrays.stream(squares)
             .flatMap(Arrays::stream)
             .map(Square::getPiece)
-            .filter(piece -> piece.getLegalMoves() != null)
+            .filter(piece -> !(piece instanceof EmptyPiece))
             .toList();
     }
 }

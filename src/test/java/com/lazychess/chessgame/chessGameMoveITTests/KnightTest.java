@@ -88,6 +88,67 @@ class KnightTest {
             .anyMatch(square -> square.getRow() == 3 && square.getColumn() == 3);
     }
 
+    @Test
+    void shouldHaveThreeLegalMovesForKnight1() {
+        board.movePiece(0,1,2,0);
+        List<Square> legalMoves = board.getSquares()[2][0].getPiece().getLegalMoves();
+        assertThat(legalMoves).hasSize(3)
+            .anyMatch(square -> square.getRow() == 0 && square.getColumn() == 1)
+            .anyMatch(square -> square.getRow() == 4 && square.getColumn() == 1)
+            .anyMatch(square -> square.getRow() == 3 && square.getColumn() == 2);
+
+    }
+
+    @Test
+    void shouldHaveThreeLegalMovesForKnight2() {
+        board.movePiece(0,6,2,7);
+        List<Square> legalMoves = board.getSquares()[2][7].getPiece().getLegalMoves();
+        assertThat(legalMoves).hasSize(3)
+            .anyMatch(square -> square.getRow() == 0 && square.getColumn() == 6)
+            .anyMatch(square -> square.getRow() == 4 && square.getColumn() == 6)
+            .anyMatch(square -> square.getRow() == 3 && square.getColumn() == 5);
+    }
+
+    @Test
+    void shouldHaveThreeLegalMovesForKnight3() {
+        board.movePiece(7,1,5,0);
+        List<Square> legalMoves = board.getSquares()[5][0].getPiece().getLegalMoves();
+        assertThat(legalMoves).hasSize(3)
+            .anyMatch(square -> square.getRow() == 7 && square.getColumn() == 1)
+            .anyMatch(square -> square.getRow() == 3 && square.getColumn() == 1)
+            .anyMatch(square -> square.getRow() == 4 && square.getColumn() == 2);
+    }
+
+    @Test
+    void shouldHaveThreeLegalMovesForKnight4() {
+        board.movePiece(7,6,5,7);
+        List<Square> legalMoves = board.getSquares()[5][7].getPiece().getLegalMoves();
+        assertThat(legalMoves).hasSize(3)
+            .anyMatch(square -> square.getRow() == 7 && square.getColumn() == 6)
+            .anyMatch(square -> square.getRow() == 3 && square.getColumn() == 6)
+            .anyMatch(square -> square.getRow() == 4 && square.getColumn() == 5);
+    }
+
+    @Test
+    void knightCanTakeOppositePiece() {
+        board.movePiece(0,1,2,2);
+        board.movePiece(6,3,4,3);
+        board.movePiece(2,2,4,3);
+
+        List<Square> legalMoves = board.getSquares()[4][3].getPiece().getLegalMoves();
+        List<Piece> allPieces = board.getAllPieces();
+        assertThat(allPieces).hasSize(31);
+        assertThat(legalMoves).hasSize(8)
+            .anyMatch(square -> square.getRow() == 2 && square.getColumn() == 2)
+            .anyMatch(square -> square.getRow() == 2 && square.getColumn() == 4)
+            .anyMatch(square -> square.getRow() == 3 && square.getColumn() == 1)
+            .anyMatch(square -> square.getRow() == 3 && square.getColumn() == 5)
+            .anyMatch(square -> square.getRow() == 5 && square.getColumn() == 1)
+            .anyMatch(square -> square.getRow() == 5 && square.getColumn() == 5)
+            .anyMatch(square -> square.getRow() == 6 && square.getColumn() == 2)
+            .anyMatch(square -> square.getRow() == 6 && square.getColumn() == 4);
+    }
+
     private static boolean findAllKnightsByTheirStartingPosition(Piece piece) {
         return
             (piece.getPieceRow() == 7 && piece.getPieceColumn() == 1) ||

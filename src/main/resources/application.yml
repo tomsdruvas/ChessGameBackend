@@ -14,3 +14,9 @@ spring:
 rsa:
     private-key: classpath:certs/private.pem
     public-key: classpath:certs/public.pem
+
+systemProp:
+    sonar:
+        host:
+            url: http://localhost:9000
+        login: sqa_49f5490be1d64a94186d17797cafcf2a8747b2ff

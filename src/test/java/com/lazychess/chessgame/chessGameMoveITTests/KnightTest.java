@@ -149,6 +149,29 @@ class KnightTest {
             .anyMatch(square -> square.getRow() == 6 && square.getColumn() == 4);
     }
 
+    @Test
+    void knightCannotMoveToPutOwnKingInCheck() {
+        board.movePiece(1,4,3,4);
+        board.movePiece(6,3,4,3);
+        board.movePiece(0,4,1,4);
+        board.movePiece(6,0,4,0);
+        board.movePiece(1,4,2,4);
+        board.movePiece(7,0,5,0);
+        board.movePiece(0,1,2,2);
+        board.movePiece(5,0,5,1);
+        board.movePiece(1,7,2,7);
+        board.movePiece(5,1,2,1);
+
+        List<Square> legalMoves = board.getSquares()[2][2].getPiece().getLegalMoves();
+        assertThat(legalMoves).isEmpty();
+
+        board.movePiece(2,1,3,1);
+
+        List<Square> legalMovesAfterMoving = board.getSquares()[2][2].getPiece().getLegalMoves();
+        assertThat(legalMovesAfterMoving).hasSize(5);
+
+    }
+
     private static boolean findAllKnightsByTheirStartingPosition(Piece piece) {
         return
             (piece.getPieceRow() == 7 && piece.getPieceColumn() == 1) ||

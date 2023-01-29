@@ -8,7 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import com.lazychess.chessgame.applicationUser.ApplicationUserRepository;
+import com.lazychess.chessgame.applicationuser.ApplicationUserRepository;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

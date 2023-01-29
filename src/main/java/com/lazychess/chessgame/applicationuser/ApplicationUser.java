@@ -1,4 +1,4 @@
-package com.lazychess.chessgame.applicationUser;
+package com.lazychess.chessgame.applicationuser;
 
 import java.util.ArrayList;
 import java.util.Date;

@@ -1,4 +1,4 @@
-package com.lazychess.chessgame.chessGame;
+package com.lazychess.chessgame.chessgame;
 
 public class EmptyPiece extends Piece {
 

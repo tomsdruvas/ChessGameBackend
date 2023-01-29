@@ -1,8 +1,8 @@
-package com.lazychess.chessgame.chessGame;
+package com.lazychess.chessgame.chessgame;
 
-import static com.lazychess.chessgame.chessGame.ChessConstants.BLACK;
-import static com.lazychess.chessgame.chessGame.ChessConstants.EMPTY_PIECE;
-import static com.lazychess.chessgame.chessGame.ChessConstants.WHITE;
+import static com.lazychess.chessgame.chessgame.ChessConstants.BLACK;
+import static com.lazychess.chessgame.chessgame.ChessConstants.EMPTY_PIECE;
+import static com.lazychess.chessgame.chessgame.ChessConstants.WHITE;
 
 import java.util.Arrays;
 import java.util.List;

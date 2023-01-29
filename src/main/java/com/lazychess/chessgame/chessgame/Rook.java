@@ -1,4 +1,4 @@
-package com.lazychess.chessgame.chessGame;
+package com.lazychess.chessgame.chessgame;
 
 import java.util.Arrays;
 

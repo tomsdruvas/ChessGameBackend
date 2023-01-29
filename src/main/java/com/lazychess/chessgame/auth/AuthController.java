@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.lazychess.chessgame.applicationUser.ApplicationUser;
-import com.lazychess.chessgame.applicationUser.ApplicationUserService;
+import com.lazychess.chessgame.applicationuser.ApplicationUser;
+import com.lazychess.chessgame.applicationuser.ApplicationUserService;
 import com.lazychess.chessgame.dto.RegistrationDto;
 import com.lazychess.chessgame.security.TokenService;
 

@@ -2,7 +2,7 @@ package com.lazychess.chessgame.dto;
 
 import java.util.List;
 
-import com.lazychess.chessgame.chessGame.Square;
+import com.lazychess.chessgame.chessgame.Square;
 
 import lombok.AllArgsConstructor;
 

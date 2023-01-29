@@ -10,10 +10,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.lazychess.chessgame.chessGame.Board;
-import com.lazychess.chessgame.chessGame.Knight;
-import com.lazychess.chessgame.chessGame.Piece;
-import com.lazychess.chessgame.chessGame.Square;
+import com.lazychess.chessgame.chessgame.Board;
+import com.lazychess.chessgame.chessgame.Knight;
+import com.lazychess.chessgame.chessgame.Piece;
+import com.lazychess.chessgame.chessgame.Square;
 
 @SpringBootTest
 class KnightTest {

@@ -1,6 +1,6 @@
-package com.lazychess.chessgame.chessGame;
+package com.lazychess.chessgame.chessgame;
 
-import static com.lazychess.chessgame.chessGame.ChessConstants.EMPTY_PIECE;
+import static com.lazychess.chessgame.chessgame.ChessConstants.EMPTY_PIECE;
 
 import java.io.Serial;
 import java.io.Serializable;

@@ -11,8 +11,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import com.lazychess.chessgame.applicationUser.ApplicationUser;
-import com.lazychess.chessgame.applicationUser.ApplicationUserRepository;
+import com.lazychess.chessgame.applicationuser.ApplicationUser;
+import com.lazychess.chessgame.applicationuser.ApplicationUserRepository;
 import com.lazychess.chessgame.models.Role;
 import com.lazychess.chessgame.security.RsaKeyProperties;
 

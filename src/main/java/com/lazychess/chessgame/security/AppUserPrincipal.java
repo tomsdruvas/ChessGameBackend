@@ -7,7 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.lazychess.chessgame.applicationUser.ApplicationUser;
+import com.lazychess.chessgame.applicationuser.ApplicationUser;
 
 
 public class AppUserPrincipal implements UserDetails {

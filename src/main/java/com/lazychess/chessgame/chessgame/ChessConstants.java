@@ -1,5 +1,8 @@
 package com.lazychess.chessgame.chessgame;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class ChessConstants {
 
     public static final String WHITE = "white";

@@ -20,9 +20,9 @@ public abstract class Piece implements Serializable {
     private String colour;
     private int row;
     private int column;
-    public List<Square> legalMoves;
+    public transient List<Square> legalMoves;
 
-    public Piece(String name, int row, int column, String colour) {
+    protected Piece(String name, int row, int column, String colour) {
         this.name = name;
         this.row = row;
         this.column = column;

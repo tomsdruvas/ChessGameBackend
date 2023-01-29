@@ -15,18 +15,26 @@ import com.lazychess.chessgame.dto.IllegalMovesDataBean;
 public class Board {
 
     private Square[][] squares;
-    Piece 
-        whiteRook1, whiteRook2,
-        whiteKnight1, whiteKnight2,
-        whiteBishop1, whiteBishop2,
-        whiteQueen, whiteKing, whitePawn[];
+    Piece whiteRook1;
+    Piece whiteRook2;
+    Piece whiteKnight1;
+    Piece whiteKnight2;
+    Piece whiteBishop1;
+    Piece whiteBishop2;
+    Piece whiteQueen;
+    Piece whiteKing;
+    Piece[] whitePawn;
 
 
-    Piece
-        blackRook1, blackRook2,
-        blackKnight1, blackKnight2,
-        blackBishop1, blackBishop2,
-        blackQueen, blackKing, blackPawn[];
+    Piece blackRook1;
+    Piece blackRook2;
+    Piece blackKnight1;
+    Piece blackKnight2;
+    Piece blackBishop1;
+    Piece blackBishop2;
+    Piece blackQueen;
+    Piece blackKing;
+    Piece[] blackPawn;
 
     public Board(boolean instantiate) {
     }

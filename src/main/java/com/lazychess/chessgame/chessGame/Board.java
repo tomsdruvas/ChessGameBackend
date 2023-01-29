@@ -226,7 +226,7 @@ public class Board {
         Arrays.stream(squares)
             .flatMap(Arrays::stream)
             .filter(square -> !square.getPiece().getColour().equals(colour))
-            .filter(square -> square.getPiece().getLegalMoves()!=null)
+            .filter(square -> square.getPiece().getLegalMoves() != null)
             .filter(square -> !(square.getPiece() instanceof King))
             .forEach(square -> square.getPiece().clearLegalMoves());
     }

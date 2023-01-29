@@ -2,6 +2,9 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.0.1'
 	id 'io.spring.dependency-management' version '1.1.0'
+	id 'com.avast.gradle.docker-compose' version '0.14.3'
+	id 'jacoco'
+	id 'org.sonarqube' version '3.3'
 }
 
 group = 'com.lazychess'
@@ -45,4 +48,21 @@ dependencies {
 
 test {
 	useJUnitPlatform()
+}
+
+jacocoTestReport {
+	reports {
+		xml.enabled true
+	}
+}
+test.finalizedBy jacocoTestReport
+
+sonarqube {
+	properties {
+		property 'sonar.host.url', 'http://localhost:9000'
+	}
+}
+
+tasks.named('sonarqube').configure {
+	dependsOn test
 }

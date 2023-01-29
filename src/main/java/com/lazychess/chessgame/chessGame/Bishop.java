@@ -1,5 +1,7 @@
 package com.lazychess.chessgame.chessGame;
 
+import static java.util.Arrays.stream;
+
 import java.util.Arrays;
 
 public class Bishop extends Piece {
@@ -10,7 +12,8 @@ public class Bishop extends Piece {
 
     @Override
     public void generateLegalMoves(Square[][] squares) {
-        legalMoves = Arrays.stream(squares).flatMap(Arrays::stream)
+        legalMoves = stream(squares)
+            .flatMap(Arrays::stream)
             .filter(this::rowOrColumnCannotBeTheSame)
             .filter(this::bishopLegalMoves)
             .filter(this::filterSquaresWithSameColourPiece)
@@ -18,7 +21,6 @@ public class Bishop extends Piece {
             .toList();
 
         setLegalMoves(legalMoves);
-
     }
 
     private boolean rowOrColumnCannotBeTheSame(Square square) {

@@ -31,7 +31,7 @@ class RookTest {
         List<Piece> allRooks = Arrays.stream(board.getSquares())
             .flatMap(Arrays::stream)
             .map(Square::getPiece)
-            .filter(RookTest::findAllRooksByTheirStartingPosition)
+            .filter(this::findAllRooksByTheirStartingPosition)
             .filter(piece -> !(piece instanceof EmptyPiece))
             .toList();
 
@@ -51,7 +51,7 @@ class RookTest {
         List<Piece> allRooks = Arrays.stream(board.getSquares())
             .flatMap(Arrays::stream)
             .map(Square::getPiece)
-            .filter(RookTest::findAllRooksByTheirStartingPosition)
+            .filter(this::findAllRooksByTheirStartingPosition)
             .filter(piece -> !(piece instanceof EmptyPiece))
             .toList();
 
@@ -179,9 +179,7 @@ class RookTest {
             .noneMatch(square -> square.getRow() == 5 && square.getColumn() == 3);
     }
 
-
-
-    private static boolean findAllRooksByTheirStartingPosition(Piece piece) {
+    private boolean findAllRooksByTheirStartingPosition(Piece piece) {
         return
             (piece.getPieceRow() == 7 && piece.getPieceColumn() == 7) ||
                 (piece.getPieceRow() == 0 && piece.getPieceColumn() == 0) ||

@@ -30,7 +30,7 @@ class KnightTest {
         List<Piece> allKnights = Arrays.stream(board.getSquares())
             .flatMap(Arrays::stream)
             .map(Square::getPiece)
-            .filter(KnightTest::findAllKnightsByTheirStartingPosition)
+            .filter(this::findAllKnightsByTheirStartingPosition)
             .toList();
 
         assertThat(allKnights).hasSize(4).allSatisfy(piece -> {
@@ -171,7 +171,7 @@ class KnightTest {
 
     }
 
-    private static boolean findAllKnightsByTheirStartingPosition(Piece piece) {
+    private boolean findAllKnightsByTheirStartingPosition(Piece piece) {
         return
             (piece.getPieceRow() == 7 && piece.getPieceColumn() == 1) ||
                 (piece.getPieceRow() == 0 && piece.getPieceColumn() == 1) ||

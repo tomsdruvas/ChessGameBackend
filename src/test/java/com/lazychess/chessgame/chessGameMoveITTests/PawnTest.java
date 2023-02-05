@@ -182,7 +182,7 @@ class PawnTest {
         board.movePiece(1,4,2,4);
         board.movePiece(5,0,5,1);
         board.movePiece(2,4,3,5);
-        board.movePiece(5,1,3,1);
+        board.movePiece(5,1,4,1);
         List<Square> legalMoves = board.getSquares()[3][4].getPiece().getLegalMoves();
         assertThat(legalMoves).isEmpty();
 

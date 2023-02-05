@@ -20,7 +20,7 @@ public abstract class Piece implements Serializable {
     private String colour;
     private int row;
     private int column;
-    public transient List<Square> legalMoves;
+    protected transient List<Square> legalMoves;
 
     protected Piece(String name, int row, int column, String colour) {
         this.name = name;

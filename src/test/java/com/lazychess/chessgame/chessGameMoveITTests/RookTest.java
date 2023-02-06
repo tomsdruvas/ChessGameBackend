@@ -179,6 +179,35 @@ class RookTest {
             .noneMatch(square -> square.getRow() == 5 && square.getColumn() == 3);
     }
 
+    @Test
+    void rookShouldBeAbleToTakeOppositeKingCheckMate() {
+
+        board.movePiece(6,7,4,7);
+        board.movePiece(1,4,2,4);
+        board.movePiece(7,7,5,7);
+        board.movePiece(2,4,3,4);
+        board.movePiece(5,7,5,4);
+        board.movePiece(5,4,3,4);
+        board.movePiece(1,7,2,7);
+
+        //assert that all black pieces have zero moves and it is a check mate
+
+    }
+
+
+    @Test
+    void rookShouldBeAbleToTakeOppositeKingNotCheckMate() {
+
+        board.movePiece(6,7,4,7);
+        board.movePiece(1,4,2,4);
+        board.movePiece(7,7,5,7);
+        board.movePiece(1,5,2,5);
+        board.movePiece(5,7,5,4);
+        board.movePiece(5,4,2,4);
+
+        //assert that all black pieces have zero moves and king has one move
+    }
+
     private boolean findAllRooksByTheirStartingPosition(Piece piece) {
         return
             (piece.getPieceRow() == 7 && piece.getPieceColumn() == 7) ||

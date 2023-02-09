@@ -1,9 +1,11 @@
 package com.lazychess.chessgame.chessGameMoveITTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -14,10 +16,16 @@ import com.lazychess.chessgame.chessgame.Square;
 @SpringBootTest
 class ChessBoardTest {
 
+    private Board board;
+
+    @BeforeEach
+    public void loadChess() {
+        board = new Board();
+    }
+
+
     @Test
     void loadChessBoard() {
-        Board board = new Board();
-
 // Testing the white pawns
         for (int i = 0; i < 8; i++) {
             Piece whitePawn = board.getSquares()[6][i].getPiece();
@@ -105,6 +113,12 @@ class ChessBoardTest {
         Piece blackKing = board.getSquares()[0][4].getPiece();
         List<Square> legalMovesForBlackKing = blackKing.getLegalMoves();
         assertThat(legalMovesForBlackKing).isEmpty();
+    }
+
+    @Test
+    void exceptionThrownIfWrongColourTriesToPlay() {
+        assertThatThrownBy(() -> board.movePiece(1,0,2,0))
+            .hasMessage("It is not the black's turn");
     }
 
 

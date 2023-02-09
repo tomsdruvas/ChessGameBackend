@@ -2,6 +2,7 @@ package com.lazychess.chessgame.chessgame;
 
 import static com.lazychess.chessgame.chessgame.ChessConstants.BLACK;
 import static com.lazychess.chessgame.chessgame.ChessConstants.WHITE;
+import static com.lazychess.chessgame.chessgame.ChessGameState.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,6 +37,9 @@ public class Board {
     Piece blackKing;
     Piece[] blackPawn;
 
+    private ChessGameState stateOfTheGame;
+    private String currentPlayerColourState;
+
     public Board(boolean instantiate) {
     }
 
@@ -44,6 +48,8 @@ public class Board {
         loadSquares();
         loadPieces();
         loadPieceLegalMoves(squares);
+        this.stateOfTheGame = ONGOING;
+        this.currentPlayerColourState = WHITE;
     }
 
     public void loadSquares() {
@@ -135,9 +141,13 @@ public class Board {
     }
 
     public void movePiece(int currentRow, int currentColumn, int newRow, int newColumn) {
+        checkIfGameIsOnGoing();
+
         Piece pieceToMove = squares[currentRow][currentColumn].getPiece();
         List<Square> legalMoves = pieceToMove.getLegalMoves();
         String currentPlayersColour = pieceToMove.getColour();
+
+        checkIfItIsColoursTurn(currentPlayersColour);
 
         if(isMoveLegal(legalMoves, newRow, newColumn)) {
             pieceToMove.setPieceColumn(newColumn);
@@ -146,18 +156,35 @@ public class Board {
             squares[currentRow][currentColumn].setPiece(new EmptyPiece());
             loadPieceLegalMoves(squares);
 
-            List<Square> squaresTheKingIsInDanger = listOfSquaresWhereKingIsInDanger(currentPlayersColour, squares);
-            setKingsLegalMovesToPreventCheckMate(currentPlayersColour);
+            List<Square> squaresTheKingIsInDanger = listOfSquaresWhereOppositeKingIsInDanger(currentPlayersColour, squares);
+            setOppositeKingsLegalMovesToPreventCheckMateOnItself(currentPlayersColour);
 
             if (!squaresTheKingIsInDanger.isEmpty()) {
                 clearLegalMovesOfAllPiecesApartFromKingWhenItIsInDanger(currentPlayersColour);
+                checkIfOppositeKingIsInCheckMate(currentPlayersColour, squares);
             }
             else {
                 removeLegalMovesThatPutKingInDanger(currentPlayersColour);
             }
+
+            setOppositeColourAsCurrentPlayer();
         }
         else {
             throw new RuntimeException("That is not a legal move");
+        }
+    }
+
+    private void setOppositeColourAsCurrentPlayer() {
+        if (Objects.equals(getCurrentPlayerColourState(), WHITE)) {
+            setCurrentPlayerColourState(BLACK);
+        } else if (Objects.equals(getCurrentPlayerColourState(), BLACK)) {
+            setCurrentPlayerColourState(WHITE);
+        }
+    }
+
+    private void checkIfItIsColoursTurn(String currentPlayerColour) {
+        if(!Objects.equals(getCurrentPlayerColourState(), currentPlayerColour)) {
+            throw new RuntimeException("It is not the " + currentPlayerColour +"'s turn");
         }
     }
 
@@ -203,7 +230,7 @@ public class Board {
             piece.setPieceColumn(square.getColumn());
 
             loadPieceLegalMoves(squares);
-            List<Square> listOfSquaresWhereKingIsInDanger = listOfSquaresWhereKingIsInDanger(colour, squares);
+            List<Square> listOfSquaresWhereKingIsInDanger = listOfSquaresWhereOppositeKingIsInDanger(colour, squares);
 
             squares[square.getRow()][square.getColumn()].setPiece(movedOnToPiece);
             squares[clearedSquarePiece.getPieceRow()][clearedSquarePiece.getPieceColumn()].setPiece(clearedSquarePiece);
@@ -220,7 +247,7 @@ public class Board {
         return legalMoves.stream().anyMatch(square -> square.getRow() == newRow && square.getColumn() == newColumn);
     }
 
-    private List<Square> listOfSquaresWhereKingIsInDanger(String colour, Square[][] squares) {
+    private List<Square> listOfSquaresWhereOppositeKingIsInDanger(String colour, Square[][] squares) {
         return Arrays.stream(squares)
             .flatMap(Arrays::stream)
             .filter(square -> square.getPiece().getColour().equals(colour))
@@ -239,7 +266,7 @@ public class Board {
             .forEach(square -> square.getPiece().clearLegalMoves());
     }
 
-    private void setKingsLegalMovesToPreventCheckMate(String colour) {
+    private void setOppositeKingsLegalMovesToPreventCheckMateOnItself(String colour) {
         Piece kingPiece = Arrays.stream(squares).flatMap(Arrays::stream)
             .filter(square -> square.getPiece() != null)
             .filter(square -> !square.getPiece().getColour().equals(colour))
@@ -264,7 +291,7 @@ public class Board {
         return Arrays.stream(squares)
             .flatMap(Arrays::stream)
             .filter(square -> square.getPiece().getColour().equals(colour))
-            .filter(square -> square.getPiece().getLegalMoves()!=null)
+            .filter(square -> square.getPiece().getLegalMoves() != null)
             .flatMap(square -> square.getPiece().getLegalMoves().stream())
             .toList();
     }
@@ -297,5 +324,39 @@ public class Board {
             .map(Square::getPiece)
             .filter(piece -> !(piece instanceof EmptyPiece))
             .toList();
+    }
+
+    public ChessGameState getStateOfTheGame() {
+        return stateOfTheGame;
+    }
+
+    public void setStateOfTheGame(ChessGameState stateOfTheGame) {
+        this.stateOfTheGame = stateOfTheGame;
+    }
+
+    private void checkIfGameIsOnGoing() {
+        if(getStateOfTheGame() != ONGOING) {
+            throw new RuntimeException("The game is not in the ongoing state");
+        }
+    }
+
+    private void checkIfOppositeKingIsInCheckMate(String currentPlayersColour, Square[][] squares) {
+        Piece kingPiece = Arrays.stream(squares).flatMap(Arrays::stream)
+            .filter(square -> square.getPiece() != null)
+            .filter(square -> !square.getPiece().getColour().equals(currentPlayersColour))
+            .filter(square -> square.getPiece() instanceof King)
+            .toList().stream().findFirst().orElseThrow().getPiece();
+
+        if(kingPiece.getLegalMoves().isEmpty()) {
+            setStateOfTheGame(CHECKMATE);
+        }
+    }
+
+    public String getCurrentPlayerColourState() {
+        return currentPlayerColourState;
+    }
+
+    public void setCurrentPlayerColourState(String currentPlayerColourState) {
+        this.currentPlayerColourState = currentPlayerColourState;
     }
 }

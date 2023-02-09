@@ -20,7 +20,7 @@ import com.lazychess.chessgame.chessgame.Square;
 @SpringBootTest
 class BishopTest {
 
-    private static Board board;
+    private Board board;
 
     @BeforeEach
     public void loadChess() {
@@ -136,6 +136,64 @@ class BishopTest {
             .noneMatch(square -> square.getRow() == 6 && square.getColumn() == 4)
             .noneMatch(square -> square.getRow() == 3 && square.getColumn() == 7);
     }
+
+
+    @Test
+    void bishopShouldBeAbleToTakeOppositeKingCheckMate() {
+//        board.movePiece(6,7,4,7);
+//        board.movePiece(1,4,2,4);
+//        board.movePiece(7,7,5,7);
+//        board.movePiece(2,4,3,4);
+//        board.movePiece(5,7,5,4);
+//        board.movePiece(5,4,3,4);
+//
+//        List<Piece> allPieces = board.getAllPieces();
+//        assertThat(allPieces)
+//            .filteredOn(piece -> Objects.equals(piece.getColour(), "black") && !(piece instanceof King))
+//            .hasSize(14).allSatisfy(piece -> {
+//                assertThat(piece.getLegalMoves()).isEmpty();
+//            });
+//
+//        Piece blackKing = board.getSquares()[0][4].getPiece();
+//        assertThat(blackKing.getLegalMoves()).isEmpty();
+//        assertThat(blackKing).isExactlyInstanceOf(King.class);
+//
+//        Piece whiteRook = board.getSquares()[3][4].getPiece();
+//        assertThat(whiteRook)
+//            .isExactlyInstanceOf(Rook.class)
+//            .satisfies(piece -> assertThat(Objects.equals(piece.getColour(), "white")).isTrue())
+//            .satisfies(piece -> assertThat(piece.getLegalMoves()).anyMatch(square -> square.getRow() == 0 && square.getColumn() == 4));
+    }
+
+
+    @Test
+    void bishopShouldBeAbleToTakeOppositeKingNotCheckMate() {
+//        board.movePiece(6,7,4,7);
+//        board.movePiece(1,4,2,4);
+//        board.movePiece(7,7,5,7);
+//        board.movePiece(1,5,2,5);
+//        board.movePiece(5,7,5,4);
+//        board.movePiece(5,4,2,4);
+//
+//        List<Piece> allPieces = board.getAllPieces();
+//        assertThat(allPieces)
+//            .filteredOn(piece -> Objects.equals(piece.getColour(), "black") && !(piece instanceof King))
+//            .hasSize(14).allSatisfy(piece -> {
+//                assertThat(piece.getLegalMoves()).isEmpty();
+//            });
+//
+//        Piece blackKing = board.getSquares()[0][4].getPiece();
+//        assertThat(blackKing.getLegalMoves()).hasSize(1);
+//        assertThat(blackKing).isExactlyInstanceOf(King.class);
+//
+//        Piece whiteRook = board.getSquares()[2][4].getPiece();
+//        assertThat(whiteRook)
+//            .isExactlyInstanceOf(Rook.class)
+//            .satisfies(piece -> assertThat(Objects.equals(piece.getColour(), "white")).isTrue())
+//            .satisfies(piece -> assertThat(piece.getLegalMoves()).anyMatch(square -> square.getRow() == 0 && square.getColumn() == 4));
+
+    }
+
 
 
     private boolean findAllBishopsByTheirStartingPosition(Piece piece) {

@@ -45,10 +45,10 @@ class RookTest {
 
     @Test
     void whenAllPawnsInFrontOfRooksMove_allRooksShouldHaveTwoLegalMoves() {
-        board.movePiece(1,0,3,0);
         board.movePiece(6,0,4,0);
         board.movePiece(1,7,3,7);
         board.movePiece(6,7,4,7);
+        board.movePiece(1,0,3,0);
 
         List<Piece> allRooks = Arrays.stream(board.getSquares())
             .flatMap(Arrays::stream)
@@ -65,15 +65,15 @@ class RookTest {
 
     @Test
     void whenAllPawnsInFrontOfRooksMove_andRooksMove_allRooksShouldHaveEightLegalMoves() {
-        board.movePiece(1,0,3,0);
         board.movePiece(6,0,4,0);
         board.movePiece(1,7,3,7);
         board.movePiece(6,7,4,7);
+        board.movePiece(1,0,3,0);
 
-        board.movePiece(0,0,2,0);
         board.movePiece(7,0,5,0);
         board.movePiece(0,7,2,7);
         board.movePiece(7,7,5,7);
+        board.movePiece(0,0,2,0);
 
         List<Piece> allRooks = Arrays.stream(board.getSquares())
             .flatMap(Arrays::stream)
@@ -89,20 +89,20 @@ class RookTest {
 
     @Test
     void whenAllPawnsInFrontOfRooksMove_andRooksMoveTwice_allRooksShouldHaveEightLegalMoves() {
-        board.movePiece(1,0,3,0);
         board.movePiece(6,0,4,0);
         board.movePiece(1,7,3,7);
         board.movePiece(6,7,4,7);
+        board.movePiece(1,0,3,0);
 
-        board.movePiece(0,0,2,0);
         board.movePiece(7,0,5,0);
         board.movePiece(0,7,2,7);
         board.movePiece(7,7,5,7);
+        board.movePiece(0,0,2,0);
 
-        board.movePiece(2,0,2,1);
         board.movePiece(5,0,5,1);
         board.movePiece(2,7,2,6);
         board.movePiece(5,7,5,6);
+        board.movePiece(2,0,2,1);
 
         List<Piece> allRooks = Arrays.stream(board.getSquares())
             .flatMap(Arrays::stream)
@@ -118,23 +118,25 @@ class RookTest {
 
     @Test
     void whenAllPawnsInFrontOfRooksMove_andRooksMoveTwice_andRooksTakeOppositePawns_thereShouldTwoLessRooks() {
-        board.movePiece(1,0,3,0);
         board.movePiece(6,0,4,0);
         board.movePiece(1,7,3,7);
         board.movePiece(6,7,4,7);
+        board.movePiece(1,0,3,0);
 
-        board.movePiece(0,0,2,0);
         board.movePiece(7,0,5,0);
         board.movePiece(0,7,2,7);
         board.movePiece(7,7,5,7);
+        board.movePiece(0,0,2,0);
 
-        board.movePiece(2,0,2,1);
+
         board.movePiece(5,0,5,1);
         board.movePiece(2,7,2,6);
         board.movePiece(5,7,5,6);
+        board.movePiece(2,0,2,1);
 
-        board.movePiece(2,1,5,1);
+
         board.movePiece(5,6,2,6);
+        board.movePiece(2,1,5,1);
 
         List<Piece> allRooks = Arrays.stream(board.getSquares())
             .flatMap(Arrays::stream)
@@ -150,6 +152,7 @@ class RookTest {
 
     @Test
     void rookShouldNotBeAbleToPutOwnKingInCheck() {
+        board.movePiece(6,6,5,6);
         board.movePiece(1,4,3,4);
         board.movePiece(6,0,4,0);
         board.movePiece(0,4,1,4);
@@ -157,6 +160,7 @@ class RookTest {
         board.movePiece(1,4,2,4);
         board.movePiece(5,0,5,1);
         board.movePiece(3,4,4,4);
+        board.movePiece(6,5,5,5);
         board.movePiece(2,4,3,4);
         board.movePiece(5,1,4,1);
         board.movePiece(1,0,3,0);
@@ -164,6 +168,7 @@ class RookTest {
         board.movePiece(0,0,2,0);
         board.movePiece(5,7,4,7);
         board.movePiece(2,0,2,3);
+        board.movePiece(6,3,5,3);
         board.movePiece(2,3,3,3);
         board.movePiece(4,1,3,1);
 

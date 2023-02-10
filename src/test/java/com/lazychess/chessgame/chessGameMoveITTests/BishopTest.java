@@ -44,10 +44,10 @@ class BishopTest {
 
     @Test
     void afterMovingPawnsOutOfWay_allBishopsShouldHaveTwoLegalMovesWhenInitiated() {
-        board.movePiece(1,6,2,6);
         board.movePiece(6,1,5,1);
         board.movePiece(1,1,2,1);
         board.movePiece(6,6,5,6);
+        board.movePiece(1,6,2,6);
 
         List<Piece> allRooks = Arrays.stream(board.getSquares())
             .flatMap(Arrays::stream)
@@ -62,10 +62,10 @@ class BishopTest {
 
     @Test
     void afterMovingPawnsOutOfWay2_allBishopsShouldHaveFiveLegalMovesWhenInitiated() {
-        board.movePiece(1,3,3,3);
         board.movePiece(6,3,4,3);
         board.movePiece(1,4,3,4);
         board.movePiece(6,4,4,4);
+        board.movePiece(1,3,3,3);
 
         List<Piece> allRooks = Arrays.stream(board.getSquares())
             .flatMap(Arrays::stream)
@@ -80,6 +80,7 @@ class BishopTest {
 
     @Test
     void afterMovingPawnsOutOfWay2_andTakingOppositePieces_thereShouldBeLessPiecesOnTheBoard() {
+        board.movePiece(6,1,5,1);
         board.movePiece(1,3,3,3);
         board.movePiece(6,3,4,3);
         board.movePiece(1,4,3,4);
@@ -110,11 +111,12 @@ class BishopTest {
         assertThat(allRooks).hasSize(4).allSatisfy(piece -> {
             assertThat(piece.getLegalMoves()).hasSize(5);
         });
-        assertThat(allPawns).hasSize(12);
+        assertThat(allPawns).hasSize(13);
     }
 
     @Test
     void bishopShouldNotBeAbleToPutOwnKingInCheck() {
+        board.movePiece(6,1,5,1);
         board.movePiece(1,3,3,3);
         board.movePiece(6,6,5,6);
         board.movePiece(0,2,4,6);

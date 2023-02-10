@@ -41,6 +41,7 @@ class KnightTest {
 
     @Test
     void shouldHaveFourLegalMovesForKnight1() {
+        board.movePiece(6,7,5,7);
         board.movePiece(0,1,2,2);
         List<Square> legalMoves = board.getSquares()[2][2].getPiece().getLegalMoves();
         assertThat(legalMoves).hasSize(5)
@@ -65,6 +66,7 @@ class KnightTest {
 
     @Test
     void shouldHaveFourLegalMovesForKnight3() {
+        board.movePiece(6,7,5,7);
         board.movePiece(0,6,2,5);
         List<Square> legalMoves = board.getSquares()[2][5].getPiece().getLegalMoves();
         assertThat(legalMoves).hasSize(5)
@@ -89,6 +91,7 @@ class KnightTest {
 
     @Test
     void shouldHaveThreeLegalMovesForKnight1() {
+        board.movePiece(6,7,5,7);
         board.movePiece(0,1,2,0);
         List<Square> legalMoves = board.getSquares()[2][0].getPiece().getLegalMoves();
         assertThat(legalMoves).hasSize(3)
@@ -100,6 +103,7 @@ class KnightTest {
 
     @Test
     void shouldHaveThreeLegalMovesForKnight2() {
+        board.movePiece(6,7,5,7);
         board.movePiece(0,6,2,7);
         List<Square> legalMoves = board.getSquares()[2][7].getPiece().getLegalMoves();
         assertThat(legalMoves).hasSize(3)
@@ -130,6 +134,7 @@ class KnightTest {
 
     @Test
     void knightCanTakeOppositePiece() {
+        board.movePiece(6,7,5,7);
         board.movePiece(0,1,2,2);
         board.movePiece(6,3,4,3);
         board.movePiece(2,2,4,3);
@@ -150,6 +155,7 @@ class KnightTest {
 
     @Test
     void knightCannotMoveToPutOwnKingInCheck() {
+        board.movePiece(6,7,5,7);
         board.movePiece(1,4,3,4);
         board.movePiece(6,3,4,3);
         board.movePiece(0,4,1,4);
@@ -164,6 +170,7 @@ class KnightTest {
         List<Square> legalMoves = board.getSquares()[2][2].getPiece().getLegalMoves();
         assertThat(legalMoves).isEmpty();
 
+        board.movePiece(2,7,3,7);
         board.movePiece(2,1,3,1);
 
         List<Square> legalMovesAfterMoving = board.getSquares()[2][2].getPiece().getLegalMoves();

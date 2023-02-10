@@ -61,6 +61,7 @@ class PawnTest {
 
     @Test
     void afterFirstMoveBlackPawnShouldOnlyBeAbleToMoveOneSpace() {
+        board.movePiece(6,7,5,7);
         board.movePiece(1,6,2,6);
         List<Square> legalMoves = board.getSquares()[2][6].getPiece().getLegalMoves();
 
@@ -141,6 +142,7 @@ class PawnTest {
         board.movePiece(6,2,4,2);
         board.movePiece(1,1,3,1);
         board.movePiece(4,2,3,1);
+        board.movePiece(1,7,2,7);
         board.movePiece(6,1,4,1);
 
         List<Square> legalMovesWhitePawn = board.getSquares()[4][1].getPiece().getLegalMoves();
@@ -175,6 +177,7 @@ class PawnTest {
 
     @Test
     void pawnCannotMakeAMoveThatPutsOwnKingInCheck() {
+        board.movePiece(6,7,5,7);
         board.movePiece(1,4,3,4);
         board.movePiece(6,0,4,0);
         board.movePiece(0,4,1,4);
@@ -191,6 +194,7 @@ class PawnTest {
         List<Square> legalMoves2 = board.getSquares()[3][4].getPiece().getLegalMoves();
         assertThat(legalMoves2).isEmpty();
 
+        board.movePiece(1,7,2,7);
         board.movePiece(3,1,4,1);
         List<Square> legalMoves3 = board.getSquares()[3][4].getPiece().getLegalMoves();
         assertThat(legalMoves3).hasSize(2);

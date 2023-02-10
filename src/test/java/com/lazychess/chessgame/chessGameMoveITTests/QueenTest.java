@@ -41,9 +41,8 @@ class QueenTest {
 
     @Test
     void whenPawnMoves_bothQueensShouldHaveOneLegalMoveWhen() {
-        board.movePiece(1,3,2,3);
         board.movePiece(6,3,5,3);
-
+        board.movePiece(1,3,2,3);
 
         List<Piece> allKnights = Arrays.stream(board.getSquares())
             .flatMap(Arrays::stream)
@@ -58,8 +57,8 @@ class QueenTest {
 
     @Test
     void whenPawnMoves_bothQueensShouldHaveNineLegalMoveWhen() {
-        board.movePiece(1,3,3,3);
         board.movePiece(6,3,4,3);
+        board.movePiece(1,3,3,3);
         board.movePiece(6,2,5,2);
         board.movePiece(1,2,2,2);
         board.movePiece(6,4,5,4);
@@ -78,8 +77,9 @@ class QueenTest {
 
     @Test
     void queenShouldBeAbleToTakeOppositePieceDiagonally() {
-        board.movePiece(1,3,3,3);
         board.movePiece(6,3,4,3);
+        board.movePiece(1,3,3,3);
+
         board.movePiece(6,2,5,2);
         board.movePiece(1,2,2,2);
         board.movePiece(6,4,5,4);

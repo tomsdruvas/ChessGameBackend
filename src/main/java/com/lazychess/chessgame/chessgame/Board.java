@@ -2,7 +2,8 @@ package com.lazychess.chessgame.chessgame;
 
 import static com.lazychess.chessgame.chessgame.ChessConstants.BLACK;
 import static com.lazychess.chessgame.chessgame.ChessConstants.WHITE;
-import static com.lazychess.chessgame.chessgame.ChessGameState.*;
+import static com.lazychess.chessgame.chessgame.ChessGameState.CHECKMATE;
+import static com.lazychess.chessgame.chessgame.ChessGameState.ONGOING;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,15 +42,20 @@ public class Board {
     private String currentPlayerColourState;
 
     public Board(boolean instantiate) {
+        squares = new Square[8][8];
+        this.stateOfTheGame = ONGOING;
+        this.currentPlayerColourState = WHITE;
+        loadSquares();
+
     }
 
     public Board() {
+        this.stateOfTheGame = ONGOING;
+        this.currentPlayerColourState = WHITE;
         squares = new Square[8][8];
         loadSquares();
         loadPieces();
         loadPieceLegalMoves(squares);
-        this.stateOfTheGame = ONGOING;
-        this.currentPlayerColourState = WHITE;
     }
 
     public void loadSquares() {

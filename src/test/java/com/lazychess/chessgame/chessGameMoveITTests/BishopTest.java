@@ -1,9 +1,11 @@
 package com.lazychess.chessgame.chessGameMoveITTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.lazychess.chessgame.chessgame.Bishop;
 import com.lazychess.chessgame.chessgame.Board;
+import com.lazychess.chessgame.chessgame.ChessGameState;
 import com.lazychess.chessgame.chessgame.EmptyPiece;
 import com.lazychess.chessgame.chessgame.King;
 import com.lazychess.chessgame.chessgame.Pawn;
@@ -139,64 +142,67 @@ class BishopTest {
             .noneMatch(square -> square.getRow() == 3 && square.getColumn() == 7);
     }
 
+    @Test
+    void bishopShouldBeAbleToTakeOppositeKingNotCheckMate() {
+        board.movePiece(6,6,5,6);
+        board.movePiece(1,4,3,4);
+        board.movePiece(7,5,6,6);
+        board.movePiece(0,4,1,4);
+        board.movePiece(6,0,5,0);
+        board.movePiece(1,4,2,4);
+        board.movePiece(6,6,5,7);
+
+        List<Piece> allPieces = board.getAllPieces();
+        assertThat(allPieces)
+            .filteredOn(piece -> Objects.equals(piece.getColour(), "black") && !(piece instanceof King))
+            .hasSize(15).allSatisfy(piece -> {
+                assertThat(piece.getLegalMoves()).isEmpty();
+            });
+
+        Piece blackKing = board.getSquares()[2][4].getPiece();
+        assertThat(blackKing.getLegalMoves()).hasSize(4)
+            .noneMatch(square -> square.getRow() == 3 && square.getColumn() == 5);
+        assertThat(blackKing).isExactlyInstanceOf(King.class);
+
+        Piece whiteBishop = board.getSquares()[5][7].getPiece();
+        assertThat(whiteBishop)
+            .isExactlyInstanceOf(Bishop.class)
+            .satisfies(piece -> assertThat(Objects.equals(piece.getColour(), "white")).isTrue())
+            .satisfies(piece -> assertThat(piece.getLegalMoves()).anyMatch(square -> square.getRow() == 2 && square.getColumn() == 4));
+        assertThat(board.getStateOfTheGame()).isSameAs(ChessGameState.ONGOING);
+    }
 
     @Test
     void bishopShouldBeAbleToTakeOppositeKingCheckMate() {
-//        board.movePiece(6,7,4,7);
-//        board.movePiece(1,4,2,4);
-//        board.movePiece(7,7,5,7);
-//        board.movePiece(2,4,3,4);
-//        board.movePiece(5,7,5,4);
-//        board.movePiece(5,4,3,4);
-//
-//        List<Piece> allPieces = board.getAllPieces();
-//        assertThat(allPieces)
-//            .filteredOn(piece -> Objects.equals(piece.getColour(), "black") && !(piece instanceof King))
-//            .hasSize(14).allSatisfy(piece -> {
-//                assertThat(piece.getLegalMoves()).isEmpty();
-//            });
-//
-//        Piece blackKing = board.getSquares()[0][4].getPiece();
-//        assertThat(blackKing.getLegalMoves()).isEmpty();
-//        assertThat(blackKing).isExactlyInstanceOf(King.class);
-//
-//        Piece whiteRook = board.getSquares()[3][4].getPiece();
-//        assertThat(whiteRook)
-//            .isExactlyInstanceOf(Rook.class)
-//            .satisfies(piece -> assertThat(Objects.equals(piece.getColour(), "white")).isTrue())
-//            .satisfies(piece -> assertThat(piece.getLegalMoves()).anyMatch(square -> square.getRow() == 0 && square.getColumn() == 4));
+        board.movePiece(6,6,5,6);
+        board.movePiece(1,5,2,5);
+        board.movePiece(7,5,5,7);
+        board.movePiece(2,5,3,5);
+        board.movePiece(5,7,4,6);
+        board.movePiece(3,5,4,5);
+        board.movePiece(4,6,3,7);
+
+        List<Piece> allPieces = board.getAllPieces();
+        assertThat(allPieces)
+            .filteredOn(piece -> Objects.equals(piece.getColour(), "black") && !(piece instanceof King))
+            .hasSize(15).allSatisfy(piece -> {
+                assertThat(piece.getLegalMoves()).isEmpty();
+            });
+
+        Piece blackKing = board.getSquares()[0][4].getPiece();
+        assertThat(blackKing.getLegalMoves()).isEmpty();
+        assertThat(blackKing).isExactlyInstanceOf(King.class);
+
+        Piece whiteBishop = board.getSquares()[3][7].getPiece();
+        assertThat(whiteBishop)
+            .isExactlyInstanceOf(Bishop.class)
+            .satisfies(piece -> assertThat(Objects.equals(piece.getColour(), "white")).isTrue())
+            .satisfies(piece -> assertThat(piece.getLegalMoves()).anyMatch(square -> square.getRow() == 0 && square.getColumn() == 4));
+
+        assertThat(board.getStateOfTheGame()).isSameAs(ChessGameState.CHECKMATE);
+        assertThatThrownBy(() -> board.movePiece(0,4,1,5))
+            .hasMessage("The game is not in the ongoing state");
     }
-
-
-    @Test
-    void bishopShouldBeAbleToTakeOppositeKingNotCheckMate() {
-//        board.movePiece(6,7,4,7);
-//        board.movePiece(1,4,2,4);
-//        board.movePiece(7,7,5,7);
-//        board.movePiece(1,5,2,5);
-//        board.movePiece(5,7,5,4);
-//        board.movePiece(5,4,2,4);
-//
-//        List<Piece> allPieces = board.getAllPieces();
-//        assertThat(allPieces)
-//            .filteredOn(piece -> Objects.equals(piece.getColour(), "black") && !(piece instanceof King))
-//            .hasSize(14).allSatisfy(piece -> {
-//                assertThat(piece.getLegalMoves()).isEmpty();
-//            });
-//
-//        Piece blackKing = board.getSquares()[0][4].getPiece();
-//        assertThat(blackKing.getLegalMoves()).hasSize(1);
-//        assertThat(blackKing).isExactlyInstanceOf(King.class);
-//
-//        Piece whiteRook = board.getSquares()[2][4].getPiece();
-//        assertThat(whiteRook)
-//            .isExactlyInstanceOf(Rook.class)
-//            .satisfies(piece -> assertThat(Objects.equals(piece.getColour(), "white")).isTrue())
-//            .satisfies(piece -> assertThat(piece.getLegalMoves()).anyMatch(square -> square.getRow() == 0 && square.getColumn() == 4));
-
-    }
-
-
 
     private boolean findAllBishopsByTheirStartingPosition(Piece piece) {
         return

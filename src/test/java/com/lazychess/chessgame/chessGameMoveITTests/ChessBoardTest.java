@@ -120,6 +120,4 @@ class ChessBoardTest {
         assertThatThrownBy(() -> board.movePiece(1,0,2,0))
             .hasMessage("It is not the black's turn");
     }
-
-
 }

@@ -12,7 +12,8 @@ import java.util.Objects;
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.util.SerializationUtils;
 
-import com.lazychess.chessgame.dto.IllegalMovesDataBean;
+import com.lazychess.chessgame.dto.IllegalMovesDto;
+import com.lazychess.chessgame.dto.PreInitialisationMoveDto;
 
 public class Board {
 
@@ -38,21 +39,19 @@ public class Board {
     Piece blackKing;
     Piece[] blackPawn;
 
-    private ChessGameState stateOfTheGame;
-    private String currentPlayerColourState;
+    private ChessGameState stateOfTheGame = ONGOING;
+    private String currentPlayerColourState = WHITE;
 
-    public Board(boolean instantiate) {
-        squares = new Square[8][8];
-        this.stateOfTheGame = ONGOING;
-        this.currentPlayerColourState = WHITE;
+    public Board(List<PreInitialisationMoveDto> preInitialisationMoveDtoList) {
+        this.squares = new Square[8][8];
         loadSquares();
-
+        loadPieces();
+        makePreInitialisationMoves(preInitialisationMoveDtoList);
+        loadPieceLegalMoves(squares);
     }
 
     public Board() {
-        this.stateOfTheGame = ONGOING;
-        this.currentPlayerColourState = WHITE;
-        squares = new Square[8][8];
+        this.squares = new Square[8][8];
         loadSquares();
         loadPieces();
         loadPieceLegalMoves(squares);
@@ -200,23 +199,23 @@ public class Board {
 
     private void removeLegalMovesThatPutKingInDanger(String colour) {
 
-        List<IllegalMovesDataBean> illegalMovesDataBeans = Arrays.stream(squares)
+        List<IllegalMovesDto> illegalMovesDtos = Arrays.stream(squares)
             .flatMap(Arrays::stream)
             .map(Square::getPiece)
             .filter(piece -> !piece.getColour().equals(colour))
             .filter(piece -> piece.getLegalMoves() != null)
             .filter(piece -> !piece.getLegalMoves().isEmpty())
-            .map(piece -> new IllegalMovesDataBean(
+            .map(piece -> new IllegalMovesDto(
                 piece.getName(),
                 findLegalOwnMovesThatCheckKing(piece, colour)
             ))
-            .filter(illegalMovesDataBean -> !illegalMovesDataBean.getIllegalMoves().isEmpty())
+            .filter(illegalMovesDto -> !illegalMovesDto.illegalMoves().isEmpty())
             .toList();
 
-        illegalMovesDataBeans
-            .forEach(illegalMovesDataBean -> getPieceByName(illegalMovesDataBean.getPieceName()).getLegalMoves().forEach(square -> {
-                if(illegalMovesDataBean.getIllegalMoves().contains(square)){
-                    getPieceByName(illegalMovesDataBean.getPieceName()).removeLegalMove(square.getRow(), square.getColumn());
+        illegalMovesDtos
+            .forEach(illegalMovesDto -> getPieceByName(illegalMovesDto.pieceName()).getLegalMoves().forEach(square -> {
+                if(illegalMovesDto.illegalMoves().contains(square)){
+                    getPieceByName(illegalMovesDto.pieceName()).removeLegalMove(square.getRow(), square.getColumn());
                 }
             }));
     }
@@ -362,7 +361,17 @@ public class Board {
         return currentPlayerColourState;
     }
 
-    public void setCurrentPlayerColourState(String currentPlayerColourState) {
+    private void setCurrentPlayerColourState(String currentPlayerColourState) {
         this.currentPlayerColourState = currentPlayerColourState;
+    }
+
+    public void makePreInitialisationMoves(List<PreInitialisationMoveDto> preInitialisationMoveDtoList) {
+        preInitialisationMoveDtoList.forEach(preInitialisationMoveDto -> {
+            Piece pieceToMove = squares[preInitialisationMoveDto.currentRow()][preInitialisationMoveDto.currentColumn()].getPiece();
+            pieceToMove.setPieceColumn(preInitialisationMoveDto.newColumn());
+            pieceToMove.setPieceRow(preInitialisationMoveDto.newRow());
+            squares[preInitialisationMoveDto.newRow()][preInitialisationMoveDto.newColumn()].setPiece(pieceToMove);
+            squares[preInitialisationMoveDto.currentRow()][preInitialisationMoveDto.currentColumn()].setPiece(new EmptyPiece());
+        });
     }
 }

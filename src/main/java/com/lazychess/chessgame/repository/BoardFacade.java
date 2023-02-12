@@ -16,9 +16,9 @@ public class BoardFacade {
     }
 
     @Transactional
-    public Long persistBoard(Board board) {
+    public BoardDao persistBoard(Board board) {
         BoardDao boardDao = boardDaoMapper.fromBoardObject(board);
         boardDao = boardRepository.saveAndFlush(boardDao);
-        return boardDao.getId();
+        return boardDao;
     }
 }

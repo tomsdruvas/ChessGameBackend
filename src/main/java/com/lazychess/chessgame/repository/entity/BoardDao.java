@@ -1,5 +1,7 @@
 package com.lazychess.chessgame.repository.entity;
 
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.Type;
 
 import com.lazychess.chessgame.chessgame.ChessGameState;
@@ -25,11 +27,12 @@ public class BoardDao {
 
     @Id
     @Column(name = "cgb_id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Generated(GenerationTime.INSERT)
+    private String id;
 
     @Type(StringArrayType.class)
-    @Column(name = "cgb_squares", columnDefinition = "jsonb")
+    @Column(name = "cgb_squares", columnDefinition = "text[][]")
     private Square[][] squares;
 
     @Column(name = "cgb_game_state")

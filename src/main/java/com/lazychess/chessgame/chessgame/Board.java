@@ -72,7 +72,6 @@ public class Board {
     }
 
     public void loadPieces() {
-
         whiteRook1 = new Rook("White Rook1",7,0,WHITE);
         whiteRook2 = new Rook("White Rook2",7,7,WHITE);
         whiteKnight1 = new Knight("White Knight1",7,1,WHITE);
@@ -133,7 +132,6 @@ public class Board {
     }
 
     public Piece getPieceByName(String name) {
-
         Square square1 = Arrays.stream(squares).flatMap(Arrays::stream)
             .filter(square -> square.getPiece() != null)
             .filter(square -> Objects.equals(square.getPiece().getName(), name)).toList().stream().findFirst().orElseThrow();

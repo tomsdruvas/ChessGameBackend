@@ -15,7 +15,7 @@ public class BoardService {
         this.boardFacade = boardFacade;
     }
 
-    public BoardDao createInitialBoardGame() {
-        return boardFacade.persistBoard(new Board());
+    public BoardDao createInitialBoardGame(String appUserId) {
+        return boardFacade.persistBoard(new Board(), appUserId);
     }
 }

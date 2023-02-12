@@ -19,6 +19,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.lazychess.chessgame.chessgame.Board;
 import com.lazychess.chessgame.dto.PreInitialisationMoveDto;
 import com.lazychess.chessgame.repository.entity.BoardDao;
+import com.lazychess.chessgame.repository.entity.PlayersDao;
 import com.lazychess.chessgame.repository.mapper.BoardDaoMapper;
 
 @RunWith(SpringRunner.class)
@@ -53,7 +54,7 @@ public class BoardDaoRepositoryIntegrationTest {
     public void insertBoardUsingBoardFacade() {
         Board board = createBoard();
 
-        BoardDao boardDao = boardFacade.persistBoard(board);
+        BoardDao boardDao = boardFacade.persistBoard(board, "Test");
 
         assertThat(boardDao.getId()).isNotBlank();
 
@@ -72,7 +73,7 @@ public class BoardDaoRepositoryIntegrationTest {
     public void insertChangedBoardUsingBoardFacade() {
         Board board = createChangedBoard();
 
-        BoardDao boardDao = boardFacade.persistBoard(board);
+        BoardDao boardDao = boardFacade.persistBoard(board, "Test");
 
         assertThat(boardDao.getId()).isNotBlank();
 
@@ -99,23 +100,29 @@ public class BoardDaoRepositoryIntegrationTest {
     }
 
     private BoardDao createBoardDaoEntity() {
+        PlayersDao playersDao = new PlayersDao();
+        playersDao.setPlayerOneAppUserId("Test");
         Board board = createBoard();
         BoardDao boardDao = new BoardDao();
 
         boardDao.setSquares(board.getSquares());
         boardDao.setStateOfTheGame(board.getStateOfTheGame());
         boardDao.setCurrentPlayerColour(board.getCurrentPlayerColourState());
+        boardDao.setPlayersDao(playersDao);
 
         return boardDao;
     }
 
     private BoardDao createChangedBoardDaoEntity() {
+        PlayersDao playersDao = new PlayersDao();
+        playersDao.setPlayerOneAppUserId("Test");
         Board board = createChangedBoard();
         BoardDao boardDao = new BoardDao();
 
         boardDao.setSquares(board.getSquares());
         boardDao.setStateOfTheGame(board.getStateOfTheGame());
         boardDao.setCurrentPlayerColour(board.getCurrentPlayerColourState());
+        boardDao.setPlayersDao(playersDao);
 
         return boardDao;
     }

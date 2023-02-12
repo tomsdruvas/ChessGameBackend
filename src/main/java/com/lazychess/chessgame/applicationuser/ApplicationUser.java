@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
+
 import com.lazychess.chessgame.models.Role;
 
 import jakarta.persistence.CascadeType;
@@ -16,31 +19,22 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
 @Entity
-@Table
+@Table(name = "chess_game_user")
 @Getter
 @Setter
-@Data
 public class ApplicationUser {
 
     @Id
-    @SequenceGenerator(
-        name = "user_sequence",
-        sequenceName = "user_sequence",
-        allocationSize = 1
-    )
-    @GeneratedValue(
-        strategy = GenerationType.SEQUENCE,
-        generator = "user_sequence"
-    )
-    private Long id;
+    @Column(name = "cgb_app_user_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Generated(GenerationTime.INSERT)
+    private String id;
 
     @Column(unique = true)
     @NonNull
@@ -50,7 +44,7 @@ public class ApplicationUser {
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "application_user_id", referencedColumnName = "id"),
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "cgb_app_user_roles", referencedColumnName = "cgb_app_user_id"),
         inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<Role> roles = new ArrayList<>();
 
@@ -64,7 +58,7 @@ public class ApplicationUser {
         this.password = password;
     }
 
-    public ApplicationUser(Long id, String username, String password) {
+    public ApplicationUser(String id, String username, String password) {
         this.id = id;
         this.username = username;
         this.password = password;

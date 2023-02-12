@@ -2,7 +2,6 @@ package com.lazychess.chessgame.security;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(final String username) {
+    public AppUserPrincipal loadUserByUsername(final String username) {
         final ApplicationUser appUser = applicationUserRepository.findByUsername(username);
         if (appUser == null) {
             throw new UsernameNotFoundException(username);

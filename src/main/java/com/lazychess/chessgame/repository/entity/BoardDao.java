@@ -7,6 +7,7 @@ import org.hibernate.annotations.Type;
 import com.lazychess.chessgame.chessgame.ChessGameState;
 import com.lazychess.chessgame.chessgame.Square;
 import com.vladmihalcea.hibernate.type.array.StringArrayType;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,4 +42,8 @@ public class BoardDao {
 
     @Column(name = "cgb_current_player_colour")
     private String currentPlayerColour;
+
+    @Type(JsonBinaryType.class)
+    @Column(name = "cgb_current_player_number", columnDefinition = "jsonb")
+    private PlayersDao playersDao;
 }

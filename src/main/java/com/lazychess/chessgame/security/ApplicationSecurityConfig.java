@@ -146,7 +146,7 @@ public class ApplicationSecurityConfig {
     @Order(1)
     @Bean
     public SecurityFilterChain logoutSecurityChain(HttpSecurity http) throws Exception {
-        http.securityMatcher("/revoke", "/register/**", "/board")
+        http.securityMatcher("/revoke", "/register/**")
             .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
             .csrf(AbstractHttpConfigurer::disable);
         return http.build();

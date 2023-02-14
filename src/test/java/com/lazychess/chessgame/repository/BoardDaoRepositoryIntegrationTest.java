@@ -54,7 +54,7 @@ public class BoardDaoRepositoryIntegrationTest {
     public void insertBoardUsingBoardFacade() {
         Board board = createBoard();
 
-        BoardDao boardDao = boardFacade.persistBoard(board, "Test");
+        BoardDao boardDao = boardFacade.persistCreatedBoard(board, "Player1");
 
         assertThat(boardDao.getId()).isNotBlank();
 
@@ -73,7 +73,7 @@ public class BoardDaoRepositoryIntegrationTest {
     public void insertChangedBoardUsingBoardFacade() {
         Board board = createChangedBoard();
 
-        BoardDao boardDao = boardFacade.persistBoard(board, "Test");
+        BoardDao boardDao = boardFacade.persistCreatedBoard(board, "Player1");
 
         assertThat(boardDao.getId()).isNotBlank();
 
@@ -101,7 +101,8 @@ public class BoardDaoRepositoryIntegrationTest {
 
     private BoardDao createBoardDaoEntity() {
         PlayersDao playersDao = new PlayersDao();
-        playersDao.setPlayerOneAppUserId("Test");
+        playersDao.setPlayerOneAppUserId("Player1");
+        playersDao.setActivePlayer("Player1");
         Board board = createBoard();
         BoardDao boardDao = new BoardDao();
 
@@ -115,7 +116,8 @@ public class BoardDaoRepositoryIntegrationTest {
 
     private BoardDao createChangedBoardDaoEntity() {
         PlayersDao playersDao = new PlayersDao();
-        playersDao.setPlayerOneAppUserId("Test");
+        playersDao.setPlayerOneAppUserId("Player1");
+        playersDao.setActivePlayer("Player1");
         Board board = createChangedBoard();
         BoardDao boardDao = new BoardDao();
 

@@ -306,7 +306,7 @@ public class Board {
             .filter(piece -> piece.getColour().equals(colour))
             .filter(piece -> piece.getLegalMoves()!=null)
             .filter(Pawn.class::isInstance)
-            .flatMap(piece -> ((Pawn) piece).getStraightLegalMoves().stream())
+            .flatMap(piece -> ((Pawn) piece).generateStraightLegalMoves().stream())
             .toList();
     }
 

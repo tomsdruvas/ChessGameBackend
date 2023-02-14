@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -34,5 +35,16 @@ public class BoardController {
 
         return boardService.createInitialBoardGame(appUserPrincipal.getAppUser().getId());
     }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(value = "add-player-two-board/{boardGameId}")
+    public BoardDao playerTwoJoinsBoard(@PathVariable String boardGameId) {
+        Authentication principal = SecurityContextHolder.getContext().getAuthentication();
+        AppUserPrincipal appUserPrincipal = customUserDetailsService.loadUserByUsername(principal.getName());
+
+        return boardService.playerTwoJoinsGame(boardGameId, appUserPrincipal.getAppUser().getId());
+    }
+
+
 
 }

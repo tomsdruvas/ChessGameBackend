@@ -14,7 +14,6 @@ public class Queen extends Piece {
             .filter(this::filterSquaresWithSameColourPiece)
             .filter(this::queenLegalMoves)
             .filter(square -> checkForPiecesInWay(squares, square))
-
             .toList();
 
         setLegalMoves(legalMoves);

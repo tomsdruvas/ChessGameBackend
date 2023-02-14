@@ -1,5 +1,6 @@
 package com.lazychess.chessgame.chessgame;
 
+import static com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import static com.lazychess.chessgame.chessgame.ChessConstants.EMPTY_PIECE;
 
 import java.io.Serial;
@@ -8,8 +9,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import lombok.NoArgsConstructor;
 
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    property = "type")
+@JsonSubTypes({
+    @Type(value = Pawn.class, name = "pawn"),
+    @Type(value = Rook.class, name = "rook"),
+    @Type(value = Bishop.class, name = "bishop"),
+    @Type(value = King.class, name = "king"),
+    @Type(value = Queen.class, name = "queen"),
+    @Type(value = Knight.class, name = "knight"),
+    @Type(value = EmptyPiece.class, name = "emptypiece")
+})
 @NoArgsConstructor
 public abstract class Piece implements Serializable {
 
@@ -20,7 +36,7 @@ public abstract class Piece implements Serializable {
     private String colour;
     private int row;
     private int column;
-    protected transient List<Square> legalMoves;
+    protected List<Square> legalMoves;
 
     protected Piece(String name, int row, int column, String colour) {
         this.name = name;

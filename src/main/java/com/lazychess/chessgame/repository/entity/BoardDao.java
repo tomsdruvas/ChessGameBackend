@@ -6,10 +6,11 @@ import org.hibernate.annotations.Type;
 
 import com.lazychess.chessgame.chessgame.ChessGameState;
 import com.lazychess.chessgame.chessgame.Square;
-import com.vladmihalcea.hibernate.type.array.StringArrayType;
+import com.lazychess.chessgame.config.SquareListConverter;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -32,8 +33,9 @@ public class BoardDao {
     @Generated(GenerationTime.INSERT)
     private String id;
 
-    @Type(StringArrayType.class)
-    @Column(name = "cgb_squares", columnDefinition = "text[][]")
+    @Column(name = "cgb_squares", columnDefinition = "jsonb")
+    @Type(JsonBinaryType.class)
+    @Convert(converter = SquareListConverter.class)
     private Square[][] squares;
 
     @Column(name = "cgb_game_state")

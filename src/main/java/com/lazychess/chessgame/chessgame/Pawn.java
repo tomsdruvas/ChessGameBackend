@@ -72,7 +72,10 @@ public class Pawn extends Piece {
         return a || b;
     }
 
-    public List<Square> getStraightLegalMoves() {
+    public List<Square> generateStraightLegalMoves() {
+        if(legalMoves == null) {
+            return List.of();
+        }
         return legalMoves.stream().filter(square -> square.getColumn() == getPieceColumn()).toList();
     }
 

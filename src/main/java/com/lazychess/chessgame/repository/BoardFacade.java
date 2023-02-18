@@ -1,8 +1,11 @@
 package com.lazychess.chessgame.repository;
 
+import java.util.Objects;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import com.lazychess.chessgame.chessgame.Board;
+import com.lazychess.chessgame.dto.ChessMoveDto;
 import com.lazychess.chessgame.repository.entity.BoardDao;
 import com.lazychess.chessgame.repository.entity.PlayersDao;
 import com.lazychess.chessgame.repository.mapper.BoardDaoMapper;
@@ -35,5 +38,61 @@ public class BoardFacade {
         boardDao.setPlayersDao(playersDao);
         boardDao = boardRepository.saveAndFlush(boardDao);
         return boardDao;
+    }
+
+    @Transactional
+    public BoardDao persistChessMove(String boardGameId, String playersId, ChessMoveDto chessMoveDto) {
+        BoardDao boardDao = boardRepository.findById(boardGameId).orElseThrow(() -> new RuntimeException("This board does not exist"));
+        checkIfPlayerIsPartOfThisGame(boardDao, playersId);
+        checkIfItIsSubmittingPlayersTurn(boardDao, playersId);
+        Board board = boardDaoMapper.fromBoardDaoObject(boardDao);
+        implementMoveOnTheBoard(board, chessMoveDto);
+        BoardDao updatedBoardDao = boardDaoMapper.updateBoardDaoObjectAfterMove(board, boardDao);
+        changeActivePlayer(updatedBoardDao);
+
+        updatedBoardDao = boardRepository.saveAndFlush(updatedBoardDao);
+        return updatedBoardDao;
+
+    }
+
+    private void checkIfPlayerIsPartOfThisGame(BoardDao boardDao, String playersId) {
+        PlayersDao playersDao = boardDao.getPlayersDao();
+        String playerOneAppUserId = playersDao.getPlayerOneAppUserId();
+        String playerTwoAppUserId = playersDao.getPlayerTwoAppUserId();
+
+        if(!(Objects.equals(playerOneAppUserId, playersId) || Objects.equals(playerTwoAppUserId, playersId))) {
+            throw new RuntimeException("Submitting player is not part of this game");
+        }
+    }
+
+    private void checkIfItIsSubmittingPlayersTurn(BoardDao boardDao, String playersId) {
+        String activePlayerId = boardDao.getPlayersDao().getActivePlayer();
+        if(!Objects.equals(activePlayerId, playersId)) {
+            throw new RuntimeException("The Player ID does not match active Player ID");
+        }
+    }
+
+    private void implementMoveOnTheBoard(Board board, ChessMoveDto chessMoveDto) {
+        int currentRow = chessMoveDto.currentRow();
+        int currentColumn = chessMoveDto.currentColumn();
+        int newRow = chessMoveDto.newRow();
+        int newColumn = chessMoveDto.newColumn();
+        board.movePiece(currentRow, currentColumn, newRow, newColumn);
+    }
+
+    private void changeActivePlayer(BoardDao boardDao) {
+        PlayersDao playersDao = boardDao.getPlayersDao();
+        String playerOneAppUserId = playersDao.getPlayerOneAppUserId();
+        String playerTwoAppUserId = playersDao.getPlayerTwoAppUserId();
+        String activePlayerId = playersDao.getActivePlayer();
+
+        if(Objects.equals(activePlayerId, playerOneAppUserId)) {
+            playersDao.setActivePlayer(playerTwoAppUserId);
+        }
+        else if (Objects.equals(activePlayerId, playerTwoAppUserId)) {
+            playersDao.setActivePlayer(playerOneAppUserId);
+
+        }
+        boardDao.setPlayersDao(playersDao);
     }
 }

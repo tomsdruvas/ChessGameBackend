@@ -1,9 +1,13 @@
 spring:
+    sql:
+        init:
+            mode: always
     datasource:
         password: Passw0rd
         url: jdbc:postgresql://localhost:5432/chess_db
         username: postgres
     jpa:
+        defer-datasource-initialization: true
         hibernate:
             ddl-auto: create-drop
         properties:

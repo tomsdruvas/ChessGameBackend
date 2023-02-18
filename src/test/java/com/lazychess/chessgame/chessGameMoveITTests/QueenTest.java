@@ -15,7 +15,7 @@ import com.lazychess.chessgame.chessgame.Pawn;
 import com.lazychess.chessgame.chessgame.Piece;
 import com.lazychess.chessgame.chessgame.Queen;
 import com.lazychess.chessgame.chessgame.Square;
-import com.lazychess.chessgame.dto.PreInitialisationMoveDto;
+import com.lazychess.chessgame.dto.ChessMoveDto;
 
 @SpringBootTest
 class QueenTest {
@@ -131,12 +131,12 @@ class QueenTest {
 
     @Test
     void queenShouldBeAbleToTakeOppositeKingDiagonally() {
-        List<PreInitialisationMoveDto> preInitialisationMoveDtos = List.of(
-            new PreInitialisationMoveDto(7, 3, 4, 6),
-            new PreInitialisationMoveDto(1, 5, 2, 5)
+        List<ChessMoveDto> chessMoveDtos = List.of(
+            new ChessMoveDto(7, 3, 4, 6),
+            new ChessMoveDto(1, 5, 2, 5)
         );
 
-        Board board = new Board(preInitialisationMoveDtos);
+        Board board = new Board(chessMoveDtos);
         board.movePiece(4,6,3,7);
 
         Piece queen = board.getSquares()[3][7].getPiece();

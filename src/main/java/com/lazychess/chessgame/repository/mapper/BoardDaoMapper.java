@@ -15,4 +15,19 @@ public class BoardDaoMapper {
         boardDao.setCurrentPlayerColour(board.getCurrentPlayerColourState());
         return boardDao;
     }
+
+    public BoardDao updateBoardDaoObjectAfterMove(Board board, BoardDao boardDao) {
+        boardDao.setSquares(board.getSquares());
+        boardDao.setStateOfTheGame(board.getStateOfTheGame());
+        boardDao.setCurrentPlayerColour(board.getCurrentPlayerColourState());
+        return boardDao;
+    }
+
+    public Board fromBoardDaoObject(BoardDao boardDao) {
+        Board board = new Board();
+        board.setSquares(boardDao.getSquares());
+        board.setStateOfTheGame(boardDao.getStateOfTheGame());
+        board.setCurrentPlayerColourState(boardDao.getCurrentPlayerColour());
+        return board;
+    }
 }

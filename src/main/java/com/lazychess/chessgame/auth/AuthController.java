@@ -57,7 +57,7 @@ public class AuthController {
     }
 
     @PostMapping("/token")
-    public ResponseEntity<String> token(Authentication authentication) {
+    public ResponseEntity<AccessTokenDto> token(Authentication authentication) {
 
         LOG.debug("Token requested for user: '{}'", authentication.getName());
         String token = tokenService.generateToken(authentication);
@@ -68,7 +68,7 @@ public class AuthController {
 
         return ResponseEntity.ok()
             .headers(responseHeaders)
-            .body("Response with header using ResponseEntity");
+            .body(new AccessTokenDto(token));
     }
 
     @PostMapping("/register/save")

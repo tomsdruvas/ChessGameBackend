@@ -6,10 +6,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.lazychess.chessgame.dto.ChessMoveDto;
 import com.lazychess.chessgame.repository.entity.BoardDao;
 import com.lazychess.chessgame.security.AppUserPrincipal;
 import com.lazychess.chessgame.security.CustomUserDetailsService;
@@ -43,6 +45,15 @@ public class BoardController {
         AppUserPrincipal appUserPrincipal = customUserDetailsService.loadUserByUsername(principal.getName());
 
         return boardService.playerTwoJoinsGame(boardGameId, appUserPrincipal.getAppUser().getId());
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(value = "make-a-move/{boardGameId}")
+    public BoardDao makeAMove(@PathVariable String boardGameId, @RequestBody ChessMoveDto chessMoveDto) {
+        Authentication principal = SecurityContextHolder.getContext().getAuthentication();
+        AppUserPrincipal appUserPrincipal = customUserDetailsService.loadUserByUsername(principal.getName());
+
+        return boardService.processChessMove(boardGameId, appUserPrincipal.getAppUser().getId(), chessMoveDto);
     }
 
 

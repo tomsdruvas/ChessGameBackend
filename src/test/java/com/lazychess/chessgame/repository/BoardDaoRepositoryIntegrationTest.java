@@ -17,7 +17,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.lazychess.chessgame.chessgame.Board;
-import com.lazychess.chessgame.dto.PreInitialisationMoveDto;
+import com.lazychess.chessgame.dto.ChessMoveDto;
 import com.lazychess.chessgame.repository.entity.BoardDao;
 import com.lazychess.chessgame.repository.entity.PlayersDao;
 import com.lazychess.chessgame.repository.mapper.BoardDaoMapper;
@@ -93,10 +93,10 @@ public class BoardDaoRepositoryIntegrationTest {
     }
 
     private Board createChangedBoard() {
-        List<PreInitialisationMoveDto> preInitialisationMoveDtos = List.of(
-            new PreInitialisationMoveDto(1, 0, 3, 0),
-            new PreInitialisationMoveDto(6, 6, 4, 6));
-        return new Board(preInitialisationMoveDtos);
+        List<ChessMoveDto> chessMoveDtos = List.of(
+            new ChessMoveDto(1, 0, 3, 0),
+            new ChessMoveDto(6, 6, 4, 6));
+        return new Board(chessMoveDtos);
     }
 
     private BoardDao createBoardDaoEntity() {

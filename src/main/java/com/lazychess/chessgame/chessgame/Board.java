@@ -12,8 +12,8 @@ import java.util.Objects;
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.util.SerializationUtils;
 
+import com.lazychess.chessgame.dto.ChessMoveDto;
 import com.lazychess.chessgame.dto.IllegalMovesDto;
-import com.lazychess.chessgame.dto.PreInitialisationMoveDto;
 
 public class Board {
 
@@ -42,11 +42,11 @@ public class Board {
     private ChessGameState stateOfTheGame = ONGOING;
     private String currentPlayerColourState = WHITE;
 
-    public Board(List<PreInitialisationMoveDto> preInitialisationMoveDtoList) {
+    public Board(List<ChessMoveDto> chessMoveDtoList) {
         this.squares = new Square[8][8];
         loadSquares();
         loadPieces();
-        makePreInitialisationMoves(preInitialisationMoveDtoList);
+        makePreInitialisationMoves(chessMoveDtoList);
         loadPieceLegalMoves(squares);
     }
 
@@ -149,7 +149,8 @@ public class Board {
         Piece pieceToMove = squares[currentRow][currentColumn].getPiece();
         List<Square> legalMoves = pieceToMove.getLegalMoves();
         String currentPlayersColour = pieceToMove.getColour();
-
+        
+        checkIfSourceSquareHasCurrentPlayersPieceOnIt(currentRow, currentColumn);
         checkIfItIsColoursTurn(currentPlayersColour);
 
         if(isMoveLegal(legalMoves, newRow, newColumn)) {
@@ -174,6 +175,15 @@ public class Board {
         }
         else {
             throw new RuntimeException("That is not a legal move");
+        }
+    }
+
+    private void checkIfSourceSquareHasCurrentPlayersPieceOnIt(int currentRow, int currentColumn) {
+        String colour = getSquares()[currentRow][currentColumn].getPiece().getColour();
+        if (Objects.equals(colour, "empty")) {
+            throw new RuntimeException("Source square does not have a piece on it");
+        } else if (!Objects.equals(colour, getCurrentPlayerColourState())) {
+            throw new RuntimeException("Source square does not your colour piece on it");
         }
     }
 
@@ -359,17 +369,23 @@ public class Board {
         return currentPlayerColourState;
     }
 
-    private void setCurrentPlayerColourState(String currentPlayerColourState) {
+    public void setCurrentPlayerColourState(String currentPlayerColourState) {
         this.currentPlayerColourState = currentPlayerColourState;
     }
 
-    public void makePreInitialisationMoves(List<PreInitialisationMoveDto> preInitialisationMoveDtoList) {
-        preInitialisationMoveDtoList.forEach(preInitialisationMoveDto -> {
-            Piece pieceToMove = squares[preInitialisationMoveDto.currentRow()][preInitialisationMoveDto.currentColumn()].getPiece();
-            pieceToMove.setPieceColumn(preInitialisationMoveDto.newColumn());
-            pieceToMove.setPieceRow(preInitialisationMoveDto.newRow());
-            squares[preInitialisationMoveDto.newRow()][preInitialisationMoveDto.newColumn()].setPiece(pieceToMove);
-            squares[preInitialisationMoveDto.currentRow()][preInitialisationMoveDto.currentColumn()].setPiece(new EmptyPiece());
+    public void makePreInitialisationMoves(List<ChessMoveDto> chessMoveDtoList) {
+        chessMoveDtoList.forEach(chessMoveDto -> {
+            Piece pieceToMove = squares[chessMoveDto.currentRow()][chessMoveDto.currentColumn()].getPiece();
+            pieceToMove.setPieceColumn(chessMoveDto.newColumn());
+            pieceToMove.setPieceRow(chessMoveDto.newRow());
+            squares[chessMoveDto.newRow()][chessMoveDto.newColumn()].setPiece(pieceToMove);
+            squares[chessMoveDto.currentRow()][chessMoveDto.currentColumn()].setPiece(new EmptyPiece());
         });
     }
+
+    public void setSquares(Square[][] squares) {
+        this.squares = squares;
+    }
+
+
 }

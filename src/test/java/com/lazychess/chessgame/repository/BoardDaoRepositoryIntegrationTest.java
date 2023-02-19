@@ -6,8 +6,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -26,7 +26,7 @@ import com.lazychess.chessgame.repository.mapper.BoardDaoMapper;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ImportAutoConfiguration(classes = SecurityAutoConfiguration.class)
 @DataJpaTest(properties = "spring.main.web-application-type=servlet")
-public class BoardDaoRepositoryIntegrationTest {
+class BoardDaoRepositoryIntegrationTest {
 
     private static final String[] DYNAMIC_FIELDS = {
         "id"
@@ -36,13 +36,13 @@ public class BoardDaoRepositoryIntegrationTest {
     private BoardRepository boardRepository;
     private BoardFacade boardFacade;
 
-    @Before
+    @BeforeEach
     public void setup() {
         boardFacade = new BoardFacade(boardRepository, new BoardDaoMapper());
     }
 
     @Test
-    public void insertBoardRecord() {
+    void insertBoardRecord() {
         BoardDao boardDao = new BoardDao();
         boardDao = boardRepository.saveAndFlush(boardDao);
 
@@ -51,7 +51,7 @@ public class BoardDaoRepositoryIntegrationTest {
     }
 
     @Test
-    public void insertBoardUsingBoardFacade() {
+    void insertBoardUsingBoardFacade() {
         Board board = createBoard();
 
         BoardDao boardDao = boardFacade.persistCreatedBoard(board, "Player1");
@@ -70,7 +70,7 @@ public class BoardDaoRepositoryIntegrationTest {
     }
 
     @Test
-    public void insertChangedBoardUsingBoardFacade() {
+    void insertChangedBoardUsingBoardFacade() {
         Board board = createChangedBoard();
 
         BoardDao boardDao = boardFacade.persistCreatedBoard(board, "Player1");

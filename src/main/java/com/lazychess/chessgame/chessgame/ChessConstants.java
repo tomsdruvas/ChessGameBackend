@@ -1,8 +1,9 @@
 package com.lazychess.chessgame.chessgame;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ChessConstants {
 
     public static final String WHITE = "white";

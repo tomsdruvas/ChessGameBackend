@@ -22,6 +22,7 @@ public class CustomTokenResolver implements BearerTokenResolver {
     private String bearerTokenHeaderName = "Authorization";
 
     public CustomTokenResolver() {
+        // Blank for because of the way Spring Security is implemented
     }
 
     @Override

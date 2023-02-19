@@ -6,6 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.lazychess.chessgame.chessgame.Board;
 import com.lazychess.chessgame.dto.ChessMoveDto;
+import com.lazychess.chessgame.exception.PlayerNotPartOfGameException;
+import com.lazychess.chessgame.exception.WrongPlayerMakingAMoveException;
 import com.lazychess.chessgame.repository.entity.BoardDao;
 import com.lazychess.chessgame.repository.entity.PlayersDao;
 import com.lazychess.chessgame.repository.mapper.BoardDaoMapper;
@@ -61,14 +63,14 @@ public class BoardFacade {
         String playerTwoAppUserId = playersDao.getPlayerTwoAppUserId();
 
         if(!(Objects.equals(playerOneAppUserId, playersId) || Objects.equals(playerTwoAppUserId, playersId))) {
-            throw new RuntimeException("Submitting player is not part of this game");
+            throw new PlayerNotPartOfGameException("Submitting player is not part of this game");
         }
     }
 
     private void checkIfItIsSubmittingPlayersTurn(BoardDao boardDao, String playersId) {
         String activePlayerId = boardDao.getPlayersDao().getActivePlayer();
         if(!Objects.equals(activePlayerId, playersId)) {
-            throw new RuntimeException("The Player ID does not match active Player ID");
+            throw new WrongPlayerMakingAMoveException("The Player ID does not match active Player ID");
         }
     }
 

@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface ApplicationUserRepository extends JpaRepository<ApplicationUser, Long> {
 
-    ApplicationUser findInvestorById(Long id);
+    ApplicationUser findUserById(Long id);
 
     ApplicationUser findByUsername(String username);
 

@@ -65,7 +65,7 @@ public class ApplicationUserController {
     @DeleteMapping("/{investorId}")
     public void  deleteInvestor(@PathVariable(value = "investorId") Long investorId){
         try {
-            applicationUserService.removeInvestorByID(investorId);
+            applicationUserService.removeUserByID(investorId);
         }
         catch (EntityNotFoundException exc){
             throw new ResponseStatusException(

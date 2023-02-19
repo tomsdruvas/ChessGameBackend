@@ -14,6 +14,11 @@ import org.springframework.util.SerializationUtils;
 
 import com.lazychess.chessgame.dto.ChessMoveDto;
 import com.lazychess.chessgame.dto.IllegalMovesDto;
+import com.lazychess.chessgame.exception.EmptySourceSquareException;
+import com.lazychess.chessgame.exception.GameIsNotInOnGoingStateException;
+import com.lazychess.chessgame.exception.IllegalMoveException;
+import com.lazychess.chessgame.exception.NotYourTurnException;
+import com.lazychess.chessgame.exception.WrongColourPieceOnSquareException;
 
 public class Board {
 
@@ -150,8 +155,8 @@ public class Board {
         List<Square> legalMoves = pieceToMove.getLegalMoves();
         String currentPlayersColour = pieceToMove.getColour();
         
-        checkIfSourceSquareHasCurrentPlayersPieceOnIt(currentRow, currentColumn);
         checkIfItIsColoursTurn(currentPlayersColour);
+        checkIfSourceSquareHasCurrentPlayersPieceOnIt(currentRow, currentColumn);
 
         if(isMoveLegal(legalMoves, newRow, newColumn)) {
             pieceToMove.setPieceColumn(newColumn);
@@ -174,16 +179,16 @@ public class Board {
             setOppositeColourAsCurrentPlayer();
         }
         else {
-            throw new RuntimeException("That is not a legal move");
+            throw new IllegalMoveException("That is not a legal move for a " + pieceToMove.getClass().getSimpleName());
         }
     }
 
     private void checkIfSourceSquareHasCurrentPlayersPieceOnIt(int currentRow, int currentColumn) {
         String colour = getSquares()[currentRow][currentColumn].getPiece().getColour();
         if (Objects.equals(colour, "empty")) {
-            throw new RuntimeException("Source square does not have a piece on it");
+            throw new EmptySourceSquareException("Source square does not have a piece on it");
         } else if (!Objects.equals(colour, getCurrentPlayerColourState())) {
-            throw new RuntimeException("Source square does not your colour piece on it");
+            throw new WrongColourPieceOnSquareException("Source square does not have your colour piece on it");
         }
     }
 
@@ -197,7 +202,7 @@ public class Board {
 
     private void checkIfItIsColoursTurn(String currentPlayerColour) {
         if(!Objects.equals(getCurrentPlayerColourState(), currentPlayerColour)) {
-            throw new RuntimeException("It is not the " + currentPlayerColour +"'s turn");
+            throw new NotYourTurnException("It is not the " + currentPlayerColour +"'s turn");
         }
     }
 
@@ -349,7 +354,7 @@ public class Board {
 
     private void checkIfGameIsOnGoing() {
         if(getStateOfTheGame() != ONGOING) {
-            throw new RuntimeException("The game is not in the ongoing state");
+            throw new GameIsNotInOnGoingStateException("The game is not in the ongoing state");
         }
     }
 

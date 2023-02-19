@@ -119,46 +119,6 @@ public abstract class Piece implements Serializable {
         return true;
     }
 
-    public boolean piecesInTheWayStraight(Square[][] squares, Square square) {
-        int currentColumn = getPieceColumn();
-        int currentRow = getPieceRow();
-
-        int newColumn = square.getColumn();
-        int newRow = square.getRow();
-
-        int direction;
-
-        if(currentRow != newRow){
-            if(currentRow < newRow){
-                direction = 1;
-            }else{
-                direction = -1;
-            }
-
-            for(int x = currentRow + direction; x != newRow; x += direction){
-                if(!Objects.equals(squares[x][currentColumn].getPiece().getColour(), EMPTY_PIECE)) {
-
-                    return false;
-                }
-            }
-        }
-
-        if(currentColumn != newColumn){
-            if(currentColumn < newColumn){
-                direction = 1;
-            }else{
-                direction = -1;
-            }
-
-            for(int x = currentColumn + direction; x != newColumn; x += direction){
-                if(!Objects.equals(squares[currentRow][x].getPiece().getColour(), EMPTY_PIECE)){
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
     public boolean bishopLegalMoves(Square square) {
         return Math.abs(square.getRow() - getPieceRow()) == Math.abs(square.getColumn() - getPieceColumn());
     }
@@ -167,27 +127,27 @@ public abstract class Piece implements Serializable {
         return square.getColumn() == getPieceColumn() || square.getRow() == getPieceRow();
     }
 
-    //    public boolean piecesInTheWayStraight(Square[][] squares, Square square) {
-//        int currentColumn = getPieceColumn();
-//        int currentRow = getPieceRow();
-//
-//        int newColumn = square.getColumn();
-//        int newRow = square.getRow();
-//
-//        if(currentRow == newRow){
-//            for(int x = Math.min(currentColumn, newColumn) + 1; x < Math.max(currentColumn, newColumn); x++){
-//                if(!Objects.equals(squares[currentRow][x].getPiece().getColour(), EMPTY_PIECE)){
-//                    return false;
-//                }
-//            }
-//        }else if(currentColumn == newColumn){
-//            for(int x = Math.min(currentRow, newRow) + 1; x < Math.max(currentRow, newRow); x++){
-//                if(!Objects.equals(squares[x][currentColumn].getPiece().getColour(), EMPTY_PIECE)) {
-//                    return false;
-//                }
-//            }
-//        }
-//        return true;
-//    }
+    public boolean piecesInTheWayStraight(Square[][] squares, Square square) {
+        int currentColumn = getPieceColumn();
+        int currentRow = getPieceRow();
+
+        int newColumn = square.getColumn();
+        int newRow = square.getRow();
+
+        if(currentRow == newRow){
+            for(int x = Math.min(currentColumn, newColumn) + 1; x < Math.max(currentColumn, newColumn); x++){
+                if(!Objects.equals(squares[currentRow][x].getPiece().getColour(), EMPTY_PIECE)){
+                    return false;
+                }
+            }
+        }else if(currentColumn == newColumn){
+            for(int x = Math.min(currentRow, newRow) + 1; x < Math.max(currentRow, newRow); x++){
+                if(!Objects.equals(squares[x][currentColumn].getPiece().getColour(), EMPTY_PIECE)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
 }

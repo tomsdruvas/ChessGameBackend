@@ -27,35 +27,35 @@ public class ApplicationUserService {
         return applicationUserRepository.findAll();
     }
 
-    public ApplicationUser getById(long investorId) throws EntityNotFoundException {
+    public ApplicationUser getById(long userId) throws EntityNotFoundException {
 
-        boolean exists = applicationUserRepository.existsById(investorId);
+        boolean exists = applicationUserRepository.existsById(userId);
         if (!exists) {
-            throw new EntityNotFoundException("Investor with " + investorId + " doesn't exist");
+            throw new EntityNotFoundException("User with " + userId + " doesn't exist");
         }
 
-        return applicationUserRepository.findInvestorById(investorId);
+        return applicationUserRepository.findUserById(userId);
     }
 
     public ApplicationUser save(ApplicationUser newApplicationUser) {
         return applicationUserRepository.save(newApplicationUser);
     }
 
-    public void removeInvestorByID(Long investorId) throws EntityNotFoundException {
-    boolean exists = applicationUserRepository.existsById(investorId);
+    public void removeUserByID(Long userId) throws EntityNotFoundException {
+    boolean exists = applicationUserRepository.existsById(userId);
     if (!exists) {
-        throw new EntityNotFoundException("Investor with " + investorId + " doesn't exist");
+        throw new EntityNotFoundException("User with " + userId + " doesn't exist");
     }
-    applicationUserRepository.deleteById(investorId);
+    applicationUserRepository.deleteById(userId);
     }
 
 
     public ApplicationUser updateById(long id, ApplicationUser updatedApplicationUserDetails) {
         boolean exists = applicationUserRepository.existsById(id);
         if (!exists) {
-            throw new EntityNotFoundException("Investor with " + id + " doesn't exist");
+            throw new EntityNotFoundException("User with " + id + " doesn't exist");
         }
-        ApplicationUser applicationUser = applicationUserRepository.findInvestorById(id);
+        ApplicationUser applicationUser = applicationUserRepository.findUserById(id);
 
         applicationUser.setUsername(updatedApplicationUserDetails.getUsername());
 

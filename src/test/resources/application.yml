@@ -1,12 +1,9 @@
-db:
-    host: localhost
-    name: chess_db
 spring:
     sql:
         init:
             mode: always
     datasource:
-        url: jdbc:postgresql://${db.host}/${db.name}
+        url: jdbc:postgresql://localhost:5432/chess_db
         username: postgres
         password: Passw0rd
     jpa:
@@ -27,17 +24,3 @@ systemProp:
         host:
             url: http://localhost:9000
         login: sqa_49f5490be1d64a94186d17797cafcf2a8747b2ff
-
----
-
-spring:
-    config:
-        activate:
-            on-profile: container
-    datasource:
-            url: ${SPRING_DATASOURCE_URL}
-            username: ${SPRING_DATASOURCE_USERNAME}
-            password: ${SPRING_DATASOURCE_PASSWORD}
-
-db:
-    host: chess_app_database

@@ -1,5 +1,38 @@
-version: "3"
+version: '3.9'
 services:
+
+  chess_app_backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: chess-app:latest
+    container_name: chess_app_backend
+    network_mode: bridge
+    depends_on:
+      - chess_app_database
+    ports:
+      - "8080:8080"
+    links:
+      - "chess_app_database:database"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://chess_app_database:5432/chess_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=Passw0rd
+
+  chess_app_database:
+    restart: always
+    image: postgres:latest
+    network_mode: bridge
+    expose:
+      - 5432
+    ports:
+      - "5432:5432"
+    container_name: chess_app_database
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Passw0rd
+      - POSTGRES_DB=chess_db
+
   sonarqube:
     image: sonarqube:9.4.0-community
     ports:

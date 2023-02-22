@@ -17,6 +17,8 @@ import com.lazychess.chessgame.security.AppUserPrincipal;
 import com.lazychess.chessgame.security.CustomUserDetailsService;
 import com.lazychess.chessgame.service.BoardService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class BoardController {
@@ -49,7 +51,7 @@ public class BoardController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "make-a-move/{boardGameId}")
-    public BoardDao makeAMove(@PathVariable String boardGameId, @RequestBody ChessMoveDto chessMoveDto) {
+    public BoardDao makeAMove(@PathVariable String boardGameId, @Valid @RequestBody ChessMoveDto chessMoveDto) {
         Authentication principal = SecurityContextHolder.getContext().getAuthentication();
         AppUserPrincipal appUserPrincipal = customUserDetailsService.loadUserByUsername(principal.getName());
 

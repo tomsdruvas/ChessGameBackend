@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.lazychess.chessgame.chessgame.Board;
 import com.lazychess.chessgame.dto.ChessMoveDto;
 import com.lazychess.chessgame.exception.PlayerNotPartOfGameException;
+import com.lazychess.chessgame.exception.PlayerTwoHasNotJoinedException;
 import com.lazychess.chessgame.exception.WrongPlayerMakingAMoveException;
 import com.lazychess.chessgame.repository.entity.BoardDao;
 import com.lazychess.chessgame.repository.entity.PlayersDao;
@@ -45,6 +46,7 @@ public class BoardFacade {
     @Transactional
     public BoardDao persistChessMove(String boardGameId, String playersId, ChessMoveDto chessMoveDto) {
         BoardDao boardDao = boardRepository.findById(boardGameId).orElseThrow(() -> new RuntimeException("This board does not exist"));
+        checkIfPlayerTwoHasJoined(boardDao);
         checkIfPlayerIsPartOfThisGame(boardDao, playersId);
         checkIfItIsSubmittingPlayersTurn(boardDao, playersId);
         Board board = boardDaoMapper.fromBoardDaoObject(boardDao);
@@ -55,6 +57,14 @@ public class BoardFacade {
         updatedBoardDao = boardRepository.saveAndFlush(updatedBoardDao);
         return updatedBoardDao;
 
+    }
+
+    private void checkIfPlayerTwoHasJoined(BoardDao boardDao) {
+        PlayersDao playersDao = boardDao.getPlayersDao();
+        String playerTwoAppUserId = playersDao.getPlayerTwoAppUserId();
+        if (playerTwoAppUserId == null) {
+            throw new PlayerTwoHasNotJoinedException("Cannot make a move until player 2 has joined");
+        }
     }
 
     private void checkIfPlayerIsPartOfThisGame(BoardDao boardDao, String playersId) {

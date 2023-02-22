@@ -32,7 +32,6 @@ public class ChessGameApplication {
 	public CommandLineRunner loadDataForUsers() {
 		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 		List<Role> allRoles = List.of(new Role("ROLE_ADMIN"));
-//		ApplicationUser applicationUser = new ApplicationUser("admin", passwordEncoder.encode("admin"), allRoles);
 		ApplicationUser applicationUser2 = new ApplicationUser("admin2", passwordEncoder.encode("admin2"), allRoles);
 
 		return args -> applicationUserRepository.saveAllAndFlush((List.of(applicationUser2)));

@@ -2,6 +2,7 @@ package com.lazychess.chessgame.chessgame;
 
 import static com.lazychess.chessgame.chessgame.ChessConstants.BLACK;
 import static com.lazychess.chessgame.chessgame.ChessConstants.WHITE;
+import static com.lazychess.chessgame.chessgame.ChessConstants.oppositeColour;
 import static com.lazychess.chessgame.chessgame.ChessGameState.CHECKMATE;
 import static com.lazychess.chessgame.chessgame.ChessGameState.ONGOING;
 
@@ -154,8 +155,9 @@ public class Board {
         Piece pieceToMove = squares[currentRow][currentColumn].getPiece();
         List<Square> legalMoves = pieceToMove.getLegalMoves();
         String currentPlayersColour = pieceToMove.getColour();
-        
-        checkIfItIsColoursTurn(currentPlayersColour);
+
+        checkIfSourceSquareIsEmpty(pieceToMove);
+        checkIfItIsColoursTurn(pieceToMove);
         checkIfSourceSquareHasCurrentPlayersPieceOnIt(currentRow, currentColumn);
 
         if(isMoveLegal(legalMoves, newRow, newColumn)) {
@@ -200,9 +202,16 @@ public class Board {
         }
     }
 
-    private void checkIfItIsColoursTurn(String currentPlayerColour) {
-        if(!Objects.equals(getCurrentPlayerColourState(), currentPlayerColour)) {
-            throw new NotYourTurnException("It is not the " + currentPlayerColour +"'s turn");
+    private void checkIfItIsColoursTurn(Piece pieceOnSquare) {
+        String colour = pieceOnSquare.getColour();
+        if(!Objects.equals(getCurrentPlayerColourState(), colour)) {
+            throw new NotYourTurnException("It is not the " + oppositeColour(colour) +"'s turn");
+        }
+    }
+
+    private void checkIfSourceSquareIsEmpty(Piece piece) {
+        if(piece instanceof EmptyPiece) {
+            throw new EmptySourceSquareException("Source square does not have a piece on it");
         }
     }
 

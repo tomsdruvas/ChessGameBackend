@@ -5,7 +5,9 @@ import java.util.Objects;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.lazychess.chessgame.chessgame.Board;
+import com.lazychess.chessgame.chessgame.ChessGameState;
 import com.lazychess.chessgame.dto.ChessMoveDto;
+import com.lazychess.chessgame.exception.PlayerAlreadyPartOfGame;
 import com.lazychess.chessgame.exception.PlayerNotPartOfGameException;
 import com.lazychess.chessgame.exception.PlayerTwoHasNotJoinedException;
 import com.lazychess.chessgame.exception.WrongPlayerMakingAMoveException;
@@ -37,6 +39,7 @@ public class BoardFacade {
     public BoardDao persistPlayerTwoAddedBoard(String boardGameId, String playerTwoId) {
         BoardDao boardDao = boardRepository.findById(boardGameId).orElseThrow(() -> new RuntimeException("This board does not exist"));
         PlayersDao playersDao = boardDao.getPlayersDao();
+        checkIfPlayerAlreadyPartOfThisGame(playersDao, playerTwoId);
         playersDao.setPlayerTwoAppUserId(playerTwoId);
         boardDao.setPlayersDao(playersDao);
         boardDao = boardRepository.saveAndFlush(boardDao);
@@ -52,11 +55,21 @@ public class BoardFacade {
         Board board = boardDaoMapper.fromBoardDaoObject(boardDao);
         implementMoveOnTheBoard(board, chessMoveDto);
         BoardDao updatedBoardDao = boardDaoMapper.updateBoardDaoObjectAfterMove(board, boardDao);
+        checkIfGameIsInACheckMateState(board, updatedBoardDao, playersId);
         changeActivePlayer(updatedBoardDao);
 
         updatedBoardDao = boardRepository.saveAndFlush(updatedBoardDao);
         return updatedBoardDao;
 
+    }
+
+    private void checkIfGameIsInACheckMateState(Board board, BoardDao updatedBoardDao, String playersId) {
+        ChessGameState stateOfTheGame = board.getStateOfTheGame();
+        if(stateOfTheGame == ChessGameState.CHECKMATE) {
+            updatedBoardDao.setWinnerUserId(playersId);
+        } else if (stateOfTheGame == ChessGameState.STALEMATE) {
+            updatedBoardDao.setWinnerUserId("Nobody");
+        }
     }
 
     private void checkIfPlayerTwoHasJoined(BoardDao boardDao) {
@@ -106,5 +119,13 @@ public class BoardFacade {
 
         }
         boardDao.setPlayersDao(playersDao);
+    }
+
+    private void checkIfPlayerAlreadyPartOfThisGame(PlayersDao playersDao, String playerTwoId) {
+        String playerOneAppUserId = playersDao.getPlayerOneAppUserId();
+        String playerTwoAppUserId = playersDao.getPlayerTwoAppUserId();
+        if(Objects.equals(playerOneAppUserId, playerTwoId) || Objects.equals(playerTwoAppUserId, playerTwoId)) {
+            throw new PlayerAlreadyPartOfGame("Player is already part of the game");
+        }
     }
 }

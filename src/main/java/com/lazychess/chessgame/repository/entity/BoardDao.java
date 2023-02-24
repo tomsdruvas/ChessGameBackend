@@ -1,9 +1,12 @@
 package com.lazychess.chessgame.repository.entity;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.Type;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.lazychess.chessgame.chessgame.ChessGameState;
 import com.lazychess.chessgame.chessgame.Square;
 import com.lazychess.chessgame.config.SquareListConverter;
@@ -48,4 +51,8 @@ public class BoardDao {
     @Type(JsonBinaryType.class)
     @Column(name = "cgb_current_player_number", columnDefinition = "jsonb")
     private PlayersDao playersDao;
+
+    @Column(name = "cgb_winner_user_id")
+    @JsonInclude(Include.NON_NULL)
+    private String winnerUserId;
 }

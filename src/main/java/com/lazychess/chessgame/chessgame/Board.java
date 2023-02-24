@@ -2,7 +2,6 @@ package com.lazychess.chessgame.chessgame;
 
 import static com.lazychess.chessgame.chessgame.ChessConstants.BLACK;
 import static com.lazychess.chessgame.chessgame.ChessConstants.WHITE;
-import static com.lazychess.chessgame.chessgame.ChessConstants.oppositeColour;
 import static com.lazychess.chessgame.chessgame.ChessGameState.CHECKMATE;
 import static com.lazychess.chessgame.chessgame.ChessGameState.ONGOING;
 
@@ -205,7 +204,7 @@ public class Board {
     private void checkIfItIsColoursTurn(Piece pieceOnSquare) {
         String colour = pieceOnSquare.getColour();
         if(!Objects.equals(getCurrentPlayerColourState(), colour)) {
-            throw new NotYourTurnException("It is not the " + oppositeColour(colour) +"'s turn");
+            throw new NotYourTurnException("It is not the " + colour +"'s turn");
         }
     }
 

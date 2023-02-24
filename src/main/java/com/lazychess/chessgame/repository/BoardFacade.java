@@ -7,7 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.lazychess.chessgame.chessgame.Board;
 import com.lazychess.chessgame.chessgame.ChessGameState;
 import com.lazychess.chessgame.dto.ChessMoveDto;
-import com.lazychess.chessgame.exception.PlayerAlreadyPartOfGame;
+import com.lazychess.chessgame.exception.GameHasFinishedException;
+import com.lazychess.chessgame.exception.PlayerAlreadyPartOfGameException;
 import com.lazychess.chessgame.exception.PlayerNotPartOfGameException;
 import com.lazychess.chessgame.exception.PlayerTwoHasNotJoinedException;
 import com.lazychess.chessgame.exception.WrongPlayerMakingAMoveException;
@@ -49,13 +50,14 @@ public class BoardFacade {
     @Transactional
     public BoardDao persistChessMove(String boardGameId, String playersId, ChessMoveDto chessMoveDto) {
         BoardDao boardDao = boardRepository.findById(boardGameId).orElseThrow(() -> new RuntimeException("This board does not exist"));
+        checkIfGameIsInACheckMateState(boardDao);
         checkIfPlayerTwoHasJoined(boardDao);
         checkIfPlayerIsPartOfThisGame(boardDao, playersId);
         checkIfItIsSubmittingPlayersTurn(boardDao, playersId);
         Board board = boardDaoMapper.fromBoardDaoObject(boardDao);
         implementMoveOnTheBoard(board, chessMoveDto);
         BoardDao updatedBoardDao = boardDaoMapper.updateBoardDaoObjectAfterMove(board, boardDao);
-        checkIfGameIsInACheckMateState(board, updatedBoardDao, playersId);
+        checkIfLastMovePutTheGameInACheckMateState(board, updatedBoardDao, playersId);
         changeActivePlayer(updatedBoardDao);
 
         updatedBoardDao = boardRepository.saveAndFlush(updatedBoardDao);
@@ -63,12 +65,19 @@ public class BoardFacade {
 
     }
 
-    private void checkIfGameIsInACheckMateState(Board board, BoardDao updatedBoardDao, String playersId) {
+    private void checkIfGameIsInACheckMateState(BoardDao boardDao) {
+        ChessGameState stateOfTheGame = boardDao.getStateOfTheGame();
+        if(stateOfTheGame != ChessGameState.ONGOING) {
+            throw new GameHasFinishedException("The game has finished");
+        }
+    }
+
+    private void checkIfLastMovePutTheGameInACheckMateState(Board board, BoardDao updatedBoardDao, String playersId) {
         ChessGameState stateOfTheGame = board.getStateOfTheGame();
         if(stateOfTheGame == ChessGameState.CHECKMATE) {
             updatedBoardDao.setWinnerUserId(playersId);
         } else if (stateOfTheGame == ChessGameState.STALEMATE) {
-            updatedBoardDao.setWinnerUserId("Nobody");
+            updatedBoardDao.setWinnerUserId("Draw");
         }
     }
 
@@ -125,7 +134,7 @@ public class BoardFacade {
         String playerOneAppUserId = playersDao.getPlayerOneAppUserId();
         String playerTwoAppUserId = playersDao.getPlayerTwoAppUserId();
         if(Objects.equals(playerOneAppUserId, playerTwoId) || Objects.equals(playerTwoAppUserId, playerTwoId)) {
-            throw new PlayerAlreadyPartOfGame("Player is already part of the game");
+            throw new PlayerAlreadyPartOfGameException("Player is already part of the game");
         }
     }
 }

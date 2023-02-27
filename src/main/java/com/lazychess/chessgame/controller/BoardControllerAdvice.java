@@ -12,23 +12,28 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.lazychess.chessgame.json.JsonObjectErrorResponse;
+
 @ControllerAdvice(assignableTypes = BoardController.class)
 @Order(HIGHEST_PRECEDENCE)
 public class BoardControllerAdvice {
 
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> invalidChessMove(RuntimeException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<JsonObjectErrorResponse> invalidChessMove(RuntimeException e) {
+        return ResponseEntity.badRequest().body(buildJsonObjectErrorResponse(e.getMessage()));
     }
 
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> invalidRequestBody(MethodArgumentNotValidException e) {
+    public ResponseEntity<JsonObjectErrorResponse> invalidRequestBody(MethodArgumentNotValidException e) {
         String defaultMessage = Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage();
-        return ResponseEntity.badRequest().body(defaultMessage);
-
+        return ResponseEntity.badRequest().body(buildJsonObjectErrorResponse(defaultMessage));
     }
 
-
+    public static JsonObjectErrorResponse buildJsonObjectErrorResponse(String message) {
+        return JsonObjectErrorResponse.newBuilder()
+            .message(message)
+            .build();
+    }
 }

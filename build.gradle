@@ -34,15 +34,18 @@ dependencies {
 	implementation 'org.hibernate.orm:hibernate-core:6.1.6.Final'
 	implementation("com.vladmihalcea:hibernate-types-60:2.21.1")
 	testImplementation 'junit:junit:4.13.1'
+	testImplementation 'org.projectlombok:lombok:1.18.22'
 
 
-    runtimeOnly 'org.postgresql:postgresql:42.3.7'
+	runtimeOnly 'org.postgresql:postgresql:42.3.7'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test:3.0.0'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.assertj:assertj-core:3.21.0'
+	testImplementation 'com.github.tomakehurst:wiremock-jre8-standalone:2.35.0'
+	testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock:4.0.1'
 
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'

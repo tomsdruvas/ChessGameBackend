@@ -54,5 +54,5 @@ public class BoardDao {
 
     @Column(name = "cgb_winner_user_id")
     @JsonInclude(Include.NON_NULL)
-    private String winnerUserId;
+    private String winnerUsername;
 }

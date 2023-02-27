@@ -8,7 +8,12 @@ public class PlayersDao {
 
     @NotNull
     private String playerOneAppUserId;
-    private String playerTwoAppUserId;
     @NotNull
-    private String activePlayer;
+    private String playerOneAppUsername;
+
+    private String playerTwoAppUserId;
+    private String playerTwoAppUsername;
+
+    @NotNull
+    private String activePlayerUsername;
 }

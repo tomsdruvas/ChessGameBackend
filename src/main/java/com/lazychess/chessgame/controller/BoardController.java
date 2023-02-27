@@ -2,6 +2,7 @@ package com.lazychess.chessgame.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
@@ -14,7 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.lazychess.chessgame.config.ValidUuid;
 import com.lazychess.chessgame.dto.ChessMoveDto;
-import com.lazychess.chessgame.repository.entity.BoardDao;
+import com.lazychess.chessgame.factory.ResponseEntityFactory;
+import com.lazychess.chessgame.json.JsonObjectBoardResponse;
 import com.lazychess.chessgame.security.AppUserPrincipal;
 import com.lazychess.chessgame.security.CustomUserDetailsService;
 import com.lazychess.chessgame.service.BoardService;
@@ -29,36 +31,41 @@ public class BoardController {
 
     private final BoardService boardService;
     private final CustomUserDetailsService customUserDetailsService;
+    private final ResponseEntityFactory responseEntityFactory;
 
-    public BoardController(BoardService boardService, CustomUserDetailsService customUserDetailsService) {
+    public BoardController(BoardService boardService, CustomUserDetailsService customUserDetailsService, ResponseEntityFactory responseEntityFactory) {
         this.boardService = boardService;
         this.customUserDetailsService = customUserDetailsService;
+        this.responseEntityFactory = responseEntityFactory;
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "board")
-    public BoardDao createBoard() {
+    public ResponseEntity<JsonObjectBoardResponse> createBoard() {
         Authentication principal = SecurityContextHolder.getContext().getAuthentication();
         AppUserPrincipal appUserPrincipal = customUserDetailsService.loadUserByUsername(principal.getName());
 
-        return boardService.createInitialBoardGame(appUserPrincipal.getAppUser().getId());
+        JsonObjectBoardResponse initialBoardGame = boardService.createInitialBoardGame(appUserPrincipal.getAppUser());
+        return responseEntityFactory.toResponseEntity(initialBoardGame);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "add-player-two-board/{boardGameId}")
-    public BoardDao playerTwoJoinsBoard(@PathVariable @NotBlank @ValidUuid String boardGameId) {
+    public ResponseEntity<JsonObjectBoardResponse> playerTwoJoinsBoard(@PathVariable @NotBlank @ValidUuid String boardGameId) {
         Authentication principal = SecurityContextHolder.getContext().getAuthentication();
         AppUserPrincipal appUserPrincipal = customUserDetailsService.loadUserByUsername(principal.getName());
 
-        return boardService.playerTwoJoinsGame(boardGameId, appUserPrincipal.getAppUser().getId());
+        JsonObjectBoardResponse jsonObjectBoardResponse = boardService.playerTwoJoinsGame(boardGameId, appUserPrincipal.getAppUser());
+        return responseEntityFactory.toResponseEntity(jsonObjectBoardResponse);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "make-a-move/{boardGameId}")
-    public BoardDao makeAMove(@PathVariable String boardGameId, @Valid @RequestBody ChessMoveDto chessMoveDto) {
+    public ResponseEntity<JsonObjectBoardResponse> makeAMove(@PathVariable String boardGameId, @Valid @RequestBody ChessMoveDto chessMoveDto) {
         Authentication principal = SecurityContextHolder.getContext().getAuthentication();
         AppUserPrincipal appUserPrincipal = customUserDetailsService.loadUserByUsername(principal.getName());
 
-        return boardService.processChessMove(boardGameId, appUserPrincipal.getAppUser().getId(), chessMoveDto);
+        JsonObjectBoardResponse jsonObjectBoardResponse = boardService.processChessMove(boardGameId, appUserPrincipal.getAppUser().getUsername(), chessMoveDto);
+        return responseEntityFactory.toResponseEntity(jsonObjectBoardResponse);
     }
 }

@@ -4,9 +4,11 @@ import java.util.Objects;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import com.lazychess.chessgame.applicationuser.ApplicationUser;
 import com.lazychess.chessgame.chessgame.Board;
 import com.lazychess.chessgame.chessgame.ChessGameState;
 import com.lazychess.chessgame.dto.ChessMoveDto;
+import com.lazychess.chessgame.exception.BoardNotFoundException;
 import com.lazychess.chessgame.exception.GameHasFinishedException;
 import com.lazychess.chessgame.exception.PlayerAlreadyPartOfGameException;
 import com.lazychess.chessgame.exception.PlayerNotPartOfGameException;
@@ -26,10 +28,11 @@ public class BoardFacade {
     }
 
     @Transactional
-    public BoardDao persistCreatedBoard(Board board, String appUserId) {
+    public BoardDao persistCreatedBoard(Board board, ApplicationUser applicationUser) {
         PlayersDao playersDao = new PlayersDao();
-        playersDao.setPlayerOneAppUserId(appUserId);
-        playersDao.setActivePlayer(appUserId);
+        playersDao.setPlayerOneAppUserId(applicationUser.getId());
+        playersDao.setPlayerOneAppUsername(applicationUser.getUsername());
+        playersDao.setActivePlayerUsername(playersDao.getPlayerOneAppUsername());
         BoardDao boardDao = boardDaoMapper.fromBoardObject(board);
         boardDao.setPlayersDao(playersDao);
         boardDao = boardRepository.saveAndFlush(boardDao);
@@ -37,10 +40,13 @@ public class BoardFacade {
     }
 
     @Transactional
-    public BoardDao persistPlayerTwoAddedBoard(String boardGameId, String playerTwoId) {
-        BoardDao boardDao = boardRepository.findById(boardGameId).orElseThrow(() -> new RuntimeException("This board does not exist"));
+    public BoardDao persistPlayerTwoAddedBoard(String boardGameId, ApplicationUser applicationUser) {
+        String playersUsername = applicationUser.getUsername();
+        String playerTwoId = applicationUser.getId();
+        BoardDao boardDao = boardRepository.findById(boardGameId).orElseThrow(() -> new BoardNotFoundException("This board does not exist"));
         PlayersDao playersDao = boardDao.getPlayersDao();
-        checkIfPlayerAlreadyPartOfThisGame(playersDao, playerTwoId);
+        checkIfPlayerAlreadyPartOfThisGame(playersDao, playersUsername);
+        playersDao.setPlayerTwoAppUsername(playersUsername);
         playersDao.setPlayerTwoAppUserId(playerTwoId);
         boardDao.setPlayersDao(playersDao);
         boardDao = boardRepository.saveAndFlush(boardDao);
@@ -48,16 +54,16 @@ public class BoardFacade {
     }
 
     @Transactional
-    public BoardDao persistChessMove(String boardGameId, String playersId, ChessMoveDto chessMoveDto) {
-        BoardDao boardDao = boardRepository.findById(boardGameId).orElseThrow(() -> new RuntimeException("This board does not exist"));
+    public BoardDao persistChessMove(String boardGameId, String playersUsername, ChessMoveDto chessMoveDto) {
+        BoardDao boardDao = boardRepository.findById(boardGameId).orElseThrow(() -> new BoardNotFoundException("This board does not exist"));
         checkIfGameIsInACheckMateState(boardDao);
         checkIfPlayerTwoHasJoined(boardDao);
-        checkIfPlayerIsPartOfThisGame(boardDao, playersId);
-        checkIfItIsSubmittingPlayersTurn(boardDao, playersId);
+        checkIfPlayerIsPartOfThisGame(boardDao, playersUsername);
+        checkIfItIsSubmittingPlayersTurn(boardDao, playersUsername);
         Board board = boardDaoMapper.fromBoardDaoObject(boardDao);
         implementMoveOnTheBoard(board, chessMoveDto);
         BoardDao updatedBoardDao = boardDaoMapper.updateBoardDaoObjectAfterMove(board, boardDao);
-        checkIfLastMovePutTheGameInACheckMateState(board, updatedBoardDao, playersId);
+        checkIfLastMovePutTheGameInACheckMateState(board, updatedBoardDao, playersUsername);
         changeActivePlayer(updatedBoardDao);
 
         updatedBoardDao = boardRepository.saveAndFlush(updatedBoardDao);
@@ -72,12 +78,12 @@ public class BoardFacade {
         }
     }
 
-    private void checkIfLastMovePutTheGameInACheckMateState(Board board, BoardDao updatedBoardDao, String playersId) {
+    private void checkIfLastMovePutTheGameInACheckMateState(Board board, BoardDao updatedBoardDao, String playersUsername) {
         ChessGameState stateOfTheGame = board.getStateOfTheGame();
         if(stateOfTheGame == ChessGameState.CHECKMATE) {
-            updatedBoardDao.setWinnerUserId(playersId);
+            updatedBoardDao.setWinnerUsername(playersUsername);
         } else if (stateOfTheGame == ChessGameState.STALEMATE) {
-            updatedBoardDao.setWinnerUserId("Draw");
+            updatedBoardDao.setWinnerUsername("Draw");
         }
     }
 
@@ -89,20 +95,20 @@ public class BoardFacade {
         }
     }
 
-    private void checkIfPlayerIsPartOfThisGame(BoardDao boardDao, String playersId) {
+    private void checkIfPlayerIsPartOfThisGame(BoardDao boardDao, String playersUsername) {
         PlayersDao playersDao = boardDao.getPlayersDao();
-        String playerOneAppUserId = playersDao.getPlayerOneAppUserId();
-        String playerTwoAppUserId = playersDao.getPlayerTwoAppUserId();
+        String playerOneAppUsername = playersDao.getPlayerOneAppUsername();
+        String playerTwoAppUsername = playersDao.getPlayerTwoAppUsername();
 
-        if(!(Objects.equals(playerOneAppUserId, playersId) || Objects.equals(playerTwoAppUserId, playersId))) {
+        if(!(Objects.equals(playerOneAppUsername, playersUsername) || Objects.equals(playerTwoAppUsername, playersUsername))) {
             throw new PlayerNotPartOfGameException("Submitting player is not part of this game");
         }
     }
 
-    private void checkIfItIsSubmittingPlayersTurn(BoardDao boardDao, String playersId) {
-        String activePlayerId = boardDao.getPlayersDao().getActivePlayer();
-        if(!Objects.equals(activePlayerId, playersId)) {
-            throw new WrongPlayerMakingAMoveException("The Player ID does not match active Player ID");
+    private void checkIfItIsSubmittingPlayersTurn(BoardDao boardDao, String playersUsername) {
+        String activePlayerUsername = boardDao.getPlayersDao().getActivePlayerUsername();
+        if(!Objects.equals(activePlayerUsername, playersUsername)) {
+            throw new WrongPlayerMakingAMoveException("The Player Username does not match active Player Username");
         }
     }
 
@@ -116,24 +122,24 @@ public class BoardFacade {
 
     private void changeActivePlayer(BoardDao boardDao) {
         PlayersDao playersDao = boardDao.getPlayersDao();
-        String playerOneAppUserId = playersDao.getPlayerOneAppUserId();
-        String playerTwoAppUserId = playersDao.getPlayerTwoAppUserId();
-        String activePlayerId = playersDao.getActivePlayer();
+        String playerOneAppUsername = playersDao.getPlayerOneAppUsername();
+        String playerTwoAppUsername= playersDao.getPlayerTwoAppUsername();
+        String activePlayerUsername = playersDao.getActivePlayerUsername();
 
-        if(Objects.equals(activePlayerId, playerOneAppUserId)) {
-            playersDao.setActivePlayer(playerTwoAppUserId);
+        if(Objects.equals(activePlayerUsername, playerOneAppUsername)) {
+            playersDao.setActivePlayerUsername(playerTwoAppUsername);
         }
-        else if (Objects.equals(activePlayerId, playerTwoAppUserId)) {
-            playersDao.setActivePlayer(playerOneAppUserId);
+        else if (Objects.equals(activePlayerUsername, playerTwoAppUsername)) {
+            playersDao.setActivePlayerUsername(playerOneAppUsername);
 
         }
         boardDao.setPlayersDao(playersDao);
     }
 
-    private void checkIfPlayerAlreadyPartOfThisGame(PlayersDao playersDao, String playerTwoId) {
-        String playerOneAppUserId = playersDao.getPlayerOneAppUserId();
-        String playerTwoAppUserId = playersDao.getPlayerTwoAppUserId();
-        if(Objects.equals(playerOneAppUserId, playerTwoId) || Objects.equals(playerTwoAppUserId, playerTwoId)) {
+    private void checkIfPlayerAlreadyPartOfThisGame(PlayersDao playersDao, String playersUsername) {
+        String playerOneAppUsername = playersDao.getPlayerOneAppUsername();
+        String playerTwoAppUsername = playersDao.getPlayerTwoAppUsername();
+        if(Objects.equals(playerOneAppUsername, playersUsername) || Objects.equals(playerTwoAppUsername, playersUsername)) {
             throw new PlayerAlreadyPartOfGameException("Player is already part of the game");
         }
     }

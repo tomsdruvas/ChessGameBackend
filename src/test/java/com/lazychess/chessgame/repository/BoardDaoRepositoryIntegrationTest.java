@@ -16,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.lazychess.chessgame.applicationuser.ApplicationUser;
 import com.lazychess.chessgame.chessgame.Board;
 import com.lazychess.chessgame.dto.ChessMoveDto;
 import com.lazychess.chessgame.repository.entity.BoardDao;
@@ -54,7 +55,7 @@ class BoardDaoRepositoryIntegrationTest {
     void insertBoardUsingBoardFacade() {
         Board board = createBoard();
 
-        BoardDao boardDao = boardFacade.persistCreatedBoard(board, "Player1");
+        BoardDao boardDao = boardFacade.persistCreatedBoard(board, new ApplicationUser("Player1Id", "Player1Username", "Test"));
 
         assertThat(boardDao.getId()).isNotBlank();
 
@@ -73,7 +74,7 @@ class BoardDaoRepositoryIntegrationTest {
     void insertChangedBoardUsingBoardFacade() {
         Board board = createChangedBoard();
 
-        BoardDao boardDao = boardFacade.persistCreatedBoard(board, "Player1");
+        BoardDao boardDao = boardFacade.persistCreatedBoard(board, new ApplicationUser("Player1Id", "Player1Username", "Test"));
 
         assertThat(boardDao.getId()).isNotBlank();
 
@@ -101,8 +102,9 @@ class BoardDaoRepositoryIntegrationTest {
 
     private BoardDao createBoardDaoEntity() {
         PlayersDao playersDao = new PlayersDao();
-        playersDao.setPlayerOneAppUserId("Player1");
-        playersDao.setActivePlayer("Player1");
+        playersDao.setPlayerOneAppUserId("Player1Id");
+        playersDao.setPlayerOneAppUsername("Player1Username");
+        playersDao.setActivePlayerUsername(playersDao.getPlayerOneAppUsername());
         Board board = createBoard();
         BoardDao boardDao = new BoardDao();
 
@@ -116,8 +118,9 @@ class BoardDaoRepositoryIntegrationTest {
 
     private BoardDao createChangedBoardDaoEntity() {
         PlayersDao playersDao = new PlayersDao();
-        playersDao.setPlayerOneAppUserId("Player1");
-        playersDao.setActivePlayer("Player1");
+        playersDao.setPlayerOneAppUserId("Player1Id");
+        playersDao.setPlayerOneAppUsername("Player1Username");
+        playersDao.setActivePlayerUsername(playersDao.getPlayerOneAppUsername());
         Board board = createChangedBoard();
         BoardDao boardDao = new BoardDao();
 

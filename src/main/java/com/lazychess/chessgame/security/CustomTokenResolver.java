@@ -29,9 +29,9 @@ public class CustomTokenResolver implements BearerTokenResolver {
     public String resolve(final HttpServletRequest request) {
         Cookie cookie = WebUtils.getCookie(request, "access_token");
         String authorizationHeaderToken = this.resolveFromAuthorizationHeader(request);
-        if(authorizationHeaderToken == null) {
-            authorizationHeaderToken = cookie.getValue();
-        }
+//        if(authorizationHeaderToken == null) {
+//            authorizationHeaderToken = cookie.getValue();
+//        }
         String parameterToken = this.isParameterTokenSupportedForRequest(request) ? resolveFromRequestParameters(request) : null;
         if (authorizationHeaderToken != null) {
             if (parameterToken != null) {

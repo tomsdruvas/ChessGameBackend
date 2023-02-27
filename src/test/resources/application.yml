@@ -1,7 +1,7 @@
 spring:
     sql:
         init:
-            mode: always
+            mode: never
     datasource:
         url: jdbc:postgresql://localhost:5432/chess_db
         username: postgres

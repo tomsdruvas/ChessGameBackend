@@ -2,6 +2,9 @@ package com.lazychess.chessgame.chessgame;
 
 import java.util.Arrays;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class Rook extends Piece {
 
     public Rook(String name, int row, int column, String colour) {

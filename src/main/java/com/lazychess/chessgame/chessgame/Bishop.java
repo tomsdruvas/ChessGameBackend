@@ -4,6 +4,9 @@ import static java.util.Arrays.stream;
 
 import java.util.Arrays;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class Bishop extends Piece {
 
     public Bishop(String name, int row, int column, String colour) {

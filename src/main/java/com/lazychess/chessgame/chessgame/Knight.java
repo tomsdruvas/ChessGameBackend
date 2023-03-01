@@ -2,6 +2,9 @@ package com.lazychess.chessgame.chessgame;
 
 import java.util.Arrays;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class Knight extends Piece {
 
     public Knight(String name, int row, int column, String colour) {

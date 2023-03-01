@@ -8,6 +8,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class Pawn extends Piece {
 
     public Pawn(String name, int row, int column, String colour) {

@@ -14,12 +14,12 @@ import jakarta.persistence.Converter;
 @Converter
 public class SquareListConverter implements AttributeConverter<Square[][], String> {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Override
     public String convertToDatabaseColumn(Square[][] attribute) {
         try {
-            return objectMapper.writeValueAsString(attribute);
+            return OBJECT_MAPPER.writeValueAsString(attribute);
         }catch(JsonProcessingException e) {
             throw new CannotWriteObjectIntoStringException("Cannot write list into string");
         }
@@ -28,7 +28,7 @@ public class SquareListConverter implements AttributeConverter<Square[][], Strin
     @Override
     public Square[][] convertToEntityAttribute(String dbData) {
         try {
-            return objectMapper.readValue(dbData, Square[][].class);
+            return OBJECT_MAPPER.readValue(dbData, Square[][].class);
         } catch (IOException e) {
             throw new CannotWriteStringIntoObjectException("Cannot write string into object");
         }

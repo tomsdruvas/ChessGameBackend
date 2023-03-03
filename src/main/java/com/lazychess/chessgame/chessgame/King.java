@@ -5,10 +5,13 @@ import java.util.Arrays;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class King extends Piece {
+public class King extends Piece implements CastlingHasMoved {
+
+    private boolean hasMoved = false;
 
     public King(String name, int row, int column, String colour) {
         super(name, row, column, colour);
+        this.hasMoved = false;
     }
 
     @Override
@@ -29,5 +32,13 @@ public class King extends Piece {
         boolean c = Math.abs(getPieceRow() - square.getRow()) == 0 && Math.abs(getPieceColumn() - square.getColumn()) == 1;
 
         return a || b || c;
+    }
+
+    public boolean getHasMoved() {
+        return hasMoved;
+    }
+
+    public void hasMoved() {
+        this.hasMoved = true;
     }
 }

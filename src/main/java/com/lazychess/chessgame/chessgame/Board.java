@@ -178,9 +178,16 @@ public class Board {
             }
 
             setOppositeColourAsCurrentPlayer();
+            checkIfItIsKingsOrRooksFirstMove(pieceToMove);
         }
         else {
             throw new IllegalMoveException("That is not a legal move for a " + pieceToMove.getClass().getSimpleName());
+        }
+    }
+
+    private void checkIfItIsKingsOrRooksFirstMove(Piece pieceToMove) {
+        if(pieceToMove instanceof CastlingHasMoved piece && (!piece.getHasMoved())) {
+            piece.hasMoved();
         }
     }
 

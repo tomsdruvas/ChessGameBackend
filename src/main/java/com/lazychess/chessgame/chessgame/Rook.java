@@ -5,7 +5,9 @@ import java.util.Arrays;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class Rook extends Piece {
+public class Rook extends Piece implements CastlingHasMoved {
+
+    private boolean hasMoved = false;
 
     public Rook(String name, int row, int column, String colour) {
         super(name, row, column, colour);
@@ -21,5 +23,13 @@ public class Rook extends Piece {
             .toList();
 
         setLegalMoves(legalMoves);
+    }
+
+    public boolean getHasMoved() {
+        return hasMoved;
+    }
+
+    public void hasMoved() {
+        this.hasMoved = true;
     }
 }

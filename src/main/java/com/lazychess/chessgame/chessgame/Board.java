@@ -83,8 +83,8 @@ public class Board {
         whiteKnight2 = new Knight("White Knight2",7,6,WHITE);
         whiteBishop1 = new Bishop("White Bishop1",7,2,WHITE);
         whiteBishop2 = new Bishop("White Bishop2",7,5,WHITE);
-        whiteQueen = new Queen("White Queen",7,3,WHITE);
-        whiteKing = new King("White King",7,4,WHITE);
+        whiteQueen = new Queen("White Queen",7,4,WHITE);
+        whiteKing = new King("White King",7,3,WHITE);
 
         whitePawn = new Piece[8];
         for(int i=0;i<8;i++)
@@ -98,8 +98,8 @@ public class Board {
         blackKnight2 = new Knight("Black Knight2",0,6,BLACK);
         blackBishop1 = new Bishop("Black Bishop1",0,2,BLACK);
         blackBishop2 = new Bishop("Black Bishop2",0,5,BLACK);
-        blackQueen = new Queen("Black Queen",0,3,BLACK);
-        blackKing = new King("Black King",0,4,BLACK);
+        blackQueen = new Queen("Black Queen",0,4,BLACK);
+        blackKing = new King("Black King",0,3,BLACK);
 
         blackPawn = new Piece[8];
         for(int i=0;i<8;i++)
@@ -110,8 +110,8 @@ public class Board {
         squares[7][0].setPiece(whiteRook1);
         squares[7][1].setPiece(whiteKnight1);
         squares[7][2].setPiece(whiteBishop1);
-        squares[7][3].setPiece(whiteQueen);
-        squares[7][4].setPiece(whiteKing);
+        squares[7][3].setPiece(whiteKing);
+        squares[7][4].setPiece(whiteQueen);
         squares[7][5].setPiece(whiteBishop2);
         squares[7][6].setPiece(whiteKnight2);
         squares[7][7].setPiece(whiteRook2);
@@ -124,8 +124,8 @@ public class Board {
         squares[0][0].setPiece(blackRook1);
         squares[0][1].setPiece(blackKnight1);
         squares[0][2].setPiece(blackBishop1);
-        squares[0][3].setPiece(blackQueen);
-        squares[0][4].setPiece(blackKing);
+        squares[0][3].setPiece(blackKing);
+        squares[0][4].setPiece(blackQueen);
         squares[0][5].setPiece(blackBishop2);
         squares[0][6].setPiece(blackKnight2);
         squares[0][7].setPiece(blackRook2);

@@ -11,9 +11,13 @@ import java.util.Objects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.lazychess.chessgame.chessgame.Bishop;
 import com.lazychess.chessgame.chessgame.Board;
+import com.lazychess.chessgame.chessgame.King;
+import com.lazychess.chessgame.chessgame.Pawn;
 import com.lazychess.chessgame.chessgame.Piece;
 import com.lazychess.chessgame.chessgame.Square;
+import com.lazychess.chessgame.dto.ChessMoveDto;
 
 class PawnTest {
 
@@ -177,26 +181,22 @@ class PawnTest {
 
     @Test
     void pawnCannotMakeAMoveThatPutsOwnKingInCheck() {
-        board.movePiece(6,7,5,7);
-        board.movePiece(1,4,3,4);
-        board.movePiece(6,0,4,0);
-        board.movePiece(0,4,1,4);
-        board.movePiece(7,0,5,0);
-        board.movePiece(1,4,2,4);
-        board.movePiece(5,0,5,1);
-        board.movePiece(2,4,3,5);
-        board.movePiece(5,1,3,1);
-        List<Square> legalMoves = board.getSquares()[3][4].getPiece().getLegalMoves();
-        assertThat(legalMoves).isEmpty();
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(7, 2, 4, 5)
+        );
 
-        board.movePiece(1,6,3,6);
-        board.movePiece(6,3,4,3);
-        List<Square> legalMoves2 = board.getSquares()[3][4].getPiece().getLegalMoves();
-        assertThat(legalMoves2).isEmpty();
+        Board board = new Board(preInitChessMoveDtoList);
+        board.movePiece(4,5,3,6);
 
-        board.movePiece(1,7,2,7);
-        board.movePiece(3,1,4,1);
-        List<Square> legalMoves3 = board.getSquares()[3][4].getPiece().getLegalMoves();
-        assertThat(legalMoves3).hasSize(2);
+        Piece whiteBishop = board.getSquares()[3][6].getPiece();
+        Piece blackPawn = board.getSquares()[1][4].getPiece();
+        Piece blackKing= board.getSquares()[0][3].getPiece();
+
+        assertThat(whiteBishop).isExactlyInstanceOf(Bishop.class);
+        assertThat(blackPawn).isExactlyInstanceOf(Pawn.class);
+        assertThat(blackKing).isExactlyInstanceOf(King.class);
+
+        assertThat(blackPawn.getLegalMoves())
+            .noneMatch(square -> square.getRow() == 2 && square.getColumn() == 4);
     }
 }

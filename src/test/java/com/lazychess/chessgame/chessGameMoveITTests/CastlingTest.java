@@ -45,12 +45,12 @@ class CastlingTest {
     @Test
     void kingPieceShouldHaveHasMovedAsTrueIfItHasMoved() {
         List<ChessMoveDto> preInitChessMoveDtos = List.of(
-            new ChessMoveDto(1, 4, 3, 4),
-            new ChessMoveDto(6, 4, 4, 4)
+            new ChessMoveDto(1, 3, 3, 3),
+            new ChessMoveDto(6, 3, 4, 3)
         );
         Board board = new Board(preInitChessMoveDtos);
-        board.movePiece(7,4,6,4);
-        board.movePiece(0,4,1,4);
+        board.movePiece(7,3,6,3);
+        board.movePiece(0,3,1,3);
 
         List<Piece> allKings = stream(board.getSquares())
             .flatMap(Arrays::stream)

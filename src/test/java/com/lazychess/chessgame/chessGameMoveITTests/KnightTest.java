@@ -9,10 +9,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.lazychess.chessgame.chessgame.Bishop;
 import com.lazychess.chessgame.chessgame.Board;
+import com.lazychess.chessgame.chessgame.King;
 import com.lazychess.chessgame.chessgame.Knight;
 import com.lazychess.chessgame.chessgame.Piece;
 import com.lazychess.chessgame.chessgame.Square;
+import com.lazychess.chessgame.dto.ChessMoveDto;
 
 @SpringBootTest
 class KnightTest {
@@ -155,27 +158,24 @@ class KnightTest {
 
     @Test
     void knightCannotMoveToPutOwnKingInCheck() {
-        board.movePiece(6,7,5,7);
-        board.movePiece(1,4,3,4);
-        board.movePiece(6,3,4,3);
-        board.movePiece(0,4,1,4);
-        board.movePiece(6,0,4,0);
-        board.movePiece(1,4,2,4);
-        board.movePiece(7,0,5,0);
-        board.movePiece(0,1,2,2);
-        board.movePiece(5,0,5,1);
-        board.movePiece(1,7,2,7);
-        board.movePiece(5,1,2,1);
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(1, 4, 2, 4),
+            new ChessMoveDto(0, 6, 2, 5),
+            new ChessMoveDto(7, 2, 4, 5)
+        );
 
-        List<Square> legalMoves = board.getSquares()[2][2].getPiece().getLegalMoves();
-        assertThat(legalMoves).isEmpty();
+        Board board = new Board(preInitChessMoveDtoList);
+        board.movePiece(4,5,3,6);
 
-        board.movePiece(2,7,3,7);
-        board.movePiece(2,1,3,1);
+        Piece whiteBishop = board.getSquares()[3][6].getPiece();
+        Piece blackKnight = board.getSquares()[2][5].getPiece();
+        Piece blackKing= board.getSquares()[0][3].getPiece();
 
-        List<Square> legalMovesAfterMoving = board.getSquares()[2][2].getPiece().getLegalMoves();
-        assertThat(legalMovesAfterMoving).hasSize(5);
+        assertThat(whiteBishop).isExactlyInstanceOf(Bishop.class);
+        assertThat(blackKnight).isExactlyInstanceOf(Knight.class);
+        assertThat(blackKing).isExactlyInstanceOf(King.class);
 
+        assertThat(blackKnight.getLegalMoves()).isEmpty();
     }
 
     private boolean findAllKnightsByTheirStartingPosition(Piece piece) {

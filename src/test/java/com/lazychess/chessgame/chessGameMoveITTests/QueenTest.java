@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.lazychess.chessgame.chessgame.Board;
 import com.lazychess.chessgame.chessgame.ChessGameState;
+import com.lazychess.chessgame.chessgame.King;
 import com.lazychess.chessgame.chessgame.Pawn;
 import com.lazychess.chessgame.chessgame.Piece;
 import com.lazychess.chessgame.chessgame.Queen;
@@ -43,8 +45,8 @@ class QueenTest {
 
     @Test
     void whenPawnMoves_bothQueensShouldHaveOneLegalMoveWhen() {
-        board.movePiece(6,3,5,3);
-        board.movePiece(1,3,2,3);
+        board.movePiece(6,4,5,4);
+        board.movePiece(1,4,2,4);
 
         List<Piece> queens = Arrays.stream(board.getSquares())
             .flatMap(Arrays::stream)
@@ -59,12 +61,12 @@ class QueenTest {
 
     @Test
     void whenPawnMoves_bothQueensShouldHaveNineLegalMoveWhen() {
-        board.movePiece(6,3,4,3);
-        board.movePiece(1,3,3,3);
-        board.movePiece(6,2,5,2);
-        board.movePiece(1,2,2,2);
-        board.movePiece(6,4,5,4);
-        board.movePiece(1,4,2,4);
+        board.movePiece(6,4,4,4);
+        board.movePiece(1,4,3,4);
+        board.movePiece(6,3,5,3);
+        board.movePiece(1,3,2,3);
+        board.movePiece(6,5,5,5);
+        board.movePiece(1,5,2,5);
 
         List<Piece> queens = Arrays.stream(board.getSquares())
             .flatMap(Arrays::stream)
@@ -79,19 +81,23 @@ class QueenTest {
 
     @Test
     void queenShouldBeAbleToTakeOppositePieceDiagonally() {
-        board.movePiece(6,3,4,3);
-        board.movePiece(1,3,3,3);
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(1, 5, 5, 6),
+            new ChessMoveDto(6, 5, 2, 6)
+        );
 
-        board.movePiece(6,2,5,2);
-        board.movePiece(1,2,2,2);
-        board.movePiece(6,4,5,4);
-        board.movePiece(1,4,2,4);
+        Board board = new Board(preInitChessMoveDtoList);
 
-        board.movePiece(7,3,5,5);
-        board.movePiece(0,3,2,5);
+        Piece blackQueen = board.getSquares()[0][4].getPiece();
+        Piece whiteQueen = board.getSquares()[7][4].getPiece();
+        Piece whitePawn = board.getSquares()[2][6].getPiece();
+        Piece blackPawn = board.getSquares()[5][6].getPiece();
 
-        board.movePiece(5,5,3,3);
-        board.movePiece(2,5,4,3);
+
+        assertThat(whiteQueen).isExactlyInstanceOf(Queen.class);
+        assertThat(blackQueen).isExactlyInstanceOf(Queen.class);
+        assertThat(whitePawn).isExactlyInstanceOf(Pawn.class);
+        assertThat(blackPawn).isExactlyInstanceOf(Pawn.class);
 
         List<Piece> queens = Arrays.stream(board.getSquares())
             .flatMap(Arrays::stream)
@@ -99,25 +105,50 @@ class QueenTest {
             .filter(piece -> piece instanceof Queen)
             .toList();
 
+        assertThat(queens).hasSize(2).allSatisfy(piece -> assertThat(piece.getLegalMoves()).hasSize(2));
+
+        board.movePiece(7,4,5,6);
+        board.movePiece(0,4,2,6);
+
         List<Piece> allPawns = Arrays.stream(board.getSquares())
             .flatMap(Arrays::stream)
             .map(Square::getPiece)
             .filter(piece -> piece instanceof Pawn)
             .toList();
 
-        assertThat(queens).hasSize(2).allSatisfy(piece -> assertThat(piece.getLegalMoves()).hasSize(17));
         assertThat(allPawns).hasSize(14);
     }
 
     @Test
     void queenShouldBeAbleToTakeOppositePieceStraight() {
-        board.movePiece(6,4,4,4);
-        board.movePiece(1,5,2,5);
-        board.movePiece(7,3,5,5);
-        board.movePiece(2,5,3,5);
-        board.movePiece(5,5,3,5);
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(1, 4, 5, 4),
+            new ChessMoveDto(6, 4, 2, 4)
+        );
 
-        Piece queen = board.getSquares()[3][5].getPiece();
+        Board board = new Board(preInitChessMoveDtoList);
+
+        Piece blackQueen = board.getSquares()[0][4].getPiece();
+        Piece whiteQueen = board.getSquares()[7][4].getPiece();
+        Piece whitePawn = board.getSquares()[2][4].getPiece();
+        Piece blackPawn = board.getSquares()[5][4].getPiece();
+
+
+        assertThat(whiteQueen).isExactlyInstanceOf(Queen.class);
+        assertThat(blackQueen).isExactlyInstanceOf(Queen.class);
+        assertThat(whitePawn).isExactlyInstanceOf(Pawn.class);
+        assertThat(blackPawn).isExactlyInstanceOf(Pawn.class);
+
+        List<Piece> queens = Arrays.stream(board.getSquares())
+            .flatMap(Arrays::stream)
+            .map(Square::getPiece)
+            .filter(piece -> piece instanceof Queen)
+            .toList();
+
+        assertThat(queens).hasSize(2).allSatisfy(piece -> assertThat(piece.getLegalMoves()).hasSize(2));
+
+        board.movePiece(7,4,5,4);
+        board.movePiece(0,4,2,4);
 
         List<Piece> allPawns = Arrays.stream(board.getSquares())
             .flatMap(Arrays::stream)
@@ -125,42 +156,64 @@ class QueenTest {
             .filter(piece -> piece instanceof Pawn)
             .toList();
 
-        assertThat(allPawns).hasSize(15);
-        assertThat(queen).isExactlyInstanceOf(Queen.class);
+        assertThat(allPawns).hasSize(14);
     }
 
     @Test
     void queenShouldBeAbleToTakeOppositeKingDiagonally() {
-        List<ChessMoveDto> chessMoveDtos = List.of(
-            new ChessMoveDto(7, 3, 4, 6),
-            new ChessMoveDto(1, 5, 2, 5)
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(1, 2, 2, 2),
+            new ChessMoveDto(7, 4, 3, 1)
         );
 
-        Board board = new Board(chessMoveDtos);
-        board.movePiece(4,6,3,7);
+        Board board = new Board(preInitChessMoveDtoList);
+        board.movePiece(3,1,2,1);
 
-        Piece queen = board.getSquares()[3][7].getPiece();
-        assertThat(queen).isExactlyInstanceOf(Queen.class);
+        Piece whiteQueen = board.getSquares()[2][1].getPiece();
+        Piece blackKing = board.getSquares()[0][3].getPiece();
+
+
+        assertThat(whiteQueen).isExactlyInstanceOf(Queen.class);
+        assertThat(blackKing).isExactlyInstanceOf(King.class);
+
+        List<Piece> allPieces = board.getAllPieces();
+        assertThat(allPieces)
+            .filteredOn(piece -> Objects.equals(piece.getColour(), "black") && !(piece instanceof King))
+            .hasSize(15).allSatisfy(piece -> {
+                assertThat(piece.getLegalMoves()).isEmpty();
+            });
         assertThat(board.getStateOfTheGame()).isSameAs(ChessGameState.CHECKMATE);
+
     }
 
     @Test
     void queenShouldBeAbleToTakeOppositeKingStraight() {
-        board.movePiece(6,4,5,4);
-        board.movePiece(1,4,2,4);
-        board.movePiece(7,3,4,6);
-        board.movePiece(2,4,3,4);
-        board.movePiece(4,6,4,4);
-        board.movePiece(1,0,2,0);
-        board.movePiece(4,4,3,4);
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(1, 3, 2, 2),
+            new ChessMoveDto(7, 4, 4, 2)
+        );
 
-        Piece queen = board.getSquares()[3][4].getPiece();
-        assertThat(queen).isExactlyInstanceOf(Queen.class);
+        Board board = new Board(preInitChessMoveDtoList);
+        board.movePiece(4,2,4,3);
+
+        Piece whiteQueen = board.getSquares()[4][3].getPiece();
+        Piece blackKing = board.getSquares()[0][3].getPiece();
+
+
+        assertThat(whiteQueen).isExactlyInstanceOf(Queen.class);
+        assertThat(blackKing).isExactlyInstanceOf(King.class);
+
+        List<Piece> allPieces = board.getAllPieces();
+        assertThat(allPieces)
+            .filteredOn(piece -> Objects.equals(piece.getColour(), "black") && !(piece instanceof King))
+            .hasSize(15).allSatisfy(piece -> {
+                assertThat(piece.getLegalMoves()).isEmpty();
+            });
         assertThat(board.getStateOfTheGame()).isSameAs(ChessGameState.CHECKMATE);
     }
 
     private boolean findBothQueensByTheirStartingPosition(Piece piece) {
         return
-            (piece.getPieceRow() == 0 && piece.getPieceColumn() == 3) || (piece.getPieceRow() == 7 && piece.getPieceColumn() == 3);
+            (piece.getPieceRow() == 0 && piece.getPieceColumn() == 4) || (piece.getPieceRow() == 7 && piece.getPieceColumn() == 4);
     }
 }

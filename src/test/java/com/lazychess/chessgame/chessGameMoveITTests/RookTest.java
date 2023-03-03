@@ -17,6 +17,7 @@ import com.lazychess.chessgame.chessgame.King;
 import com.lazychess.chessgame.chessgame.Piece;
 import com.lazychess.chessgame.chessgame.Rook;
 import com.lazychess.chessgame.chessgame.Square;
+import com.lazychess.chessgame.dto.ChessMoveDto;
 
 @SpringBootTest
 class RookTest {
@@ -152,98 +153,105 @@ class RookTest {
 
     @Test
     void rookShouldNotBeAbleToPutOwnKingInCheck() {
-        board.movePiece(6,6,5,6);
-        board.movePiece(1,4,3,4);
-        board.movePiece(6,0,4,0);
-        board.movePiece(0,4,1,4);
-        board.movePiece(7,0,5,0);
-        board.movePiece(1,4,2,4);
-        board.movePiece(5,0,5,1);
-        board.movePiece(3,4,4,4);
-        board.movePiece(6,5,5,5);
-        board.movePiece(2,4,3,4);
-        board.movePiece(5,1,4,1);
-        board.movePiece(1,0,3,0);
-        board.movePiece(6,7,5,7);
-        board.movePiece(0,0,2,0);
-        board.movePiece(5,7,4,7);
-        board.movePiece(2,0,2,3);
-        board.movePiece(6,3,5,3);
-        board.movePiece(2,3,3,3);
-        board.movePiece(4,1,3,1);
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(1, 3, 3, 7),
+            new ChessMoveDto(0, 0, 3, 3),
+            new ChessMoveDto(7, 0, 5, 2)
+        );
 
-        Piece whiteRook = board.getSquares()[3][1].getPiece();
+        Board board = new Board(preInitChessMoveDtoList);
+        board.movePiece(5,2,5,3);
+
+        Piece whiteRook = board.getSquares()[5][3].getPiece();
         Piece blackRook = board.getSquares()[3][3].getPiece();
-        Piece blackKing= board.getSquares()[3][4].getPiece();
+        Piece blackKing= board.getSquares()[0][3].getPiece();
 
         assertThat(whiteRook).isExactlyInstanceOf(Rook.class);
         assertThat(blackRook).isExactlyInstanceOf(Rook.class);
         assertThat(blackKing).isExactlyInstanceOf(King.class);
 
         assertThat(blackRook.getLegalMoves())
-            .noneMatch(square -> square.getRow() == 2 && square.getColumn() == 3)
-            .noneMatch(square -> square.getRow() == 4 && square.getColumn() == 3)
-            .noneMatch(square -> square.getRow() == 5 && square.getColumn() == 3);
+            .noneMatch(square -> square.getRow() == 3 && square.getColumn() == 0)
+            .noneMatch(square -> square.getRow() == 3 && square.getColumn() == 1)
+            .noneMatch(square -> square.getRow() == 3 && square.getColumn() == 2)
+            .noneMatch(square -> square.getRow() == 3 && square.getColumn() == 4)
+            .noneMatch(square -> square.getRow() == 3 && square.getColumn() == 5)
+            .noneMatch(square -> square.getRow() == 3 && square.getColumn() == 6)
+            .noneMatch(square -> square.getRow() == 3 && square.getColumn() == 7)
+            .anyMatch(square -> square.getRow() == 2 && square.getColumn() == 3)
+            .anyMatch(square -> square.getRow() == 1 && square.getColumn() == 3)
+            .anyMatch(square -> square.getRow() == 4 && square.getColumn() == 3)
+            .anyMatch(square -> square.getRow() == 5 && square.getColumn() == 3);
     }
 
     @Test
     void rookShouldBeAbleToTakeOppositeKingCheckMate() {
-        board.movePiece(6,7,4,7);
-        board.movePiece(1,4,2,4);
-        board.movePiece(7,7,5,7);
-        board.movePiece(2,4,3,4);
-        board.movePiece(5,7,5,4);
-        board.movePiece(1,0,2,0);
-        board.movePiece(5,4,3,4);
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(1, 3, 3, 7),
+            new ChessMoveDto(7, 0, 5, 2)
+        );
 
-        List<Piece> allPieces = board.getAllPieces();
-        assertThat(allPieces)
-            .filteredOn(piece -> Objects.equals(piece.getColour(), "black") && !(piece instanceof King))
-            .hasSize(14).allSatisfy(piece -> {
-            assertThat(piece.getLegalMoves()).isEmpty();
-        });
+        Board board = new Board(preInitChessMoveDtoList);
+        board.movePiece(5,2,5,3);
 
-        Piece blackKing = board.getSquares()[0][4].getPiece();
-        assertThat(blackKing.getLegalMoves()).isEmpty();
+        Piece whiteRook = board.getSquares()[5][3].getPiece();
+        Piece blackKing= board.getSquares()[0][3].getPiece();
+
+        assertThat(whiteRook).isExactlyInstanceOf(Rook.class);
         assertThat(blackKing).isExactlyInstanceOf(King.class);
 
-        Piece whiteRook = board.getSquares()[3][4].getPiece();
-        assertThat(whiteRook)
-            .isExactlyInstanceOf(Rook.class)
-            .satisfies(piece -> assertThat(Objects.equals(piece.getColour(), "white")).isTrue())
-            .satisfies(piece -> assertThat(piece.getLegalMoves()).anyMatch(square -> square.getRow() == 0 && square.getColumn() == 4));
-        assertThat(board.getStateOfTheGame()).isSameAs(ChessGameState.CHECKMATE);
-    }
-
-
-    @Test
-    void rookShouldBeAbleToTakeOppositeKingNotCheckMate() {
-        board.movePiece(6,7,4,7);
-        board.movePiece(1,4,2,4);
-        board.movePiece(7,7,5,7);
-        board.movePiece(1,5,2,5);
-        board.movePiece(5,7,5,4);
-        board.movePiece(1,0,2,0);
-        board.movePiece(5,4,2,4);
-
         List<Piece> allPieces = board.getAllPieces();
         assertThat(allPieces)
             .filteredOn(piece -> Objects.equals(piece.getColour(), "black") && !(piece instanceof King))
-            .hasSize(14).allSatisfy(piece -> {
+            .hasSize(15).allSatisfy(piece -> {
                 assertThat(piece.getLegalMoves()).isEmpty();
             });
 
-        Piece blackKing = board.getSquares()[0][4].getPiece();
-        assertThat(blackKing.getLegalMoves()).hasSize(1);
-        assertThat(blackKing).isExactlyInstanceOf(King.class);
-
-        Piece whiteRook = board.getSquares()[2][4].getPiece();
         assertThat(whiteRook)
             .isExactlyInstanceOf(Rook.class)
             .satisfies(piece -> assertThat(Objects.equals(piece.getColour(), "white")).isTrue())
-            .satisfies(piece -> assertThat(piece.getLegalMoves()).anyMatch(square -> square.getRow() == 0 && square.getColumn() == 4));
-        assertThat(board.getStateOfTheGame()).isSameAs(ChessGameState.ONGOING);
+            .satisfies(piece -> assertThat(piece.getLegalMoves()).anyMatch(square -> square.getRow() == 0 && square.getColumn() == 3));
 
+        assertThat(blackKing.getLegalMoves()).isEmpty();
+
+        assertThat(board.getStateOfTheGame()).isSameAs(ChessGameState.CHECKMATE);
+    }
+
+    @Test
+    void rookShouldBeAbleToTakeOppositeKingNotCheckMate() {
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(1, 3, 3, 7),
+            new ChessMoveDto(1, 2, 2, 2),
+            new ChessMoveDto(1, 4, 2, 4),
+            new ChessMoveDto(7, 0, 5, 2)
+        );
+
+        Board board = new Board(preInitChessMoveDtoList);
+        board.movePiece(5,2,5,3);
+
+        Piece whiteRook = board.getSquares()[5][3].getPiece();
+        Piece blackKing= board.getSquares()[0][3].getPiece();
+
+        assertThat(whiteRook).isExactlyInstanceOf(Rook.class);
+        assertThat(blackKing).isExactlyInstanceOf(King.class);
+
+        List<Piece> allPieces = board.getAllPieces();
+        assertThat(allPieces)
+            .filteredOn(piece -> Objects.equals(piece.getColour(), "black") && !(piece instanceof King))
+            .hasSize(15).allSatisfy(piece -> {
+                assertThat(piece.getLegalMoves()).isEmpty();
+            });
+
+        assertThat(whiteRook)
+            .isExactlyInstanceOf(Rook.class)
+            .satisfies(piece -> assertThat(Objects.equals(piece.getColour(), "white")).isTrue())
+            .satisfies(piece -> assertThat(piece.getLegalMoves()).anyMatch(square -> square.getRow() == 0 && square.getColumn() == 3));
+
+        assertThat(blackKing.getLegalMoves()).hasSize(2)
+            .anyMatch(square -> square.getRow() == 1 && square.getColumn() == 4)
+            .anyMatch(square -> square.getRow() == 1 && square.getColumn() == 2);
+
+        assertThat(board.getStateOfTheGame()).isSameAs(ChessGameState.ONGOING);
     }
 
     private boolean findAllRooksByTheirStartingPosition(Piece piece) {

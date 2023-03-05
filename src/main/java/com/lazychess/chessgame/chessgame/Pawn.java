@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import com.lazychess.chessgame.config.CustomLegalSquareListMapper;
+
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
@@ -19,7 +21,7 @@ public class Pawn extends Piece {
 
     @Override
     public void generateLegalMoves(Square[][] squares) {
-        List<Square> legalMoves = Arrays.stream(squares).flatMap(Arrays::stream)
+        List<LegalMoveSquare> legalMoves = Arrays.stream(squares).flatMap(Arrays::stream)
             .filter(this::filterSquaresWithSameColourPiece)
             .filter(this::pawnCannotMoveMoreThanOneSquareAlongTheColumns)
             .filter(this::pawnCannotMoveMoreThanTwoSquareAlongTheRow)
@@ -27,6 +29,7 @@ public class Pawn extends Piece {
             .filter(this::pawnCannotMoveMoreThanOneSpaceAfterStartingPosition)
             .filter(this::pawnCannotMoveBack)
             .filter(this::twoFilterCombination)
+            .map(CustomLegalSquareListMapper::fromSquareToLegalMove)
             .toList();
 
         setLegalMoves(legalMoves);
@@ -77,14 +80,14 @@ public class Pawn extends Piece {
         return a || b;
     }
 
-    public List<Square> generateStraightLegalMoves() {
+    public List<LegalMoveSquare> generateStraightLegalMoves() {
         if(legalMoves == null) {
             return List.of();
         }
         return legalMoves.stream().filter(square -> square.getColumn() == getPieceColumn()).toList();
     }
 
-    public List<Square> getDiagonalLegalMovesToPreventTheKingFromGoingIntoCheckMate(Square[][] squares) {
+    public List<LegalMoveSquare> getDiagonalLegalMovesToPreventTheKingFromGoingIntoCheckMate(Square[][] squares) {
         return Arrays.stream(squares).flatMap(Arrays::stream)
             .filter(this::pawnCannotMoveMoreThanOneSquareAlongTheColumns)
             .filter(this::pawnCannotMoveMoreThanTwoSquareAlongTheRow)
@@ -92,6 +95,7 @@ public class Pawn extends Piece {
             .filter(this::pawnCannotMoveMoreThanOneSpaceAfterStartingPosition)
             .filter(this::pawnCannotMoveBack)
             .filter(this::getEmptyLegalDiagonalMoves)
+            .map(CustomLegalSquareListMapper::fromSquareToLegalMove)
             .toList();
     }
 

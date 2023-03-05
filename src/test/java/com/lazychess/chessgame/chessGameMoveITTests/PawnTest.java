@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import com.lazychess.chessgame.chessgame.Bishop;
 import com.lazychess.chessgame.chessgame.Board;
 import com.lazychess.chessgame.chessgame.King;
+import com.lazychess.chessgame.chessgame.LegalMoveSquare;
 import com.lazychess.chessgame.chessgame.Pawn;
 import com.lazychess.chessgame.chessgame.Piece;
 import com.lazychess.chessgame.chessgame.Square;
@@ -32,7 +33,7 @@ class PawnTest {
     void allPawnsShouldHaveTwoLegalMovesAtTheStart() {
         for (int i = 0; i < 8; i++) {
             Piece whitePawn = board.getSquares()[6][i].getPiece();
-            List<Square> legalMovesForWhitePawn = whitePawn.getLegalMoves();
+            List<LegalMoveSquare> legalMovesForWhitePawn = whitePawn.getLegalMoves();
             assertThat(legalMovesForWhitePawn).hasSize(2);
 
             assertThat(legalMovesForWhitePawn).allSatisfy(square -> {
@@ -43,7 +44,7 @@ class PawnTest {
 
         for (int i = 0; i < 8; i++) {
             Piece blackPawn = board.getSquares()[1][i].getPiece();
-            List<Square> legalMovesForBlackPawn = blackPawn.getLegalMoves();
+            List<LegalMoveSquare> legalMovesForBlackPawn = blackPawn.getLegalMoves();
             assertThat(legalMovesForBlackPawn).hasSize(2);
 
             assertThat(legalMovesForBlackPawn).allSatisfy(square -> {
@@ -56,7 +57,7 @@ class PawnTest {
     @Test
     void afterFirstMoveWhitePawnShouldOnlyBeAbleToMoveOneSpaceForward() {
         board.movePiece(6,1,4,1);
-        List<Square> legalMoves = board.getSquares()[4][1].getPiece().getLegalMoves();
+        List<LegalMoveSquare> legalMoves = board.getSquares()[4][1].getPiece().getLegalMoves();
 
         assertThat(legalMoves).hasSize(1);
         assertThat(legalMoves.get(0).getRow()).isEqualTo(3);
@@ -67,7 +68,7 @@ class PawnTest {
     void afterFirstMoveBlackPawnShouldOnlyBeAbleToMoveOneSpace() {
         board.movePiece(6,7,5,7);
         board.movePiece(1,6,2,6);
-        List<Square> legalMoves = board.getSquares()[2][6].getPiece().getLegalMoves();
+        List<LegalMoveSquare> legalMoves = board.getSquares()[2][6].getPiece().getLegalMoves();
 
         assertThat(legalMoves).hasSize(1);
         assertThat(legalMoves.get(0).getRow()).isEqualTo(3);
@@ -78,8 +79,8 @@ class PawnTest {
     void pawnShouldNotBeAbleToTakeAPieceStraight() {
         board.movePiece(6,1,4,1);
         board.movePiece(1,1,3,1);
-        List<Square> legalMovesWhitePawn = board.getSquares()[4][1].getPiece().getLegalMoves();
-        List<Square> legalMovesBlackPawn = board.getSquares()[3][1].getPiece().getLegalMoves();
+        List<LegalMoveSquare> legalMovesWhitePawn = board.getSquares()[4][1].getPiece().getLegalMoves();
+        List<LegalMoveSquare> legalMovesBlackPawn = board.getSquares()[3][1].getPiece().getLegalMoves();
 
         assertThat(legalMovesWhitePawn).isEmpty();
         assertThat(legalMovesBlackPawn).isEmpty();
@@ -90,8 +91,8 @@ class PawnTest {
         board.movePiece(6,2,4,2);
         board.movePiece(1,1,3,1);
 
-        List<Square> legalMovesWhitePawn = board.getSquares()[4][2].getPiece().getLegalMoves();
-        List<Square> legalMovesBlackPawn = board.getSquares()[3][1].getPiece().getLegalMoves();
+        List<LegalMoveSquare> legalMovesWhitePawn = board.getSquares()[4][2].getPiece().getLegalMoves();
+        List<LegalMoveSquare> legalMovesBlackPawn = board.getSquares()[3][1].getPiece().getLegalMoves();
 
         assertThat(legalMovesWhitePawn).hasSize(2);
         assertThat(legalMovesBlackPawn).hasSize(2);
@@ -103,8 +104,8 @@ class PawnTest {
         board.movePiece(1,1,3,1);
         board.movePiece(4,2,3,2);
 
-        List<Square> legalMovesWhitePawn = board.getSquares()[3][2].getPiece().getLegalMoves();
-        List<Square> legalMovesBlackPawn = board.getSquares()[3][1].getPiece().getLegalMoves();
+        List<LegalMoveSquare> legalMovesWhitePawn = board.getSquares()[3][2].getPiece().getLegalMoves();
+        List<LegalMoveSquare> legalMovesBlackPawn = board.getSquares()[3][1].getPiece().getLegalMoves();
 
         assertThat(legalMovesWhitePawn).hasSize(1);
         assertThat(legalMovesBlackPawn).hasSize(1);
@@ -117,8 +118,8 @@ class PawnTest {
         board.movePiece(4,2,3,2);
         board.movePiece(3,1,4,1);
 
-        List<Square> legalMovesWhitePawn = board.getSquares()[3][2].getPiece().getLegalMoves();
-        List<Square> legalMovesBlackPawn = board.getSquares()[4][1].getPiece().getLegalMoves();
+        List<LegalMoveSquare> legalMovesWhitePawn = board.getSquares()[3][2].getPiece().getLegalMoves();
+        List<LegalMoveSquare> legalMovesBlackPawn = board.getSquares()[4][1].getPiece().getLegalMoves();
 
         assertThat(legalMovesWhitePawn).hasSize(1);
         assertThat(legalMovesBlackPawn).hasSize(1);
@@ -149,7 +150,7 @@ class PawnTest {
         board.movePiece(1,7,2,7);
         board.movePiece(6,1,4,1);
 
-        List<Square> legalMovesWhitePawn = board.getSquares()[4][1].getPiece().getLegalMoves();
+        List<LegalMoveSquare> legalMovesWhitePawn = board.getSquares()[4][1].getPiece().getLegalMoves();
 
         assertThat(legalMovesWhitePawn).isEmpty();
     }
@@ -163,7 +164,7 @@ class PawnTest {
         board.movePiece(7,0,4,0);
         board.movePiece(3,1,4,0);
 
-        List<Square> legalMovesWhitePawn = board.getSquares()[4][0].getPiece().getLegalMoves();
+        List<LegalMoveSquare> legalMovesWhitePawn = board.getSquares()[4][0].getPiece().getLegalMoves();
 
 
         assertThat(legalMovesWhitePawn).allSatisfy(square -> {

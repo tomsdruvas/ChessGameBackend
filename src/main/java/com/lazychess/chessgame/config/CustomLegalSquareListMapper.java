@@ -17,6 +17,10 @@ public class CustomLegalSquareListMapper {
         return squares.stream().map(square -> new LegalMoveSquare(square.getRow(), square.getColumn(), removeLegalMovesField(square.getPiece()))).toList();
     }
 
+    public static LegalMoveSquare fromSquareToLegalMove(Square square) {
+        return new LegalMoveSquare(square.getRow(), square.getColumn(), removeLegalMovesField(square.getPiece()));
+    }
+
     private static Piece removeLegalMovesField(Piece piece) {
         Piece clone = SerializationUtils.clone(piece);
         clone.clearLegalMoves();

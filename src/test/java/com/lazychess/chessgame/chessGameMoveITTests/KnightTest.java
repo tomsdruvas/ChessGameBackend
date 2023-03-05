@@ -13,6 +13,7 @@ import com.lazychess.chessgame.chessgame.Bishop;
 import com.lazychess.chessgame.chessgame.Board;
 import com.lazychess.chessgame.chessgame.King;
 import com.lazychess.chessgame.chessgame.Knight;
+import com.lazychess.chessgame.chessgame.LegalMoveSquare;
 import com.lazychess.chessgame.chessgame.Piece;
 import com.lazychess.chessgame.chessgame.Square;
 import com.lazychess.chessgame.dto.ChessMoveDto;
@@ -46,7 +47,7 @@ class KnightTest {
     void shouldHaveFourLegalMovesForKnight1() {
         board.movePiece(6,7,5,7);
         board.movePiece(0,1,2,2);
-        List<Square> legalMoves = board.getSquares()[2][2].getPiece().getLegalMoves();
+        List<LegalMoveSquare> legalMoves = board.getSquares()[2][2].getPiece().getLegalMoves();
         assertThat(legalMoves).hasSize(5)
             .anyMatch(square -> square.getRow() == 0 && square.getColumn() == 1)
             .anyMatch(square -> square.getRow() == 3 && square.getColumn() == 0)
@@ -58,7 +59,7 @@ class KnightTest {
     @Test
     void shouldHaveFourLegalMovesForKnight2() {
         board.movePiece(7,6,5,5);
-        List<Square> legalMoves = board.getSquares()[5][5].getPiece().getLegalMoves();
+        List<LegalMoveSquare> legalMoves = board.getSquares()[5][5].getPiece().getLegalMoves();
         assertThat(legalMoves).hasSize(5)
             .anyMatch(square -> square.getRow() == 7 && square.getColumn() == 6)
             .anyMatch(square -> square.getRow() == 4 && square.getColumn() == 7)
@@ -71,7 +72,7 @@ class KnightTest {
     void shouldHaveFourLegalMovesForKnight3() {
         board.movePiece(6,7,5,7);
         board.movePiece(0,6,2,5);
-        List<Square> legalMoves = board.getSquares()[2][5].getPiece().getLegalMoves();
+        List<LegalMoveSquare> legalMoves = board.getSquares()[2][5].getPiece().getLegalMoves();
         assertThat(legalMoves).hasSize(5)
             .anyMatch(square -> square.getRow() == 0 && square.getColumn() == 6)
             .anyMatch(square -> square.getRow() == 3 && square.getColumn() == 7)
@@ -83,7 +84,7 @@ class KnightTest {
     @Test
     void shouldHaveFourLegalMovesForKnight4() {
         board.movePiece(7,1,5,2);
-        List<Square> legalMoves = board.getSquares()[5][2].getPiece().getLegalMoves();
+        List<LegalMoveSquare> legalMoves = board.getSquares()[5][2].getPiece().getLegalMoves();
         assertThat(legalMoves).hasSize(5)
             .anyMatch(square -> square.getRow() == 7 && square.getColumn() == 1)
             .anyMatch(square -> square.getRow() == 4 && square.getColumn() == 0)
@@ -96,7 +97,7 @@ class KnightTest {
     void shouldHaveThreeLegalMovesForKnight1() {
         board.movePiece(6,7,5,7);
         board.movePiece(0,1,2,0);
-        List<Square> legalMoves = board.getSquares()[2][0].getPiece().getLegalMoves();
+        List<LegalMoveSquare> legalMoves = board.getSquares()[2][0].getPiece().getLegalMoves();
         assertThat(legalMoves).hasSize(3)
             .anyMatch(square -> square.getRow() == 0 && square.getColumn() == 1)
             .anyMatch(square -> square.getRow() == 4 && square.getColumn() == 1)
@@ -108,7 +109,7 @@ class KnightTest {
     void shouldHaveThreeLegalMovesForKnight2() {
         board.movePiece(6,7,5,7);
         board.movePiece(0,6,2,7);
-        List<Square> legalMoves = board.getSquares()[2][7].getPiece().getLegalMoves();
+        List<LegalMoveSquare> legalMoves = board.getSquares()[2][7].getPiece().getLegalMoves();
         assertThat(legalMoves).hasSize(3)
             .anyMatch(square -> square.getRow() == 0 && square.getColumn() == 6)
             .anyMatch(square -> square.getRow() == 4 && square.getColumn() == 6)
@@ -118,7 +119,7 @@ class KnightTest {
     @Test
     void shouldHaveThreeLegalMovesForKnight3() {
         board.movePiece(7,1,5,0);
-        List<Square> legalMoves = board.getSquares()[5][0].getPiece().getLegalMoves();
+        List<LegalMoveSquare> legalMoves = board.getSquares()[5][0].getPiece().getLegalMoves();
         assertThat(legalMoves).hasSize(3)
             .anyMatch(square -> square.getRow() == 7 && square.getColumn() == 1)
             .anyMatch(square -> square.getRow() == 3 && square.getColumn() == 1)
@@ -128,7 +129,7 @@ class KnightTest {
     @Test
     void shouldHaveThreeLegalMovesForKnight4() {
         board.movePiece(7,6,5,7);
-        List<Square> legalMoves = board.getSquares()[5][7].getPiece().getLegalMoves();
+        List<LegalMoveSquare> legalMoves = board.getSquares()[5][7].getPiece().getLegalMoves();
         assertThat(legalMoves).hasSize(3)
             .anyMatch(square -> square.getRow() == 7 && square.getColumn() == 6)
             .anyMatch(square -> square.getRow() == 3 && square.getColumn() == 6)
@@ -142,7 +143,7 @@ class KnightTest {
         board.movePiece(6,3,4,3);
         board.movePiece(2,2,4,3);
 
-        List<Square> legalMoves = board.getSquares()[4][3].getPiece().getLegalMoves();
+        List<LegalMoveSquare> legalMoves = board.getSquares()[4][3].getPiece().getLegalMoves();
         List<Piece> allPieces = board.getAllPieces();
         assertThat(allPieces).hasSize(31);
         assertThat(legalMoves).hasSize(8)

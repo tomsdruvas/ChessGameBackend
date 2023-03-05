@@ -28,4 +28,18 @@ public final class LegalMoveSquare implements Serializable {
     public Piece getPiece() {
         return piece;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof LegalMoveSquare that)) return false;
+
+        if (row != that.row) return false;
+        return column == that.column;
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
 }

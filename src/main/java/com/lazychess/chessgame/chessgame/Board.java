@@ -152,7 +152,7 @@ public class Board {
         checkIfGameIsOnGoing();
 
         Piece pieceToMove = squares[currentRow][currentColumn].getPiece();
-        List<Square> legalMoves = pieceToMove.getLegalMoves();
+        List<LegalMoveSquare> legalMoves = pieceToMove.getLegalMoves();
         String currentPlayersColour = pieceToMove.getColour();
 
         checkIfSourceSquareIsEmpty(pieceToMove);
@@ -166,7 +166,7 @@ public class Board {
             squares[currentRow][currentColumn].setPiece(new EmptyPiece());
             loadPieceLegalMoves(squares);
 
-            List<Square> squaresTheKingIsInDanger = listOfSquaresWhereOppositeKingIsInDanger(currentPlayersColour, squares);
+            List<LegalMoveSquare> squaresTheKingIsInDanger = listOfSquaresWhereOppositeKingIsInDanger(currentPlayersColour, squares);
             setOppositeKingsLegalMovesToPreventCheckMateOnItself(currentPlayersColour);
 
             if (!squaresTheKingIsInDanger.isEmpty()) {
@@ -248,7 +248,7 @@ public class Board {
             }));
     }
 
-    private List<Square> findLegalOwnMovesThatCheckKing(Piece piece, String colour) {
+    private List<LegalMoveSquare> findLegalOwnMovesThatCheckKing(Piece piece, String colour) {
 
         return piece.getLegalMoves().stream().filter(square -> {
 
@@ -263,7 +263,7 @@ public class Board {
             piece.setPieceColumn(square.getColumn());
 
             loadPieceLegalMoves(squares);
-            List<Square> listOfSquaresWhereKingIsInDanger = listOfSquaresWhereOppositeKingIsInDanger(colour, squares);
+            List<LegalMoveSquare> listOfSquaresWhereKingIsInDanger = listOfSquaresWhereOppositeKingIsInDanger(colour, squares);
 
             squares[square.getRow()][square.getColumn()].setPiece(movedOnToPiece);
             squares[clearedSquarePiece.getPieceRow()][clearedSquarePiece.getPieceColumn()].setPiece(clearedSquarePiece);
@@ -276,11 +276,11 @@ public class Board {
             .toList();
     }
 
-    private boolean isMoveLegal(List<Square> legalMoves, int newRow, int newColumn) {
+    private boolean isMoveLegal(List<LegalMoveSquare> legalMoves, int newRow, int newColumn) {
         return legalMoves.stream().anyMatch(square -> square.getRow() == newRow && square.getColumn() == newColumn);
     }
 
-    private List<Square> listOfSquaresWhereOppositeKingIsInDanger(String colour, Square[][] squares) {
+    private List<LegalMoveSquare> listOfSquaresWhereOppositeKingIsInDanger(String colour, Square[][] squares) {
         return Arrays.stream(squares)
             .flatMap(Arrays::stream)
             .filter(square -> square.getPiece().getColour().equals(colour))
@@ -306,21 +306,21 @@ public class Board {
             .filter(square -> square.getPiece() instanceof King)
             .toList().stream().findFirst().orElseThrow().getPiece();
 
-        List<Square> listOfPossibleMovesByNextPlayer = listOfPossibleMovesByNextPlayer(colour);
-        List<Square> pawnStraightMoves = pawnStraightMoves(colour);
-        List<Square> pawnDiagonalLegalMovesWhereKingCannotGo = pawnDiagonalMoves(colour);
+        List<LegalMoveSquare> listOfPossibleMovesByNextPlayer = listOfPossibleMovesByNextPlayer(colour);
+        List<LegalMoveSquare> pawnStraightMoves = pawnStraightMoves(colour);
+        List<LegalMoveSquare> pawnDiagonalLegalMovesWhereKingCannotGo = pawnDiagonalMoves(colour);
 
-        List<Square> listOfPossibleMovesByNextPlayerWithoutPawnStraightMoves = ListUtils.subtract(listOfPossibleMovesByNextPlayer, pawnStraightMoves);
-        List<Square> listOfPossibleMovesByNextPlayerWithoutPawnStraightMovesAndWithPawnDiagonalMoves = ListUtils.union(listOfPossibleMovesByNextPlayerWithoutPawnStraightMoves, pawnDiagonalLegalMovesWhereKingCannotGo);
+        List<LegalMoveSquare> listOfPossibleMovesByNextPlayerWithoutPawnStraightMoves = ListUtils.subtract(listOfPossibleMovesByNextPlayer, pawnStraightMoves);
+        List<LegalMoveSquare> listOfPossibleMovesByNextPlayerWithoutPawnStraightMovesAndWithPawnDiagonalMoves = ListUtils.union(listOfPossibleMovesByNextPlayerWithoutPawnStraightMoves, pawnDiagonalLegalMovesWhereKingCannotGo);
 
-        List<Square> kingLegalMoves = kingPiece.getLegalMoves();
+        List<LegalMoveSquare> kingLegalMoves = kingPiece.getLegalMoves();
 
-        List<Square> kingLegalMovesWithoutDanger = ListUtils.subtract(kingLegalMoves, listOfPossibleMovesByNextPlayerWithoutPawnStraightMovesAndWithPawnDiagonalMoves);
+        List<LegalMoveSquare> kingLegalMovesWithoutDanger = ListUtils.subtract(kingLegalMoves, listOfPossibleMovesByNextPlayerWithoutPawnStraightMovesAndWithPawnDiagonalMoves);
 
         kingPiece.setLegalMoves(kingLegalMovesWithoutDanger);
     }
 
-    private List<Square> listOfPossibleMovesByNextPlayer(String colour) {
+    private List<LegalMoveSquare> listOfPossibleMovesByNextPlayer(String colour) {
         return Arrays.stream(squares)
             .flatMap(Arrays::stream)
             .filter(square -> square.getPiece().getColour().equals(colour))
@@ -329,7 +329,7 @@ public class Board {
             .toList();
     }
 
-    private List<Square> pawnStraightMoves(String colour) {
+    private List<LegalMoveSquare> pawnStraightMoves(String colour) {
         return Arrays.stream(squares)
             .flatMap(Arrays::stream)
             .map(Square::getPiece)
@@ -340,7 +340,7 @@ public class Board {
             .toList();
     }
 
-    private List<Square> pawnDiagonalMoves(String colour) {
+    private List<LegalMoveSquare> pawnDiagonalMoves(String colour) {
         return Arrays.stream(squares)
             .flatMap(Arrays::stream)
             .map(Square::getPiece)

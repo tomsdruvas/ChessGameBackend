@@ -37,7 +37,7 @@ public abstract class Piece implements Serializable {
     private int row;
     private int column;
 
-    protected List<Square> legalMoves;
+    protected List<LegalMoveSquare> legalMoves;
 
     protected Piece(String name, int row, int column, String colour) {
         this.name = name;
@@ -70,12 +70,12 @@ public abstract class Piece implements Serializable {
         this.column = column;
     }
 
-    public List<Square> getLegalMoves() {
+    public List<LegalMoveSquare> getLegalMoves() {
         return legalMoves;
     }
 
     public void removeLegalMove(int row, int column) {
-        ArrayList<Square> squareArrayList = new ArrayList<>(legalMoves);
+        ArrayList<LegalMoveSquare> squareArrayList = new ArrayList<>(legalMoves);
 
         this.legalMoves = squareArrayList.stream()
             .filter(square -> !(square.getRow() == row && square.getColumn() == column))
@@ -85,7 +85,7 @@ public abstract class Piece implements Serializable {
     public void generateLegalMoves(Square[][] squares) {
     }
 
-    public void setLegalMoves(List<Square> legalMoves) {
+    public void setLegalMoves(List<LegalMoveSquare> legalMoves) {
         this.legalMoves = legalMoves;
     }
 

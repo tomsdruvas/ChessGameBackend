@@ -95,7 +95,7 @@ class BoardControllerIntegrationTest {
         MvcResult mvcResult = mockMvc.perform(post("/make-a-move/test-data-id02")
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerOneAccessToken())
-                .content(getMoveJsonRequestBody(6, 5, 4, 5)))
+                .content(getMoveJsonRequestBody(6, 4, 4, 4)))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.Players.PlayerOneUsername").value("test_user1"))
             .andExpect(jsonPath("$.Players.PlayerTwoUsername").value("test_user2"))
@@ -105,15 +105,15 @@ class BoardControllerIntegrationTest {
         Square[][] squaresFromResponseBody = getSquaresFromResponseBody(mvcResult);
 
         assertThat(squaresFromResponseBody).satisfies(squares1 -> {
-            assertThat(squares1[6][5].getPiece()).isExactlyInstanceOf(EmptyPiece.class);
-            assertThat(squares1[4][5].getPiece()).isExactlyInstanceOf(Pawn.class);
+            assertThat(squares1[6][4].getPiece()).isExactlyInstanceOf(EmptyPiece.class);
+            assertThat(squares1[4][4].getPiece()).isExactlyInstanceOf(Pawn.class);
         });
 
-        squaresFromResponseBody[6][5] = null;
-        squaresFromResponseBody[4][5] = null;
+        squaresFromResponseBody[6][4] = null;
+        squaresFromResponseBody[4][4] = null;
         Square[][] squares = new Board().getSquares();
-        squares[6][5] = null;
-        squares[4][5] = null;
+        squares[6][4] = null;
+        squares[4][4] = null;
         assertArrayEquals(squaresFromResponseBody, squares);
     }
 
@@ -123,7 +123,7 @@ class BoardControllerIntegrationTest {
         MvcResult mvcResult = mockMvc.perform(post("/make-a-move/test-data-id02")
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerTwoAccessToken())
-                .content(getMoveJsonRequestBody(1, 4, 2, 4)))
+                .content(getMoveJsonRequestBody(1, 5, 2, 5)))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.Players.PlayerOneUsername").value("test_user1"))
             .andExpect(jsonPath("$.Players.PlayerTwoUsername").value("test_user2"))
@@ -133,21 +133,21 @@ class BoardControllerIntegrationTest {
         Square[][] squaresFromResponseBody = getSquaresFromResponseBody(mvcResult);
 
         assertThat(squaresFromResponseBody).satisfies(squares1 -> {
-            assertThat(squares1[1][4].getPiece()).isExactlyInstanceOf(EmptyPiece.class);
-            assertThat(squares1[2][4].getPiece()).isExactlyInstanceOf(Pawn.class);
+            assertThat(squares1[1][5].getPiece()).isExactlyInstanceOf(EmptyPiece.class);
+            assertThat(squares1[2][5].getPiece()).isExactlyInstanceOf(Pawn.class);
         });
 
-        squaresFromResponseBody[6][5] = null;
-        squaresFromResponseBody[4][5] = null;
+        squaresFromResponseBody[6][4] = null;
+        squaresFromResponseBody[4][4] = null;
 
-        squaresFromResponseBody[1][4] = null;
-        squaresFromResponseBody[2][4] = null;
+        squaresFromResponseBody[1][5] = null;
+        squaresFromResponseBody[2][5] = null;
         Square[][] squares = new Board().getSquares();
-        squares[6][5] = null;
-        squares[4][5] = null;
+        squares[6][4] = null;
+        squares[4][4] = null;
 
-        squares[1][4] = null;
-        squares[2][4] = null;
+        squares[1][5] = null;
+        squares[2][5] = null;
         assertArrayEquals(squaresFromResponseBody, squares);
     }
 
@@ -157,7 +157,7 @@ class BoardControllerIntegrationTest {
         MvcResult mvcResult = mockMvc.perform(post("/make-a-move/test-data-id02")
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerTwoAccessToken())
-                .content(getMoveJsonRequestBody(0, 3, 4, 7)))
+                .content(getMoveJsonRequestBody(0, 4, 3, 7)))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.Players.PlayerOneUsername").value("test_user1"))
             .andExpect(jsonPath("$.Players.PlayerTwoUsername").value("test_user2"))
@@ -166,11 +166,11 @@ class BoardControllerIntegrationTest {
             .andExpect(jsonPath("$.GameState").value("CHECKMATE"))
             .andReturn();
 
-        Square[][] squares = getSquaresFromResponseBody(mvcResult);
+        Square[][] squaresFromResponseBody = getSquaresFromResponseBody(mvcResult);
 
-        assertThat(squares).satisfies(squares1 -> {
-            assertThat(squares1[0][3].getPiece()).isExactlyInstanceOf(EmptyPiece.class);
-            assertThat(squares1[4][7].getPiece()).isExactlyInstanceOf(Queen.class);
+        assertThat(squaresFromResponseBody).satisfies(squares -> {
+            assertThat(squares[0][4].getPiece()).isExactlyInstanceOf(EmptyPiece.class);
+            assertThat(squares[3][7].getPiece()).isExactlyInstanceOf(Queen.class);
         });
     }
 

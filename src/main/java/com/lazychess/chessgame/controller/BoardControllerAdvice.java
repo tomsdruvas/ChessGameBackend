@@ -5,8 +5,12 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,6 +22,8 @@ import com.lazychess.chessgame.json.JsonObjectErrorResponse;
 @Order(HIGHEST_PRECEDENCE)
 public class BoardControllerAdvice {
 
+    private static final Logger logger = LoggerFactory.getLogger(BoardControllerAdvice.class);
+    
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<JsonObjectErrorResponse> invalidChessMove(RuntimeException e) {
@@ -29,6 +35,12 @@ public class BoardControllerAdvice {
     public ResponseEntity<JsonObjectErrorResponse> invalidRequestBody(MethodArgumentNotValidException e) {
         String defaultMessage = Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage();
         return ResponseEntity.badRequest().body(buildJsonObjectErrorResponse(defaultMessage));
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public void handle(HttpMessageNotReadableException e) {
+        logger.warn("Returning HTTP 400 Bad Request", e);
     }
 
     public static JsonObjectErrorResponse buildJsonObjectErrorResponse(String message) {

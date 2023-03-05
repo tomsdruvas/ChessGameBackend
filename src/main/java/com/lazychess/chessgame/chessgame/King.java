@@ -1,6 +1,7 @@
 package com.lazychess.chessgame.chessgame;
 
 import java.util.Arrays;
+import java.util.List;
 
 import lombok.NoArgsConstructor;
 
@@ -16,8 +17,7 @@ public class King extends Piece implements CastlingHasMoved {
 
     @Override
     public void generateLegalMoves(Square[][] squares) {
-
-        legalMoves = Arrays.stream(squares).flatMap(Arrays::stream)
+        List<Square> legalMoves = Arrays.stream(squares).flatMap(Arrays::stream)
             .filter(this::filterSquaresWithSameColourPiece)
             .filter(this::kingLegalMoves)
             .toList();

@@ -19,7 +19,7 @@ public class Pawn extends Piece {
 
     @Override
     public void generateLegalMoves(Square[][] squares) {
-        legalMoves = Arrays.stream(squares).flatMap(Arrays::stream)
+        List<Square> legalMoves = Arrays.stream(squares).flatMap(Arrays::stream)
             .filter(this::filterSquaresWithSameColourPiece)
             .filter(this::pawnCannotMoveMoreThanOneSquareAlongTheColumns)
             .filter(this::pawnCannotMoveMoreThanTwoSquareAlongTheRow)
@@ -28,6 +28,8 @@ public class Pawn extends Piece {
             .filter(this::pawnCannotMoveBack)
             .filter(this::twoFilterCombination)
             .toList();
+
+        setLegalMoves(legalMoves);
     }
 
     private boolean pawnCannotMoveMoreThanOneSquareAlongTheColumns(Square square) {

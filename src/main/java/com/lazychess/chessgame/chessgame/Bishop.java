@@ -3,6 +3,7 @@ package com.lazychess.chessgame.chessgame;
 import static java.util.Arrays.stream;
 
 import java.util.Arrays;
+import java.util.List;
 
 import lombok.NoArgsConstructor;
 
@@ -15,7 +16,7 @@ public class Bishop extends Piece {
 
     @Override
     public void generateLegalMoves(Square[][] squares) {
-        legalMoves = stream(squares)
+        List<Square> legalMoves = stream(squares)
             .flatMap(Arrays::stream)
             .filter(this::rowOrColumnCannotBeTheSame)
             .filter(this::bishopLegalMoves)

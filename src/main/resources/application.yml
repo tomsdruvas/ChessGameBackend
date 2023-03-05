@@ -1,3 +1,4 @@
+
 db:
     host: localhost
     name: chess_db
@@ -27,7 +28,11 @@ systemProp:
         host:
             url: http://localhost:9000
         login: sqa_49f5490be1d64a94186d17797cafcf2a8747b2ff
-
+server:
+    error:
+        include-exception: true
+        include-stacktrace: always
+        include-message: always
 ---
 
 spring:

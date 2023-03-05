@@ -2,7 +2,7 @@ package com.lazychess.chessgame.chessgame;
 
 public interface CastlingHasMoved {
 
-    public boolean getHasMoved();
+    boolean getHasMoved();
 
-    public void hasMoved();
+    void hasMoved();
 }

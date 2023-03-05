@@ -65,8 +65,13 @@ public class BoardFacade {
         BoardDao updatedBoardDao = boardDaoMapper.updateBoardDaoObjectAfterMove(board, boardDao);
         checkIfLastMovePutTheGameInACheckMateState(board, updatedBoardDao, playersUsername);
         changeActivePlayer(updatedBoardDao);
-
+try {
         updatedBoardDao = boardRepository.saveAndFlush(updatedBoardDao);
+
+}catch (Exception e) {
+    throw new RuntimeException();
+}
+
         return updatedBoardDao;
 
     }
@@ -117,7 +122,12 @@ public class BoardFacade {
         int currentColumn = chessMoveDto.currentColumn();
         int newRow = chessMoveDto.newRow();
         int newColumn = chessMoveDto.newColumn();
-        board.movePiece(currentRow, currentColumn, newRow, newColumn);
+        try {
+            board.movePiece(currentRow, currentColumn, newRow, newColumn);
+        }
+        catch (Exception e) {
+            throw new RuntimeException();
+        }
     }
 
     private void changeActivePlayer(BoardDao boardDao) {

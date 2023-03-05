@@ -38,6 +38,7 @@ class CastlingTest {
 
 
         assertThat(allPieceImplementingHasMoved).hasSize(6).allSatisfy(piece -> {
+            assertThat(piece).isInstanceOfAny(King.class, Rook.class);
             assertThat(((CastlingHasMoved)piece).getHasMoved()).isFalse();
         });
     }
@@ -76,13 +77,13 @@ class CastlingTest {
         board.movePiece(7,7,6,7);
         board.movePiece(0,7,1,7);
 
-        List<Piece> allKings = stream(board.getSquares())
+        List<Piece> allRooks = stream(board.getSquares())
             .flatMap(Arrays::stream)
             .map(Square::getPiece)
             .filter(piece -> piece instanceof Rook)
             .toList();
 
-        assertThat(allKings).hasSize(4).allSatisfy(piece -> assertThat(((CastlingHasMoved)piece).getHasMoved()).isTrue());
+        assertThat(allRooks).hasSize(4).allSatisfy(piece -> assertThat(((CastlingHasMoved) piece).getHasMoved()).isTrue());
     }
 
 //    @Test

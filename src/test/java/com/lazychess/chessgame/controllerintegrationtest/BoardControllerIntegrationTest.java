@@ -1,6 +1,7 @@
 package com.lazychess.chessgame.controllerintegrationtest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -35,7 +36,6 @@ import com.lazychess.chessgame.config.SquareListConverter;
 import com.lazychess.chessgame.dto.ChessMoveDto;
 
 import wiremock.com.fasterxml.jackson.core.JsonProcessingException;
-import wiremock.com.fasterxml.jackson.databind.DeserializationFeature;
 import wiremock.com.fasterxml.jackson.databind.ObjectMapper;
 import wiremock.com.fasterxml.jackson.databind.ObjectWriter;
 import wiremock.com.fasterxml.jackson.databind.SerializationFeature;
@@ -69,10 +69,9 @@ class BoardControllerIntegrationTest {
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.Players.PlayerOneUsername").value("test_user1")).andReturn();
 
-        String response = mvcResult.getResponse().getContentAsString();
-        Board board = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).readValue(response, Board.class);
-
-        assertThat(board).usingRecursiveComparison().isEqualTo(new Board());
+        Square[][] squaresFromResponseBody = getSquaresFromResponseBody(mvcResult);
+        Square[][] expected = new Board().getSquares();
+        assertArrayEquals(squaresFromResponseBody, expected);
     }
 
     @Test
@@ -86,8 +85,8 @@ class BoardControllerIntegrationTest {
             .andReturn();
 
         Square[][] squaresFromResponseBody = getSquaresFromResponseBody(mvcResult);
-
-        assertThat(squaresFromResponseBody).isEqualTo(new Board().getSquares());
+        Square[][] expected = new Board().getSquares();
+        assertArrayEquals(squaresFromResponseBody, expected);
     }
 
     @Test
@@ -103,12 +102,19 @@ class BoardControllerIntegrationTest {
             .andExpect(jsonPath("$.Players.ActivePlayerUsername").value("test_user2"))
             .andReturn();
 
-        Square[][] squares = getSquaresFromResponseBody(mvcResult);
+        Square[][] squaresFromResponseBody = getSquaresFromResponseBody(mvcResult);
 
-        assertThat(squares).satisfies(squares1 -> {
+        assertThat(squaresFromResponseBody).satisfies(squares1 -> {
             assertThat(squares1[6][5].getPiece()).isExactlyInstanceOf(EmptyPiece.class);
             assertThat(squares1[4][5].getPiece()).isExactlyInstanceOf(Pawn.class);
         });
+
+        squaresFromResponseBody[6][5] = null;
+        squaresFromResponseBody[4][5] = null;
+        Square[][] squares = new Board().getSquares();
+        squares[6][5] = null;
+        squares[4][5] = null;
+        assertArrayEquals(squaresFromResponseBody, squares);
     }
 
     @Test
@@ -124,17 +130,30 @@ class BoardControllerIntegrationTest {
             .andExpect(jsonPath("$.Players.ActivePlayerUsername").value("test_user1"))
             .andReturn();
 
-        Square[][] squares = getSquaresFromResponseBody(mvcResult);
+        Square[][] squaresFromResponseBody = getSquaresFromResponseBody(mvcResult);
 
-        assertThat(squares).satisfies(squares1 -> {
+        assertThat(squaresFromResponseBody).satisfies(squares1 -> {
             assertThat(squares1[1][4].getPiece()).isExactlyInstanceOf(EmptyPiece.class);
             assertThat(squares1[2][4].getPiece()).isExactlyInstanceOf(Pawn.class);
         });
+
+        squaresFromResponseBody[6][5] = null;
+        squaresFromResponseBody[4][5] = null;
+
+        squaresFromResponseBody[1][4] = null;
+        squaresFromResponseBody[2][4] = null;
+        Square[][] squares = new Board().getSquares();
+        squares[6][5] = null;
+        squares[4][5] = null;
+
+        squares[1][4] = null;
+        squares[2][4] = null;
+        assertArrayEquals(squaresFromResponseBody, squares);
     }
 
     @Test
     @Sql("classpath:sql/movesForPlayerTwoCheckmate.sql")
-    void playerTwoOfTheBoardShouldBeAbleToMakeAMoveAndTherResultShouldBeCheckmate() throws Exception {
+    void playerTwoOfTheBoardShouldBeAbleToMakeAMoveAndTheResultShouldBeCheckmate() throws Exception {
         MvcResult mvcResult = mockMvc.perform(post("/make-a-move/test-data-id02")
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerTwoAccessToken())

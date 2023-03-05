@@ -212,6 +212,26 @@ class QueenTest {
         assertThat(board.getStateOfTheGame()).isSameAs(ChessGameState.CHECKMATE);
     }
 
+    @Test
+    void queenShouldCheckMateKing() {
+        board.movePiece(6,4,4,4);
+        board.movePiece(1,5,2,5);
+        board.movePiece(6,6,5,6);
+        board.movePiece(0,4,3,7);
+        assertThat(board.getStateOfTheGame()).isSameAs(ChessGameState.CHECKMATE);
+    }
+
+    @Test
+    void queenShouldCheckMateKing2() {
+        board.movePiece(6,4,4,4);
+        board.movePiece(1,5,2,5);
+        board.movePiece(6,6,4,6);
+        board.movePiece(0,4,3,7);
+
+    }
+
+
+
     private boolean findBothQueensByTheirStartingPosition(Piece piece) {
         return
             (piece.getPieceRow() == 0 && piece.getPieceColumn() == 4) || (piece.getPieceRow() == 7 && piece.getPieceColumn() == 4);

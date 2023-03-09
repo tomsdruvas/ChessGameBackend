@@ -1,7 +1,12 @@
 package com.lazychess.chessgame.chessgame;
 
+import static com.lazychess.chessgame.config.CustomLegalSquareListMapper.fromSquareToLegalMove;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.apache.commons.collections4.ListUtils;
 
 import com.lazychess.chessgame.config.CustomLegalSquareListMapper;
 
@@ -25,7 +30,9 @@ public class King extends Piece implements CastlingHasMoved {
             .map(CustomLegalSquareListMapper::fromSquareToLegalMove)
             .toList();
 
-        setLegalMoves(legalMoves);
+        List<LegalMoveSquare> castlingMoves = generateCastlingSquares(squares);
+        List<LegalMoveSquare> legalMoveWithCastlingMoves = ListUtils.union(legalMoves, castlingMoves);
+        setLegalMoves(legalMoveWithCastlingMoves);
     }
 
     private boolean kingLegalMoves(Square square) {
@@ -37,11 +44,43 @@ public class King extends Piece implements CastlingHasMoved {
         return a || b || c;
     }
 
+    private List<LegalMoveSquare> generateCastlingSquares(Square[][] squares) {
+        List<LegalMoveSquare> castlingMovesToAdd = new ArrayList<>();
+
+        if(getPieceColumn() == 3) {
+            if (!getHasMoved() && squares[getPieceRow()][getPieceColumn() - 3].getPiece() instanceof CastlingHasMoved rook && !rook.getHasMoved()) {
+                if (squares[getPieceRow()][getPieceColumn() - 1].isEmptySquare() && squares[getPieceRow()][getPieceColumn() - 2].isEmptySquare()) {
+                    LegalMoveSquare legalMoveSquareOnTwoSide = fromSquareToLegalMove(squares[getPieceRow()][getPieceColumn() - 2]);
+                    castlingMovesToAdd.add(legalMoveSquareOnTwoSide);
+                }
+            }
+            if (!getHasMoved() && squares[getPieceRow()][getPieceColumn() + 4].getPiece() instanceof CastlingHasMoved rook && !rook.getHasMoved()) {
+                if (squares[getPieceRow()][getPieceColumn() + 1].isEmptySquare() && squares[getPieceRow()][getPieceColumn() + 2].isEmptySquare() && squares[getPieceRow()][getPieceColumn() + 3].isEmptySquare()) {
+                    LegalMoveSquare legalMoveSquareOnThreeSide = fromSquareToLegalMove(squares[getPieceRow()][getPieceColumn() + 2]);
+                    castlingMovesToAdd.add(legalMoveSquareOnThreeSide);
+                }
+            }
+        }
+        return castlingMovesToAdd;
+    }
+
     public boolean getHasMoved() {
         return hasMoved;
     }
 
     public void hasMoved() {
         this.hasMoved = true;
+    }
+
+    public void removeCastlingMoves() {
+        if(getPieceRow() == 7) {
+            removeLegalMove(7,1);
+            removeLegalMove(7,5);
+        }
+
+        if(getPieceRow() == 0) {
+            removeLegalMove(0,1);
+            removeLegalMove(0,5);
+        }
     }
 }

@@ -39,8 +39,9 @@ public class BoardControllerAdvice {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public void handle(HttpMessageNotReadableException e) {
+    public ResponseEntity<JsonObjectErrorResponse> handleBadRequest(HttpMessageNotReadableException e) {
         logger.warn("Returning HTTP 400 Bad Request", e);
+        return ResponseEntity.badRequest().body(buildJsonObjectErrorResponse(e.getMessage()));
     }
 
     public static JsonObjectErrorResponse buildJsonObjectErrorResponse(String message) {

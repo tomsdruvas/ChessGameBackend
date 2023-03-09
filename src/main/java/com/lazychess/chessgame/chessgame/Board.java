@@ -160,10 +160,12 @@ public class Board {
         checkIfSourceSquareHasCurrentPlayersPieceOnIt(currentRow, currentColumn);
 
         if(isMoveLegal(legalMoves, newRow, newColumn)) {
-            pieceToMove.setPieceColumn(newColumn);
             pieceToMove.setPieceRow(newRow);
+            pieceToMove.setPieceColumn(newColumn);
             squares[newRow][newColumn].setPiece(pieceToMove);
             squares[currentRow][currentColumn].setPiece(new EmptyPiece());
+            ifMoveIsACastlingMoveAlsoMoveRook(pieceToMove, newRow, newColumn);
+
             loadPieceLegalMoves(squares);
 
             List<LegalMoveSquare> squaresTheKingIsInDanger = listOfSquaresWhereOppositeKingIsInDanger(currentPlayersColour, squares);
@@ -171,10 +173,13 @@ public class Board {
 
             if (!squaresTheKingIsInDanger.isEmpty()) {
                 clearLegalMovesOfAllPiecesApartFromKingWhenItIsInDanger(currentPlayersColour);
+                clearCastlingMovesFromKingWhenItIsInDanger(currentPlayersColour);
                 checkIfOppositeKingIsInCheckMate(currentPlayersColour, squares);
             }
             else {
                 removeLegalMovesThatPutKingInDanger(currentPlayersColour);
+//                checkIfCastlingMovesAreAvailable(currentPlayersColour);
+                removeCastlingMovesWhereKingIsGoingThroughACheckOrEndUpInCheck(currentPlayersColour);
             }
 
             setOppositeColourAsCurrentPlayer();
@@ -182,6 +187,85 @@ public class Board {
         }
         else {
             throw new IllegalMoveException("That is not a legal move for a " + pieceToMove.getClass().getSimpleName());
+        }
+    }
+
+    private void checkIfCastlingMovesAreAvailable(String currentPlayersColour) {
+        Arrays.stream(squares).flatMap(Arrays::stream)
+            .filter(square -> square.getPiece() != null)
+            .filter(square -> !square.getPiece().getColour().equals(currentPlayersColour))
+            .filter(square -> square.getPiece() instanceof King)
+            .toList().stream().findFirst().orElseThrow().getPiece().generateLegalMoves(squares);
+    }
+
+    private void ifMoveIsACastlingMoveAlsoMoveRook(Piece pieceToMove, int newRow, int newColumn) {
+        if (pieceToMove instanceof King king && !king.getHasMoved()) {
+            if(pieceToMove.getPieceRow() == 7 && newRow == 7 && newColumn == 1) {
+                moveRookAsPartOfCastling(7,0,7,2);
+            }
+
+            if(pieceToMove.getPieceRow() == 7 && newRow == 7 && newColumn == 5) {
+                moveRookAsPartOfCastling(7,7,7,4);
+            }
+
+            if(pieceToMove.getPieceRow() == 0 && newRow == 0 && newColumn == 1) {
+                moveRookAsPartOfCastling(0,0,0,2);
+            }
+
+            if(pieceToMove.getPieceRow() == 0 && newRow == 0 && newColumn == 5) {
+                moveRookAsPartOfCastling(0,7,0,4);
+            }
+        }
+    }
+
+    private void moveRookAsPartOfCastling(int rookCurrentRow, int rookCurrentColumn, int rookNewRow, int rookNewColumn) {
+        Piece rookToMove = squares[rookCurrentRow][rookCurrentColumn].getPiece();
+        rookToMove.setPieceRow(rookNewRow);
+        rookToMove.setPieceColumn(rookNewColumn);
+        squares[rookNewRow][rookNewColumn].setPiece(rookToMove);
+        squares[rookCurrentRow][rookCurrentColumn].setPiece(new EmptyPiece());
+
+    }
+
+    private void removeCastlingMovesWhereKingIsGoingThroughACheckOrEndUpInCheck(String currentPlayersColour) {
+        Piece oppositePlayersKingPiece = Arrays.stream(squares).flatMap(Arrays::stream)
+            .filter(square -> square.getPiece() != null)
+            .filter(square -> !square.getPiece().getColour().equals(currentPlayersColour))
+            .filter(square -> square.getPiece() instanceof King)
+            .toList().stream().findFirst().orElseThrow().getPiece();
+
+        List<LegalMoveSquare> allCurrentPlayerMoves = Arrays.stream(squares)
+            .flatMap(Arrays::stream)
+            .filter(square -> square.getPiece().getColour().equals(currentPlayersColour))
+            .flatMap(square -> square.getPiece().getLegalMoves().stream())
+            .toList();
+
+        if(oppositePlayersKingPiece.getPieceRow() == 7 && !((King) oppositePlayersKingPiece).getHasMoved()) {
+            boolean castlingWhiteSquare1 = allCurrentPlayerMoves.stream().anyMatch(square -> square.getRow() == 7 && square.getColumn() == 1);
+            boolean castlingWhiteSquare2 = allCurrentPlayerMoves.stream().anyMatch(square -> square.getRow() == 7 && square.getColumn() == 2);
+            if(castlingWhiteSquare1 || castlingWhiteSquare2) {
+                oppositePlayersKingPiece.removeLegalMove(7,1);
+            }
+            boolean castlingWhiteSquare3 = allCurrentPlayerMoves.stream().anyMatch(square -> square.getRow() == 7 && square.getColumn() == 4);
+            boolean castlingWhiteSquare4 = allCurrentPlayerMoves.stream().anyMatch(square -> square.getRow() == 7 && square.getColumn() == 5);
+            if(castlingWhiteSquare3 || castlingWhiteSquare4) {
+                oppositePlayersKingPiece.removeLegalMove(7,5);
+            }
+        }
+
+        if(oppositePlayersKingPiece.getPieceRow() == 0 && !((King) oppositePlayersKingPiece).getHasMoved()) {
+            boolean castlingBlackSquare1 = allCurrentPlayerMoves.stream().anyMatch(square -> square.getRow() == 0 && square.getColumn() == 1);
+            boolean castlingBlackSquare2 = allCurrentPlayerMoves.stream().anyMatch(square -> square.getRow() == 0 && square.getColumn() == 2);
+            if(castlingBlackSquare1 || castlingBlackSquare2) {
+                oppositePlayersKingPiece.removeLegalMove(0,1);
+            }
+
+            boolean castlingBlackSquare3 = allCurrentPlayerMoves.stream().anyMatch(square -> square.getRow() == 0 && square.getColumn() == 4);
+            boolean castlingBlackSquare4 = allCurrentPlayerMoves.stream().anyMatch(square -> square.getRow() == 0 && square.getColumn() == 5);
+
+            if(castlingBlackSquare3 || castlingBlackSquare4) {
+                oppositePlayersKingPiece.removeLegalMove(0,5);
+            }
         }
     }
 
@@ -297,6 +381,14 @@ public class Board {
             .filter(square -> square.getPiece().getLegalMoves() != null)
             .filter(square -> !(square.getPiece() instanceof King))
             .forEach(square -> square.getPiece().clearLegalMoves());
+    }
+
+    private void clearCastlingMovesFromKingWhenItIsInDanger(String colour) {
+        Arrays.stream(squares)
+            .flatMap(Arrays::stream)
+            .filter(square -> !square.getPiece().getColour().equals(colour))
+            .filter(square -> square.getPiece() instanceof King)
+            .forEach(square -> ((King) square.getPiece()).removeCastlingMoves());
     }
 
     private void setOppositeKingsLegalMovesToPreventCheckMateOnItself(String colour) {

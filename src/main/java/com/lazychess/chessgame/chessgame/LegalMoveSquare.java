@@ -42,4 +42,13 @@ public final class LegalMoveSquare implements Serializable {
     public int hashCode() {
         return 0;
     }
+
+    @Override
+    public String toString() {
+        return "LegalMoveSquare{" +
+            "row=" + row +
+            ", column=" + column +
+            ", piece=" + piece +
+            '}';
+    }
 }

@@ -49,6 +49,10 @@ public class Square implements Serializable {
         this.piece = new EmptyPiece();
     }
 
+    public boolean isEmptySquare() {
+        return getPiece().getClass() == EmptyPiece.class;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

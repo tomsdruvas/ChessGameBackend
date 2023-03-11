@@ -4,7 +4,9 @@ import static com.lazychess.chessgame.chessgame.ChessConstants.BLACK;
 import static com.lazychess.chessgame.chessgame.ChessConstants.WHITE;
 import static com.lazychess.chessgame.chessgame.ChessGameState.CHECKMATE;
 import static com.lazychess.chessgame.chessgame.ChessGameState.ONGOING;
+import static com.lazychess.chessgame.config.CustomLegalSquareListMapper.fromSquareToLegalMove;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -178,8 +180,8 @@ public class Board {
             }
             else {
                 removeLegalMovesThatPutKingInDanger(currentPlayersColour);
-//                checkIfCastlingMovesAreAvailable(currentPlayersColour);
                 removeCastlingMovesWhereKingIsGoingThroughACheckOrEndUpInCheck(currentPlayersColour);
+                checkIfEnPassenIsAvailableForNextMove(pieceToMove, currentPlayersColour, currentRow, currentColumn, newRow, newColumn);
             }
 
             setOppositeColourAsCurrentPlayer();
@@ -190,12 +192,45 @@ public class Board {
         }
     }
 
-    private void checkIfCastlingMovesAreAvailable(String currentPlayersColour) {
-        Arrays.stream(squares).flatMap(Arrays::stream)
-            .filter(square -> square.getPiece() != null)
-            .filter(square -> !square.getPiece().getColour().equals(currentPlayersColour))
-            .filter(square -> square.getPiece() instanceof King)
-            .toList().stream().findFirst().orElseThrow().getPiece().generateLegalMoves(squares);
+    private void checkIfEnPassenIsAvailableForNextMove(Piece pieceToMove, String currentPlayersColour, int currentRow, int currentColumn, int newRow, int newColumn) {
+        if (pieceToMove instanceof Pawn && (currentRow == 1 || currentRow == 6)) {
+            if (Math.abs(currentRow - newRow) == 2) {
+                List<Piece> piecesToAddEnPassenMovesTo = findPiecesAvailableForEnPassenMove(newRow, newColumn, currentPlayersColour);
+                if (newRow == 3) {
+                    if (squares[newRow - 1][newColumn].getPiece() instanceof EmptyPiece) {
+                        LegalMoveSquare enPassenSquareToAddToLegalMoves = fromSquareToLegalMove(squares[newRow - 1][newColumn]);
+                        piecesToAddEnPassenMovesTo.forEach(piece -> {
+                            piece.addLegalMove(enPassenSquareToAddToLegalMoves);
+                        });
+                    }
+                } else if (newRow == 4) {
+                    if (squares[newRow + 1][newColumn].getPiece() instanceof EmptyPiece) {
+                        LegalMoveSquare enPassenSquareToAddToLegalMoves = fromSquareToLegalMove(squares[newRow - 1][newColumn]);
+                        piecesToAddEnPassenMovesTo.forEach(piece -> {
+                            piece.addLegalMove(enPassenSquareToAddToLegalMoves);
+                        });
+                    }
+                }
+            }
+        }
+    }
+
+    private List<Piece> findPiecesAvailableForEnPassenMove(int newRow, int newColumn, String currentPlayersColour) {
+        List<Piece> piecesToAddEnPassenMovesTo = new ArrayList<>();
+        if (newColumn == 0) {
+            piecesToAddEnPassenMovesTo.add(squares[newRow][newColumn + 1].getPiece());
+        } else if (newColumn == 7) {
+            piecesToAddEnPassenMovesTo.add(squares[newRow][newColumn - 1].getPiece());
+        } else {
+            piecesToAddEnPassenMovesTo.add(squares[newRow][newColumn + 1].getPiece());
+            piecesToAddEnPassenMovesTo.add(squares[newRow][newColumn - 1].getPiece());
+        }
+
+        return piecesToAddEnPassenMovesTo.stream().filter(piece -> checkIfItIsOppositeColourPawn(piece, currentPlayersColour)).toList();
+    }
+
+    private boolean checkIfItIsOppositeColourPawn(Piece piece, String currentPlayersColour) {
+        return (piece instanceof Pawn && !Objects.equals(piece.getColour(), currentPlayersColour));
     }
 
     private void ifMoveIsACastlingMoveAlsoMoveRook(Piece pieceToMove, int newRow, int newColumn) {

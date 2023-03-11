@@ -130,6 +130,72 @@ class CastlingTest {
     }
 
     @Test
+    void castlingShouldBeAvailableOnBothSides_whenAllCriteriaIsMet_whiteKing_twoSide() {
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(7, 1, 5, 1),
+            new ChessMoveDto(7, 2, 5, 2)
+        );
+        Board board = new Board(preInitChessMoveDtoList);
+        board.movePiece(6,7,5,7);
+
+
+        Piece whiteKing = board.getSquares()[7][3].getPiece();
+
+        assertThat(whiteKing).isExactlyInstanceOf(King.class);
+        assertThat(whiteKing.getLegalMoves())
+            .anyMatch(square -> square.getRow() == 7 && square.getColumn() == 1);
+    }
+
+    @Test
+    void castlingShouldBeAvailableOnBothSides_whenAllCriteriaIsMet_whiteKing_3side() {
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(7, 4, 5, 4),
+            new ChessMoveDto(7, 5, 5, 5),
+            new ChessMoveDto(7, 6, 5, 6)
+        );
+        Board board = new Board(preInitChessMoveDtoList);
+        board.movePiece(6,7,5,7);
+
+
+        Piece whiteKing = board.getSquares()[7][3].getPiece();
+
+        assertThat(whiteKing).isExactlyInstanceOf(King.class);
+        assertThat(whiteKing.getLegalMoves())
+            .anyMatch(square -> square.getRow() == 7 && square.getColumn() == 5);
+    }
+
+    @Test
+    void castlingShouldBeAvailableOnBothSides_whenAllCriteriaIsMet_blackKing_twoSide() {
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(0, 1, 2, 1),
+            new ChessMoveDto(0, 2, 2, 2)
+        );
+        Board board = new Board(preInitChessMoveDtoList);
+
+        Piece whiteKing = board.getSquares()[0][3].getPiece();
+
+        assertThat(whiteKing).isExactlyInstanceOf(King.class);
+        assertThat(whiteKing.getLegalMoves())
+            .anyMatch(square -> square.getRow() == 0 && square.getColumn() == 1);
+    }
+
+    @Test
+    void castlingShouldBeAvailableOnBothSides_whenAllCriteriaIsMet_blackKing_threeSide() {
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(0, 4, 2, 4),
+            new ChessMoveDto(0, 5, 2, 5),
+            new ChessMoveDto(0, 6, 2, 6)
+        );
+        Board board = new Board(preInitChessMoveDtoList);
+
+        Piece whiteKing = board.getSquares()[0][3].getPiece();
+
+        assertThat(whiteKing).isExactlyInstanceOf(King.class);
+        assertThat(whiteKing.getLegalMoves())
+            .anyMatch(square -> square.getRow() == 0 && square.getColumn() == 5);
+    }
+
+    @Test
     void afterMakingCastlingMove_rookAndKingShouldBothMoveInOneGo_white2Side() {
         List<ChessMoveDto> preInitChessMoveDtoList = List.of(
             new ChessMoveDto(7, 1, 5, 1),
@@ -301,8 +367,8 @@ class CastlingTest {
     @Test
     void castlingShouldNotBeAvailable_whenKingWillEndUpInCheck_blackKing_sideWith2Spaces() {
         List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(0, 1, 2, 1),
-            new ChessMoveDto(0, 2, 2, 2),
+            new ChessMoveDto(0, 1, 2, 7),
+            new ChessMoveDto(0, 2, 2, 6),
 
             new ChessMoveDto(1, 1, 3, 6),
             new ChessMoveDto(7, 0, 3, 1)
@@ -334,9 +400,9 @@ class CastlingTest {
     @Test
     void castlingShouldNotBeAvailable_whenKingWillEndUpInCheck_blackKing_sideWith3Spaces() {
         List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(0, 4, 2, 4),
-            new ChessMoveDto(0, 5, 2, 5),
-            new ChessMoveDto(0, 6, 2, 6),
+            new ChessMoveDto(0, 4, 2, 0),
+            new ChessMoveDto(0, 5, 2, 1),
+            new ChessMoveDto(0, 6, 2, 2),
 
             new ChessMoveDto(1, 5, 3, 6),
             new ChessMoveDto(7, 0, 3, 5)
@@ -350,8 +416,8 @@ class CastlingTest {
     @Test
     void castlingShouldNotBeAvailable_whenKingIsGoingThroughCheck_whiteKing_sideWith2Spaces() {
         List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(7, 1, 5, 1),
-            new ChessMoveDto(7, 2, 5, 2),
+            new ChessMoveDto(7, 1, 5, 6),
+            new ChessMoveDto(7, 2, 5, 5),
 
             new ChessMoveDto(6, 2, 4, 6),
             new ChessMoveDto(0, 0, 4, 2)
@@ -366,8 +432,8 @@ class CastlingTest {
     @Test
     void castlingShouldNotBeAvailable_whenKingIsGoingThroughCheck_blackKing_sideWith2Spaces() {
         List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(0, 1, 2, 1),
-            new ChessMoveDto(0, 2, 2, 2),
+            new ChessMoveDto(0, 1, 2, 6),
+            new ChessMoveDto(0, 2, 2, 5),
 
             new ChessMoveDto(1, 2, 3, 6),
             new ChessMoveDto(7, 0, 3, 2)
@@ -381,9 +447,9 @@ class CastlingTest {
     @Test
     void castlingShouldNotBeAvailable_whenKingIsGoingThroughCheck_whiteKing_sideWith3Spaces() {
         List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(7, 4, 5, 4),
-            new ChessMoveDto(7, 5, 5, 5),
-            new ChessMoveDto(7, 6, 5, 6),
+            new ChessMoveDto(7, 4, 5, 0),
+            new ChessMoveDto(7, 5, 5, 1),
+            new ChessMoveDto(7, 6, 5, 2),
 
             new ChessMoveDto(6, 4, 4, 6),
             new ChessMoveDto(0, 0, 4, 4)
@@ -398,9 +464,9 @@ class CastlingTest {
     @Test
     void castlingShouldNotBeAvailable_whenKingIsGoingThroughCheck_blackKing_sideWith3Spaces() {
         List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(0, 4, 2, 4),
-            new ChessMoveDto(0, 5, 2, 5),
-            new ChessMoveDto(0, 6, 2, 6),
+            new ChessMoveDto(0, 4, 2, 0),
+            new ChessMoveDto(0, 5, 2, 1),
+            new ChessMoveDto(0, 6, 2, 2),
 
             new ChessMoveDto(1, 4, 3, 6),
             new ChessMoveDto(7, 0, 3, 4)
@@ -413,6 +479,123 @@ class CastlingTest {
 
     @Test
     void castlingShouldNotBeAvailable_whenRookOrKingHasBeenMoved_andTheyAreInTheirOriginalPosition() {
+    }
+
+    @Test
+    void castlingShouldNotBeAvailable_whenKingWillEndUpInCheck_whiteKing_sideWith2Spaces_andShouldBeAvailableOnOtherSide() {
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(7, 1, 3, 7),
+            new ChessMoveDto(7, 2, 5, 2),
+
+            new ChessMoveDto(6, 1, 4, 6),
+            new ChessMoveDto(0, 0, 4, 1),
+
+            new ChessMoveDto(7, 4, 5, 4),
+            new ChessMoveDto(7, 5, 5, 5),
+            new ChessMoveDto(7, 6, 5, 6)
+        );
+        Board board = new Board(preInitChessMoveDtoList);
+        board.movePiece(6,7,5,7);
+        board.movePiece(1,7,2,7);
+
+        Piece whiteKing = board.getSquares()[7][3].getPiece();
+
+        assertThat(whiteKing).isExactlyInstanceOf(King.class);
+        assertThat(whiteKing.getLegalMoves())
+            .noneMatch(square -> square.getRow() == 7 && square.getColumn() == 1)
+            .anyMatch(square -> square.getRow() == 7 && square.getColumn() == 5);
+    }
+
+    @Test
+    void castlingShouldNotBeAvailable_whenKingWillEndUpInCheck_blackKing_sideWith2Spaces_andShouldBeAvailableOnOtherSide() {
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(0, 1, 3, 7),
+            new ChessMoveDto(0, 2, 3, 6),
+
+            new ChessMoveDto(1, 1, 4, 6),
+            new ChessMoveDto(7, 0, 3, 1),
+
+            new ChessMoveDto(0, 4, 2, 4),
+            new ChessMoveDto(0, 5, 2, 5),
+            new ChessMoveDto(0, 6, 2, 6)
+        );
+        Board board = new Board(preInitChessMoveDtoList);
+        board.movePiece(6,7,5,7);
+
+        Piece blackKing = board.getSquares()[0][3].getPiece();
+
+        assertThat(blackKing).isExactlyInstanceOf(King.class);
+        assertThat(blackKing.getLegalMoves())
+            .noneMatch(square -> square.getRow() == 0 && square.getColumn() == 1)
+            .anyMatch(square -> square.getRow() == 0 && square.getColumn() == 5);
+    }
+
+    @Test
+    void castlingShouldNotBeAvailable_whenKingWillEndUpInCheck_whiteKing_sideWith3Spaces_andShouldBeAvailableOnOtherSide() {
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(7, 4, 5, 4),
+            new ChessMoveDto(7, 5, 5, 5),
+            new ChessMoveDto(7, 6, 5, 6),
+
+            new ChessMoveDto(6, 5, 4, 6),
+            new ChessMoveDto(0, 0, 5, 5),
+
+            new ChessMoveDto(7, 1, 5, 1),
+            new ChessMoveDto(7, 2, 5, 2)
+        );
+        Board board = new Board(preInitChessMoveDtoList);
+        board.movePiece(6,7,5,7);
+        board.movePiece(1,7,2,7);
+
+        Piece whiteKing = board.getSquares()[7][3].getPiece();
+
+        assertThat(whiteKing).isExactlyInstanceOf(King.class);
+        assertThat(whiteKing.getLegalMoves())
+            .anyMatch(square -> square.getRow() == 7 && square.getColumn() == 1)
+            .noneMatch(square -> square.getRow() == 7 && square.getColumn() == 5);
+
+    }
+
+    @Test
+    void castlingShouldNotBeAvailable_whenKingWillEndUpInCheck_blackKing_sideWith3Spaces_andShouldBeAvailableOnOtherSide() {
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(0, 4, 2, 0),
+            new ChessMoveDto(0, 5, 2, 1),
+            new ChessMoveDto(0, 6, 2, 2),
+
+            new ChessMoveDto(1, 5, 3, 6),
+            new ChessMoveDto(7, 0, 3, 5),
+
+            new ChessMoveDto(0, 1, 2, 1),
+            new ChessMoveDto(0, 2, 2, 2)
+        );
+        Board board = new Board(preInitChessMoveDtoList);
+        board.movePiece(6,7,5,7);
+
+        Piece blackKing = board.getSquares()[0][3].getPiece();
+
+        assertThat(blackKing).isExactlyInstanceOf(King.class);
+        assertThat(blackKing.getLegalMoves())
+            .anyMatch(square -> square.getRow() == 0 && square.getColumn() == 1)
+            .noneMatch(square -> square.getRow() == 0 && square.getColumn() == 5);
+    }
+
+    @Test
+    void castlingShouldNotBeAvailable_whenPawnIsInFrontOfRook() {
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(0, 1, 5, 7),
+            new ChessMoveDto(0, 2, 5, 6),
+            new ChessMoveDto(1, 0, 5, 5),
+            new ChessMoveDto(6, 0, 1, 0)
+        );
+        Board board = new Board(preInitChessMoveDtoList);
+        board.movePiece(6,1,5,1);
+
+        Piece blackKing = board.getSquares()[0][3].getPiece();
+
+        assertThat(blackKing).isExactlyInstanceOf(King.class);
+        assertThat(blackKing.getLegalMoves())
+            .noneMatch(square -> square.getRow() == 0 && square.getColumn() == 1);
     }
 
     private static void assertCastlingNotAvailableForWhiteKing(Board board) {
@@ -432,11 +615,4 @@ class CastlingTest {
             .noneMatch(square -> square.getRow() == 0 && square.getColumn() == 1)
             .noneMatch(square -> square.getRow() == 0 && square.getColumn() == 5);
     }
-
-    // add tests where the rooks moves away and then moves back both sides
-    // add tests where the king moves away and then moves back both sides
-    // add tests of the castling move actually happening on all 4 sides and test if the rook moves
-    // check castling with a pawn being able to take the rook
-    // check castling with the pawn being in front of the king
-    // check if knight position is in check can the castle happen - rook can pass through
 }

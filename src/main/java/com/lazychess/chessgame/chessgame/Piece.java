@@ -82,6 +82,13 @@ public abstract class Piece implements Serializable {
             .toList();
     }
 
+    public void addLegalMove(LegalMoveSquare square) {
+        ArrayList<LegalMoveSquare> squareArrayList = new ArrayList<>(legalMoves);
+        squareArrayList.add(square);
+
+        this.legalMoves = squareArrayList;
+    }
+
     public void generateLegalMoves(Square[][] squares) {
     }
 

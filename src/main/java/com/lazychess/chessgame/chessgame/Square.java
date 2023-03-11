@@ -7,6 +7,8 @@ import static com.lazychess.chessgame.chessgame.ChessConstants.WHITE;
 import java.io.Serializable;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
@@ -49,6 +51,7 @@ public class Square implements Serializable {
         this.piece = new EmptyPiece();
     }
 
+    @JsonIgnore
     public boolean isEmptySquare() {
         return getPiece().getClass() == EmptyPiece.class;
     }

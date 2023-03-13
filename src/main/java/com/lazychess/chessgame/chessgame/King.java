@@ -49,13 +49,13 @@ public class King extends Piece implements CastlingHasMoved {
 
         if(getPieceColumn() == 3) {
             if (!getHasMoved() && squares[getPieceRow()][getPieceColumn() - 3].getPiece() instanceof CastlingHasMoved rook && !rook.getHasMoved()) {
-                if (squares[getPieceRow()][getPieceColumn() - 1].isEmptySquare() && squares[getPieceRow()][getPieceColumn() - 2].isEmptySquare()) {
+                if (squares[getPieceRow()][getPieceColumn() - 1].squareEmpty() && squares[getPieceRow()][getPieceColumn() - 2].squareEmpty()) {
                     LegalMoveSquare legalMoveSquareOnTwoSide = fromSquareToLegalMove(squares[getPieceRow()][getPieceColumn() - 2]);
                     castlingMovesToAdd.add(legalMoveSquareOnTwoSide);
                 }
             }
             if (!getHasMoved() && squares[getPieceRow()][getPieceColumn() + 4].getPiece() instanceof CastlingHasMoved rook && !rook.getHasMoved()) {
-                if (squares[getPieceRow()][getPieceColumn() + 1].isEmptySquare() && squares[getPieceRow()][getPieceColumn() + 2].isEmptySquare() && squares[getPieceRow()][getPieceColumn() + 3].isEmptySquare()) {
+                if (squares[getPieceRow()][getPieceColumn() + 1].squareEmpty() && squares[getPieceRow()][getPieceColumn() + 2].squareEmpty() && squares[getPieceRow()][getPieceColumn() + 3].squareEmpty()) {
                     LegalMoveSquare legalMoveSquareOnThreeSide = fromSquareToLegalMove(squares[getPieceRow()][getPieceColumn() + 2]);
                     castlingMovesToAdd.add(legalMoveSquareOnThreeSide);
                 }

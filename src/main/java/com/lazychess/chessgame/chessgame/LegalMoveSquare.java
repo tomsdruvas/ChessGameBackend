@@ -17,6 +17,12 @@ public final class LegalMoveSquare implements Serializable {
         this.piece = piece;
     }
 
+    public LegalMoveSquare(int row, int column) {
+        this.row = row;
+        this.column = column;
+
+    }
+
     public int getRow() {
         return row;
     }

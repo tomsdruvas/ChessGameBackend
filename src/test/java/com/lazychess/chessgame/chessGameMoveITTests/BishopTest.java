@@ -158,8 +158,8 @@ class BishopTest {
 
         List<Piece> allPieces = board.getAllPieces();
         assertThat(allPieces)
-            .filteredOn(piece -> Objects.equals(piece.getColour(), "black") && !(piece instanceof King))
-            .hasSize(15).allSatisfy(piece -> {
+            .filteredOn(piece -> Objects.equals(piece.getColour(), "black") && !(piece instanceof King) && !(Objects.equals(piece.getName(), "Black Pawn6")))
+            .hasSize(14).allSatisfy(piece -> {
                 assertThat(piece.getLegalMoves()).isEmpty();
             });
 
@@ -179,12 +179,16 @@ class BishopTest {
     @Test
     void bishopShouldBeAbleToTakeOppositeKingCheckMate() {
         List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(7, 2, 4, 5),
-            new ChessMoveDto(1, 4, 3, 4)
+            new ChessMoveDto(0, 3, 4, 0),
+            new ChessMoveDto(7, 7, 4, 7),
+            new ChessMoveDto(6, 0, 5, 7),
+            new ChessMoveDto(7, 5, 5, 3),
+            new ChessMoveDto(6, 2, 2, 7),
+            new ChessMoveDto(7, 2, 6, 2)
         );
 
         Board board = new Board(preInitChessMoveDtoList);
-        board.movePiece(4,5,3,6);
+        board.movePiece(6,6,5,6);
 
         List<Piece> allPieces = board.getAllPieces();
         assertThat(allPieces)
@@ -193,18 +197,18 @@ class BishopTest {
                 assertThat(piece.getLegalMoves()).isEmpty();
             });
 
-        Piece blackKing = board.getSquares()[0][3].getPiece();
+        Piece blackKing = board.getSquares()[4][0].getPiece();
         assertThat(blackKing.getLegalMoves()).isEmpty();
         assertThat(blackKing).isExactlyInstanceOf(King.class);
 
-        Piece whiteBishop = board.getSquares()[3][6].getPiece();
+        Piece whiteBishop = board.getSquares()[6][2].getPiece();
         assertThat(whiteBishop)
             .isExactlyInstanceOf(Bishop.class)
             .satisfies(piece -> assertThat(Objects.equals(piece.getColour(), "white")).isTrue())
-            .satisfies(piece -> assertThat(piece.getLegalMoves()).anyMatch(square -> square.getRow() == 0 && square.getColumn() == 3));
+            .satisfies(piece -> assertThat(piece.getLegalMoves()).anyMatch(square -> square.getRow() == 4 && square.getColumn() == 0));
 
         assertThat(board.getStateOfTheGame()).isSameAs(ChessGameState.CHECKMATE);
-        assertThatThrownBy(() -> board.movePiece(0,4,1,5))
+        assertThatThrownBy(() -> board.movePiece(1,4,2,4))
             .hasMessage("The game is not in the ongoing state");
     }
 

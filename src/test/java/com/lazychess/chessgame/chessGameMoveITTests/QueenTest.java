@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.lazychess.chessgame.chessgame.Board;
 import com.lazychess.chessgame.chessgame.ChessGameState;
-import com.lazychess.chessgame.chessgame.King;
 import com.lazychess.chessgame.chessgame.Pawn;
 import com.lazychess.chessgame.chessgame.Piece;
 import com.lazychess.chessgame.chessgame.Queen;
@@ -160,59 +158,6 @@ class QueenTest {
     }
 
     @Test
-    void queenShouldBeAbleToTakeOppositeKingDiagonally() {
-        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(1, 2, 2, 2),
-            new ChessMoveDto(7, 4, 3, 1)
-        );
-
-        Board board = new Board(preInitChessMoveDtoList);
-        board.movePiece(3,1,2,1);
-
-        Piece whiteQueen = board.getSquares()[2][1].getPiece();
-        Piece blackKing = board.getSquares()[0][3].getPiece();
-
-
-        assertThat(whiteQueen).isExactlyInstanceOf(Queen.class);
-        assertThat(blackKing).isExactlyInstanceOf(King.class);
-
-        List<Piece> allPieces = board.getAllPieces();
-        assertThat(allPieces)
-            .filteredOn(piece -> Objects.equals(piece.getColour(), "black") && !(piece instanceof King))
-            .hasSize(15).allSatisfy(piece -> {
-                assertThat(piece.getLegalMoves()).isEmpty();
-            });
-        assertThat(board.getStateOfTheGame()).isSameAs(ChessGameState.CHECKMATE);
-
-    }
-
-    @Test
-    void queenShouldBeAbleToTakeOppositeKingStraight() {
-        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(1, 3, 2, 2),
-            new ChessMoveDto(7, 4, 4, 2)
-        );
-
-        Board board = new Board(preInitChessMoveDtoList);
-        board.movePiece(4,2,4,3);
-
-        Piece whiteQueen = board.getSquares()[4][3].getPiece();
-        Piece blackKing = board.getSquares()[0][3].getPiece();
-
-
-        assertThat(whiteQueen).isExactlyInstanceOf(Queen.class);
-        assertThat(blackKing).isExactlyInstanceOf(King.class);
-
-        List<Piece> allPieces = board.getAllPieces();
-        assertThat(allPieces)
-            .filteredOn(piece -> Objects.equals(piece.getColour(), "black") && !(piece instanceof King))
-            .hasSize(15).allSatisfy(piece -> {
-                assertThat(piece.getLegalMoves()).isEmpty();
-            });
-        assertThat(board.getStateOfTheGame()).isSameAs(ChessGameState.CHECKMATE);
-    }
-
-    @Test
     void queenShouldCheckMateKing() {
         board.movePiece(6,4,4,4);
         board.movePiece(1,5,2,5);
@@ -220,17 +165,6 @@ class QueenTest {
         board.movePiece(0,4,3,7);
         assertThat(board.getStateOfTheGame()).isSameAs(ChessGameState.CHECKMATE);
     }
-
-    @Test
-    void queenShouldCheckMateKing2() {
-        board.movePiece(6,4,4,4);
-        board.movePiece(1,5,2,5);
-        board.movePiece(6,6,4,6);
-        board.movePiece(0,4,3,7);
-
-    }
-
-
 
     private boolean findBothQueensByTheirStartingPosition(Piece piece) {
         return

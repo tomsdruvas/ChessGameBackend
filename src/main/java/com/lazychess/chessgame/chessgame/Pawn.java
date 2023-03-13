@@ -5,15 +5,22 @@ import static com.lazychess.chessgame.chessgame.ChessConstants.EMPTY_PIECE;
 import static com.lazychess.chessgame.chessgame.ChessConstants.WHITE;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
+import org.apache.commons.collections4.ListUtils;
 
 import com.lazychess.chessgame.config.CustomLegalSquareListMapper;
 
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class Pawn extends Piece {
+public class Pawn extends Piece implements EnPassenAvailability{
+
+    private boolean enPassenAvailable = false;
+    private LegalMoveSquare availableEnPassenMove;
+    private LegalMoveSquare enPassenPieceToRemove;
 
     public Pawn(String name, int row, int column, String colour) {
         super(name, row, column, colour);
@@ -32,7 +39,17 @@ public class Pawn extends Piece {
             .map(CustomLegalSquareListMapper::fromSquareToLegalMove)
             .toList();
 
-        setLegalMoves(legalMoves);
+        List<LegalMoveSquare> legalMoveSquaresWithEnPassenMoves = addEnPassenMovesIfItIsAvailable(legalMoves);
+
+        setLegalMoves(legalMoveSquaresWithEnPassenMoves);
+    }
+
+    private List<LegalMoveSquare> addEnPassenMovesIfItIsAvailable(List<LegalMoveSquare> legalMoves) {
+        if (enPassenAvailable) {
+            List<LegalMoveSquare> enPassenMoveToAddList = Collections.singletonList(enPassenMoveToAdd());
+            return ListUtils.union(legalMoves, enPassenMoveToAddList);
+        }
+        return legalMoves;
     }
 
     private boolean pawnCannotMoveMoreThanOneSquareAlongTheColumns(Square square) {
@@ -101,5 +118,41 @@ public class Pawn extends Piece {
 
     private boolean getEmptyLegalDiagonalMoves(Square square) {
         return square.getColumn() != getPieceColumn() && square.getRow() != getPieceRow();
+    }
+
+    @Override
+    public boolean enPassenAvailable() {
+        return enPassenAvailable;
+    }
+
+    @Override
+    public void setEnPassenAvailable() {
+        this.enPassenAvailable = true;
+    }
+
+    @Override
+    public LegalMoveSquare enPassenMoveToAdd() {
+        return availableEnPassenMove;
+    }
+
+    @Override
+    public void setEnPassenMoveToAdd(LegalMoveSquare legalMoveSquare) {
+        this.availableEnPassenMove = legalMoveSquare;
+    }
+
+    @Override
+    public void setEnPassenPieceToRemove(LegalMoveSquare legalMoveSquare) {
+        this.enPassenPieceToRemove = legalMoveSquare;
+    }
+
+    @Override
+    public LegalMoveSquare enPassenPieceToRemove() {
+        return enPassenPieceToRemove;
+    }
+
+    @Override
+    public void clearEnPassen() {
+        this.enPassenAvailable = false;
+        this.availableEnPassenMove = null;
     }
 }

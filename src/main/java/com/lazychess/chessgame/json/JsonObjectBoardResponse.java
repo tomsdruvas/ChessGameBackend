@@ -16,6 +16,7 @@ public class JsonObjectBoardResponse {
     private static final String GAME_STATE_JSON_PROPERTY = "GameState";
     private static final String CURRENT_PLAYER_COLOUR_JSON_PROPERTY = "CurrentPlayerColour";
     private static final String PLAYERS_JSON_PROPERTY = "Players";
+    private static final String PAWN_PROMOTION_PENDING = "PawnPromotionPending";
     private static final String WINNER_JSON_PROPERTY = "WinnerUsername";
 
     private final String boardId;
@@ -23,6 +24,7 @@ public class JsonObjectBoardResponse {
     private final String gameState;
     private final String currentPlayerColour;
     private final JsonObjectPlayersResponseData players;
+    private final boolean pawnPromotionPending;
     private final String winner;
 
     private JsonObjectBoardResponse(Builder builder) {
@@ -31,6 +33,7 @@ public class JsonObjectBoardResponse {
         gameState = builder.gameState;
         currentPlayerColour = builder.currentPlayerColour;
         players = builder.players;
+        pawnPromotionPending = builder.pawnPromotionPending;
         winner = builder.winner;
     }
 
@@ -75,6 +78,11 @@ public class JsonObjectBoardResponse {
         return players;
     }
 
+    @JsonProperty(PAWN_PROMOTION_PENDING)
+    public boolean getPawnPromotionPending() {
+        return pawnPromotionPending;
+    }
+
     @JsonProperty(WINNER_JSON_PROPERTY)
     public String getWinner() {
         return winner;
@@ -87,6 +95,7 @@ public class JsonObjectBoardResponse {
         private String gameState;
         private String currentPlayerColour;
         private JsonObjectPlayersResponseData players;
+        private boolean pawnPromotionPending;
         private String winner;
 
         private Builder() {
@@ -119,6 +128,12 @@ public class JsonObjectBoardResponse {
         @JsonProperty(PLAYERS_JSON_PROPERTY)
         public Builder players(JsonObjectPlayersResponseData val) {
             players = val;
+            return this;
+        }
+
+        @JsonProperty(PAWN_PROMOTION_PENDING)
+        public Builder winner(boolean val) {
+            pawnPromotionPending = val;
             return this;
         }
 

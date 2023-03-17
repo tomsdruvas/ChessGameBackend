@@ -13,6 +13,7 @@ public class BoardDaoMapper {
         boardDao.setSquares(board.getSquares());
         boardDao.setStateOfTheGame(board.getStateOfTheGame());
         boardDao.setCurrentPlayerColour(board.getCurrentPlayerColourState());
+        boardDao.setPawnPromotionPending(board.isPawnPromotionPending());
         return boardDao;
     }
 
@@ -20,6 +21,7 @@ public class BoardDaoMapper {
         boardDao.setSquares(board.getSquares());
         boardDao.setStateOfTheGame(board.getStateOfTheGame());
         boardDao.setCurrentPlayerColour(board.getCurrentPlayerColourState());
+        boardDao.setPawnPromotionPending(board.isPawnPromotionPending());
         return boardDao;
     }
 
@@ -28,6 +30,7 @@ public class BoardDaoMapper {
         board.setSquares(boardDao.getSquares());
         board.setStateOfTheGame(boardDao.getStateOfTheGame());
         board.setCurrentPlayerColourState(boardDao.getCurrentPlayerColour());
+        board.setPawnPromotionPending(boardDao.isPawnPromotionPending());
         return board;
     }
 }

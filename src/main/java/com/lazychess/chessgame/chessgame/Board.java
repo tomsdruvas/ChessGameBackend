@@ -48,6 +48,7 @@ public class Board {
 
     private ChessGameState stateOfTheGame = ONGOING;
     private String currentPlayerColourState = WHITE;
+    private boolean pawnPromotionPending = false;
 
     public Board(List<ChessMoveDto> chessMoveDtoList) {
         this.squares = new Square[8][8];
@@ -146,8 +147,54 @@ public class Board {
         return square1.getPiece();
     }
 
+    public boolean isPawnPromotionPending() {
+        return pawnPromotionPending;
+    }
+
+    public void setPawnPromotionPending(boolean pawnPromotionPending) {
+        this.pawnPromotionPending = pawnPromotionPending;
+    }
+
     public Square[][] getSquares() {
         return squares;
+    }
+
+    public void promoteAPawn(String newChessPieceType) {
+        Square squareWithPawnToPromote = Arrays.stream(squares).flatMap(Arrays::stream)
+            .filter(square -> square.getPiece() != null)
+            .filter(square -> square.getPiece().getColour().equals(currentPlayerColourState))
+            .filter(square -> square.getPiece() instanceof Pawn)
+            .filter(square -> {
+                if (Objects.equals(currentPlayerColourState, WHITE)) {
+                    return square.getPiece().getPieceRow() == 0;
+                } else if (Objects.equals(currentPlayerColourState, BLACK)) {
+                    return square.getPiece().getPieceRow() == 7;
+                }
+                    return false;
+            })
+            .toList().stream().findFirst().orElseThrow();
+
+        String name = squareWithPawnToPromote.getPiece().getName() + "To" + newChessPieceType;
+        int pieceRow = squareWithPawnToPromote.getPiece().getPieceRow();
+        int pieceColumn = squareWithPawnToPromote.getPiece().getPieceColumn();
+        String colour = squareWithPawnToPromote.getPiece().getColour();
+
+        if (Objects.equals(newChessPieceType, "queen")) {
+            Queen queen = new Queen(name, pieceRow, pieceColumn, colour);
+            squareWithPawnToPromote.setPiece(queen);
+        } else if (Objects.equals(newChessPieceType, "rook")) {
+            Rook rook = new Rook(name, pieceRow, pieceColumn, colour);
+            squareWithPawnToPromote.setPiece(rook);
+        } else if (Objects.equals(newChessPieceType, "bishop")) {
+            Bishop bishop = new Bishop(name, pieceRow, pieceColumn, colour);
+            squareWithPawnToPromote.setPiece(bishop);
+        } else if (Objects.equals(newChessPieceType, "knight")) {
+            Knight knight = new Knight(name, pieceRow, pieceColumn, colour);
+            squareWithPawnToPromote.setPiece(knight);
+        }
+        setPawnPromotionPending(false);
+        loadPieceLegalMoves(squares);
+        setOppositeColourAsCurrentPlayer();
     }
 
     public void movePiece(int currentRow, int currentColumn, int newRow, int newColumn) {
@@ -169,6 +216,7 @@ public class Board {
             ifMoveIsACastlingMoveAlsoMoveRook(pieceToMove, newRow, newColumn);
             ifMoveIsAnEnPassenMoveRemovePawn(pieceToMove, newRow, newColumn);
             checkIfEnPassenIsAvailableForNextMove(pieceToMove, currentPlayersColour, currentRow, currentColumn, newRow, newColumn);
+            checkIfPawnPromotionIsAvailable(pieceToMove, newRow, newColumn);
 
             loadPieceLegalMoves(squares);
 
@@ -192,6 +240,14 @@ public class Board {
         }
         else {
             throw new IllegalMoveException("That is not a legal move for a " + pieceToMove.getClass().getSimpleName());
+        }
+    }
+
+    private void checkIfPawnPromotionIsAvailable(Piece pieceToMove, int newRow, int newColumn) {
+        if (pieceToMove instanceof Pawn pawn) {
+            if ((Objects.equals(pawn.getColour(), WHITE) && newRow == 0) || (Objects.equals(pawn.getColour(), BLACK) && newRow == 7)) {
+                setPawnPromotionPending(true);
+            }
         }
     }
 
@@ -342,10 +398,12 @@ public class Board {
     }
 
     private void setOppositeColourAsCurrentPlayer() {
-        if (Objects.equals(getCurrentPlayerColourState(), WHITE)) {
-            setCurrentPlayerColourState(BLACK);
-        } else if (Objects.equals(getCurrentPlayerColourState(), BLACK)) {
-            setCurrentPlayerColourState(WHITE);
+        if (!isPawnPromotionPending()) {
+            if (Objects.equals(getCurrentPlayerColourState(), WHITE)) {
+                setCurrentPlayerColourState(BLACK);
+            } else if (Objects.equals(getCurrentPlayerColourState(), BLACK)) {
+                setCurrentPlayerColourState(WHITE);
+            }
         }
     }
 

@@ -52,6 +52,10 @@ public class BoardDao {
     @Column(name = "cgb_current_player_number", columnDefinition = "jsonb")
     private PlayersDao playersDao;
 
+    @Column(name = "cgb_pawn_promotion_pending")
+    @JsonInclude(Include.NON_NULL)
+    private boolean pawnPromotionPending;
+
     @Column(name = "cgb_winner_user_id")
     @JsonInclude(Include.NON_NULL)
     private String winnerUsername;

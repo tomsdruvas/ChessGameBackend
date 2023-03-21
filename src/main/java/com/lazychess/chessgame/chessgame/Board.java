@@ -19,6 +19,7 @@ import com.lazychess.chessgame.dto.IllegalMovesDto;
 import com.lazychess.chessgame.exception.EmptySourceSquareException;
 import com.lazychess.chessgame.exception.GameIsNotInOnGoingStateException;
 import com.lazychess.chessgame.exception.IllegalMoveException;
+import com.lazychess.chessgame.exception.InvalidChessPieceForPawnPromotionException;
 import com.lazychess.chessgame.exception.NotYourTurnException;
 import com.lazychess.chessgame.exception.WrongColourPieceOnSquareException;
 
@@ -170,7 +171,7 @@ public class Board {
                 } else if (Objects.equals(currentPlayerColourState, BLACK)) {
                     return square.getPiece().getPieceRow() == 7;
                 }
-                    return false;
+                return false;
             })
             .toList().stream().findFirst().orElseThrow();
 
@@ -191,6 +192,8 @@ public class Board {
         } else if (Objects.equals(newChessPieceType, "knight")) {
             Knight knight = new Knight(name, pieceRow, pieceColumn, colour);
             squareWithPawnToPromote.setPiece(knight);
+        } else {
+            throw new InvalidChessPieceForPawnPromotionException(newChessPieceType + " is not a valid chess piece");
         }
         setPawnPromotionPending(false);
         loadPieceLegalMoves(squares);

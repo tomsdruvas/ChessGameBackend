@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.lazychess.chessgame.config.ValidUuid;
 import com.lazychess.chessgame.dto.ChessMoveDto;
+import com.lazychess.chessgame.dto.PawnPromotionDto;
 import com.lazychess.chessgame.factory.ResponseEntityFactory;
 import com.lazychess.chessgame.json.JsonObjectBoardResponse;
 import com.lazychess.chessgame.security.AppUserPrincipal;
@@ -66,6 +67,16 @@ public class BoardController {
         AppUserPrincipal appUserPrincipal = customUserDetailsService.loadUserByUsername(principal.getName());
 
         JsonObjectBoardResponse jsonObjectBoardResponse = boardService.processChessMove(boardGameId, appUserPrincipal.getAppUser().getUsername(), chessMoveDto);
+        return responseEntityFactory.toResponseEntity(jsonObjectBoardResponse);
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(value = "promote-pawn/{boardGameId}")
+    public ResponseEntity<JsonObjectBoardResponse> promotePawn(@PathVariable String boardGameId, @Valid @RequestBody PawnPromotionDto pawnPromotionDto) {
+        Authentication principal = SecurityContextHolder.getContext().getAuthentication();
+        AppUserPrincipal appUserPrincipal = customUserDetailsService.loadUserByUsername(principal.getName());
+
+        JsonObjectBoardResponse jsonObjectBoardResponse = boardService.processPawnPromotion(boardGameId, appUserPrincipal.getAppUser().getUsername(), pawnPromotionDto.upgradedPieceName());
         return responseEntityFactory.toResponseEntity(jsonObjectBoardResponse);
     }
 }

@@ -35,6 +35,11 @@ public class BoardService {
         return buildJsonObjectBoardResponse(boardDao);
     }
 
+    public JsonObjectBoardResponse processPawnPromotion(String boardGameId, String playersUsername, String promotePawnTo) {
+        BoardDao boardDao = boardFacade.persistUpgradedPawn(boardGameId, playersUsername, promotePawnTo);
+        return buildJsonObjectBoardResponse(boardDao);
+    }
+
     public static JsonObjectBoardResponse buildJsonObjectBoardResponse(BoardDao boardDao) {
         return JsonObjectBoardResponse.newBuilder()
             .boardId(boardDao.getId())

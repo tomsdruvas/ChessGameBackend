@@ -10,6 +10,7 @@ import com.lazychess.chessgame.chessgame.ChessGameState;
 import com.lazychess.chessgame.dto.ChessMoveDto;
 import com.lazychess.chessgame.exception.BoardNotFoundException;
 import com.lazychess.chessgame.exception.GameHasFinishedException;
+import com.lazychess.chessgame.exception.PawnPromotionStatusNotPendingException;
 import com.lazychess.chessgame.exception.PlayerAlreadyPartOfGameException;
 import com.lazychess.chessgame.exception.PlayerNotPartOfGameException;
 import com.lazychess.chessgame.exception.PlayerTwoHasNotJoinedException;
@@ -65,15 +66,36 @@ public class BoardFacade {
         BoardDao updatedBoardDao = boardDaoMapper.updateBoardDaoObjectAfterMove(board, boardDao);
         checkIfLastMovePutTheGameInACheckMateState(board, updatedBoardDao, playersUsername);
         changeActivePlayer(updatedBoardDao);
-try {
+
         updatedBoardDao = boardRepository.saveAndFlush(updatedBoardDao);
 
-}catch (Exception e) {
-    throw new RuntimeException();
-}
+        return updatedBoardDao;
+    }
+
+    @Transactional
+    public BoardDao persistUpgradedPawn(String boardGameId, String playersUsername, String promotePawnTo) {
+        BoardDao boardDao = boardRepository.findById(boardGameId).orElseThrow(() -> new BoardNotFoundException("This board does not exist"));
+        checkIfGameIsInACheckMateState(boardDao);
+        checkIfPlayerTwoHasJoined(boardDao);
+        checkIfPlayerIsPartOfThisGame(boardDao, playersUsername);
+        checkIfItIsSubmittingPlayersTurn(boardDao, playersUsername);
+        checkIfPawnPromotionIsPending(boardDao);
+        Board board = boardDaoMapper.fromBoardDaoObject(boardDao);
+        board.promoteAPawn(promotePawnTo);
+        BoardDao updatedBoardDao = boardDaoMapper.updateBoardDaoObjectAfterMove(board, boardDao);
+        checkIfLastMovePutTheGameInACheckMateState(board, updatedBoardDao, playersUsername);
+        changeActivePlayer(updatedBoardDao);
+
+        updatedBoardDao = boardRepository.saveAndFlush(updatedBoardDao);
 
         return updatedBoardDao;
+    }
 
+    private void checkIfPawnPromotionIsPending(BoardDao boardDao) {
+        boolean pawnPromotionStatus = boardDao.isPawnPromotionPending();
+        if(!pawnPromotionStatus) {
+            throw new PawnPromotionStatusNotPendingException("Cannot promote a pawn at this time");
+        }
     }
 
     private void checkIfGameIsInACheckMateState(BoardDao boardDao) {
@@ -122,28 +144,25 @@ try {
         int currentColumn = chessMoveDto.currentColumn();
         int newRow = chessMoveDto.newRow();
         int newColumn = chessMoveDto.newColumn();
-        try {
-            board.movePiece(currentRow, currentColumn, newRow, newColumn);
-        }
-        catch (Exception e) {
-            throw new RuntimeException();
-        }
+
+        board.movePiece(currentRow, currentColumn, newRow, newColumn);
     }
 
     private void changeActivePlayer(BoardDao boardDao) {
-        PlayersDao playersDao = boardDao.getPlayersDao();
-        String playerOneAppUsername = playersDao.getPlayerOneAppUsername();
-        String playerTwoAppUsername= playersDao.getPlayerTwoAppUsername();
-        String activePlayerUsername = playersDao.getActivePlayerUsername();
+        if(!boardDao.isPawnPromotionPending()) {
+            PlayersDao playersDao = boardDao.getPlayersDao();
+            String playerOneAppUsername = playersDao.getPlayerOneAppUsername();
+            String playerTwoAppUsername = playersDao.getPlayerTwoAppUsername();
+            String activePlayerUsername = playersDao.getActivePlayerUsername();
 
-        if(Objects.equals(activePlayerUsername, playerOneAppUsername)) {
-            playersDao.setActivePlayerUsername(playerTwoAppUsername);
-        }
-        else if (Objects.equals(activePlayerUsername, playerTwoAppUsername)) {
-            playersDao.setActivePlayerUsername(playerOneAppUsername);
+            if (Objects.equals(activePlayerUsername, playerOneAppUsername)) {
+                playersDao.setActivePlayerUsername(playerTwoAppUsername);
+            } else if (Objects.equals(activePlayerUsername, playerTwoAppUsername)) {
+                playersDao.setActivePlayerUsername(playerOneAppUsername);
 
+            }
+            boardDao.setPlayersDao(playersDao);
         }
-        boardDao.setPlayersDao(playersDao);
     }
 
     private void checkIfPlayerAlreadyPartOfThisGame(PlayersDao playersDao, String playersUsername) {

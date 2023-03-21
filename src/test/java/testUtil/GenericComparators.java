@@ -1,4 +1,4 @@
-package TestUtil;
+package testUtil;
 
 import java.util.Comparator;
 

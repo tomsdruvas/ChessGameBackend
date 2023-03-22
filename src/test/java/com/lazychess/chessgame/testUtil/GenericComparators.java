@@ -1,4 +1,4 @@
-package testUtil;
+package com.lazychess.chessgame.testUtil;
 
 import java.util.Comparator;
 

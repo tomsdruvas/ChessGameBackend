@@ -1,7 +1,7 @@
 package com.lazychess.chessgame.repository;
 
+import static com.lazychess.chessgame.testUtil.GenericComparators.notNullComparator;
 import static org.assertj.core.api.Assertions.assertThat;
-import static testUtil.GenericComparators.notNullComparator;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package com.lazychess.chessgame.testUtil;
+package testUtil;
 
 import com.lazychess.chessgame.chessgame.Piece;
 
@@ -17,8 +17,9 @@ public class ChessMoveNotion {
     private Class<? extends Piece> pawnPromotionPieceType;
     private int row;
     private int column;
+    private TypeOfMoveEnum typeOfMove;
 
-    public ChessMoveNotion(String pieceColour, Class<? extends Piece> pieceClass, boolean shouldTakePiece, boolean shouldEndInCheck, int pieceLocationColumn, int pieceLocationRow, boolean pawnPromotion, Class<? extends Piece> pawnPromotionPieceType, int row, int column) {
+    public ChessMoveNotion(String pieceColour, Class<? extends Piece> pieceClass, boolean shouldTakePiece, boolean shouldEndInCheck, int pieceLocationColumn, int pieceLocationRow, boolean pawnPromotion, Class<? extends Piece> pawnPromotionPieceType, int row, int column, TypeOfMoveEnum typeOfMove) {
         this.pieceColour = pieceColour;
         this.pieceClass = pieceClass;
         this.shouldTakePiece = shouldTakePiece;
@@ -29,6 +30,15 @@ public class ChessMoveNotion {
         this.pawnPromotionPieceType = pawnPromotionPieceType;
         this.row = row;
         this.column = column;
+        this.typeOfMove = typeOfMove;
+    }
+
+    public TypeOfMoveEnum getTypeOfMove() {
+        return typeOfMove;
+    }
+
+    public void setTypeOfMove(TypeOfMoveEnum typeOfMove) {
+        this.typeOfMove = typeOfMove;
     }
 
     public Class<? extends Piece> getPawnPromotionPieceType() {

@@ -1,0 +1,10 @@
+package testUtil;
+
+public enum TypeOfMoveEnum {
+    BASIC_PAWN_MOVE,
+    BASIC_WITH_PIECE_NAME,
+    CASTLING,
+    PAWN_PROMOTION,
+    PIECE_TO_MOVE_WITH_ROW,
+    PIECE_TO_MOVE_WITH_COLUMN
+}

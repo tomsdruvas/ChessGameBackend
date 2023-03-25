@@ -75,7 +75,7 @@ class PawnPromotionTest {
         Board board = new Board(preInitChessMoveDtos);
         board.movePiece(1, 0, 0, 0);
 
-        board.promoteAPawn("queen");
+        board.promoteAPawn("Queen");
 
         List<Piece> allWhiteQueens = Arrays.stream(board.getSquares())
             .flatMap(Arrays::stream)
@@ -100,7 +100,7 @@ class PawnPromotionTest {
         board.movePiece(6, 7, 5, 7);
         board.movePiece(6, 0, 7, 0);
 
-        board.promoteAPawn("rook");
+        board.promoteAPawn("Rook");
 
         List<Piece> allBlackRooks = Arrays.stream(board.getSquares())
             .flatMap(Arrays::stream)

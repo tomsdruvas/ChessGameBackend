@@ -11,6 +11,7 @@ public class ChessMoveNotion {
     private Class<? extends Piece> pieceClass;
     private boolean shouldTakePiece;
     private boolean shouldEndInCheck;
+    private boolean shouldEndInCheckMate;
     private int pieceLocationColumn;
     private int pieceLocationRow;
     private boolean pawnPromotion;
@@ -18,12 +19,14 @@ public class ChessMoveNotion {
     private int row;
     private int column;
     private TypeOfMoveEnum typeOfMove;
+    private int numberOfMove;
 
-    public ChessMoveNotion(String pieceColour, Class<? extends Piece> pieceClass, boolean shouldTakePiece, boolean shouldEndInCheck, int pieceLocationColumn, int pieceLocationRow, boolean pawnPromotion, Class<? extends Piece> pawnPromotionPieceType, int row, int column, TypeOfMoveEnum typeOfMove) {
+    public ChessMoveNotion(String pieceColour, Class<? extends Piece> pieceClass, boolean shouldTakePiece, boolean shouldEndInCheck, boolean shouldEndInCheckMate, int pieceLocationColumn, int pieceLocationRow, boolean pawnPromotion, Class<? extends Piece> pawnPromotionPieceType, int row, int column, TypeOfMoveEnum typeOfMove, int numberOfMove) {
         this.pieceColour = pieceColour;
         this.pieceClass = pieceClass;
         this.shouldTakePiece = shouldTakePiece;
         this.shouldEndInCheck = shouldEndInCheck;
+        this.shouldEndInCheckMate = shouldEndInCheckMate;
         this.pieceLocationColumn = pieceLocationColumn;
         this.pieceLocationRow = pieceLocationRow;
         this.pawnPromotion = pawnPromotion;
@@ -31,6 +34,23 @@ public class ChessMoveNotion {
         this.row = row;
         this.column = column;
         this.typeOfMove = typeOfMove;
+        this.numberOfMove = numberOfMove;
+    }
+
+    public boolean isShouldEndInCheckMate() {
+        return shouldEndInCheckMate;
+    }
+
+    public void setShouldEndInCheckMate(boolean shouldEndInCheckMate) {
+        this.shouldEndInCheckMate = shouldEndInCheckMate;
+    }
+
+    public int getNumberOfMove() {
+        return numberOfMove;
+    }
+
+    public void setNumberOfMove(int numberOfMove) {
+        this.numberOfMove = numberOfMove;
     }
 
     public TypeOfMoveEnum getTypeOfMove() {
@@ -119,5 +139,23 @@ public class ChessMoveNotion {
 
     public void setColumn(int column) {
         this.column = column;
+    }
+
+    @Override
+    public String toString() {
+        return "ChessMoveNotion{" +
+            "pieceColour='" + pieceColour + '\'' +
+            ", pieceClass=" + pieceClass +
+            ", shouldTakePiece=" + shouldTakePiece +
+            ", shouldEndInCheck=" + shouldEndInCheck +
+            ", pieceLocationColumn=" + pieceLocationColumn +
+            ", pieceLocationRow=" + pieceLocationRow +
+            ", pawnPromotion=" + pawnPromotion +
+            ", pawnPromotionPieceType=" + pawnPromotionPieceType +
+            ", row=" + row +
+            ", column=" + column +
+            ", typeOfMove=" + typeOfMove +
+            ", numberOfMove=" + numberOfMove +
+            '}';
     }
 }

@@ -74,10 +74,11 @@ public class ChessMoveNotationsParser {
 
     private static ChessMoveNotion buildChessMoveNotation(int index, String moveItemAsString) {
         boolean shouldEndInCheck = moveItemAsString.endsWith("+");
+        boolean shouldEndInCheckMate = moveItemAsString.endsWith("#");
         boolean shouldTakePiece = moveItemAsString.contains("x");
 
         String pieceColour = null;
-        Class<? extends Piece> pieceToMoveType = null;
+        Class<? extends Piece> pieceToMoveType;
         int pieceLocationColumn = 9;
         int pieceLocationRow = 9;
         int row = 0;
@@ -87,7 +88,7 @@ public class ChessMoveNotationsParser {
         TypeOfMoveEnum typeOfMove;
 
 
-        if(shouldEndInCheck) {
+        if(shouldEndInCheck || shouldEndInCheckMate) {
             moveItemAsString = StringUtils.chop(moveItemAsString);
         }
 
@@ -110,10 +111,19 @@ public class ChessMoveNotationsParser {
         pawnPromotion = moveItemAsString.contains("=");
 
         if (pawnPromotion) {
-            row = mapRow.get(String.valueOf(moveItemAsString.charAt(1)));
-            column = mapColumn.get(String.valueOf(moveItemAsString.charAt(0)));
-            pawnPromotionPieceType = pieceTypeMap.get(String.valueOf(moveItemAsString.charAt(3)));
-            typeOfMove = TypeOfMoveEnum.PAWN_PROMOTION;
+            if (moveItemAsString.length() == 5) {
+                pieceLocationColumn = mapColumn.get(String.valueOf(moveItemAsString.charAt(0)));
+                column = mapColumn.get(String.valueOf(moveItemAsString.charAt(1)));
+                row = mapRow.get(String.valueOf(moveItemAsString.charAt(2)));
+                pawnPromotionPieceType = pieceTypeMap.get(String.valueOf(moveItemAsString.charAt(4)));
+                typeOfMove = TypeOfMoveEnum.PAWN_PROMOTION_WITH_COLUMN;
+            } else {
+                row = mapRow.get(String.valueOf(moveItemAsString.charAt(1)));
+                column = mapColumn.get(String.valueOf(moveItemAsString.charAt(0)));
+                pawnPromotionPieceType = pieceTypeMap.get(String.valueOf(moveItemAsString.charAt(3)));
+                typeOfMove = TypeOfMoveEnum.PAWN_PROMOTION;
+            }
+            pieceToMoveType = Pawn.class;
 
         } else if (moveItemAsString.equals("O-O")) {
             typeOfMove = TypeOfMoveEnum.CASTLING;
@@ -181,6 +191,8 @@ public class ChessMoveNotationsParser {
             .pawnPromotion(pawnPromotion)
             .pawnPromotionPieceType(pawnPromotionPieceType)
             .typeOfMove(typeOfMove)
+            .numberOfMove(index)
+            .shouldEndInCheckMate(shouldEndInCheckMate)
             .build();
     }
 

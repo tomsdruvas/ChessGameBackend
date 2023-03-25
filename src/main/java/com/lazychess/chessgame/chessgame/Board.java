@@ -4,8 +4,10 @@ import static com.lazychess.chessgame.chessgame.ChessConstants.BLACK;
 import static com.lazychess.chessgame.chessgame.ChessConstants.WHITE;
 import static com.lazychess.chessgame.chessgame.ChessGameState.CHECKMATE;
 import static com.lazychess.chessgame.chessgame.ChessGameState.ONGOING;
+import static com.lazychess.chessgame.chessgame.ChessGameStateService.chessGameStateEvaluator;
 import static com.lazychess.chessgame.config.CustomLegalSquareListMapper.fromSquareToLegalMove;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +25,7 @@ import com.lazychess.chessgame.exception.InvalidChessPieceForPawnPromotionExcept
 import com.lazychess.chessgame.exception.NotYourTurnException;
 import com.lazychess.chessgame.exception.WrongColourPieceOnSquareException;
 
-public class Board {
+public class Board implements Serializable {
 
     private Square[][] squares;
     Piece whiteRook1;
@@ -180,16 +182,16 @@ public class Board {
         int pieceColumn = squareWithPawnToPromote.getPiece().getPieceColumn();
         String colour = squareWithPawnToPromote.getPiece().getColour();
 
-        if (Objects.equals(newChessPieceType, "queen")) {
+        if (Objects.equals(newChessPieceType, "Queen")) {
             Queen queen = new Queen(name, pieceRow, pieceColumn, colour);
             squareWithPawnToPromote.setPiece(queen);
-        } else if (Objects.equals(newChessPieceType, "rook")) {
+        } else if (Objects.equals(newChessPieceType, "Rook")) {
             Rook rook = new Rook(name, pieceRow, pieceColumn, colour);
             squareWithPawnToPromote.setPiece(rook);
-        } else if (Objects.equals(newChessPieceType, "bishop")) {
+        } else if (Objects.equals(newChessPieceType, "Bishop")) {
             Bishop bishop = new Bishop(name, pieceRow, pieceColumn, colour);
             squareWithPawnToPromote.setPiece(bishop);
-        } else if (Objects.equals(newChessPieceType, "knight")) {
+        } else if (Objects.equals(newChessPieceType, "Knight")) {
             Knight knight = new Knight(name, pieceRow, pieceColumn, colour);
             squareWithPawnToPromote.setPiece(knight);
         } else {
@@ -197,6 +199,7 @@ public class Board {
         }
         setPawnPromotionPending(false);
         loadPieceLegalMoves(squares);
+        checkIfOppositeKingIsInCheckMate(currentPlayerColourState, squares);
         setOppositeColourAsCurrentPlayer();
     }
 
@@ -224,7 +227,6 @@ public class Board {
             loadPieceLegalMoves(squares);
 
             List<LegalMoveSquare> squaresTheKingIsInDanger = listOfSquaresWhereOppositeKingIsInDanger(currentPlayersColour, squares);
-            setOppositeKingsLegalMovesToPreventCheckMateOnItself(currentPlayersColour);
 
             if (!squaresTheKingIsInDanger.isEmpty()) {
 //                clearLegalMovesThatDontProtectTheKingOfAllPiecesApartFromKingWhenItIsInDanger(currentPlayersColour);
@@ -237,6 +239,7 @@ public class Board {
                 removeCastlingMovesWhereKingIsGoingThroughACheckOrEndUpInCheck(currentPlayersColour);
             }
 
+            setOppositeKingsLegalMovesToPreventCheckMateOnItself(currentPlayersColour);
             clearEnPassenForAllPawns(currentPlayersColour);
             setOppositeColourAsCurrentPlayer();
             checkIfItIsKingsOrRooksFirstMove(pieceToMove);
@@ -495,7 +498,7 @@ public class Board {
         return Arrays.stream(squares)
             .flatMap(Arrays::stream)
             .filter(square -> square.getPiece().getColour().equals(colour))
-            .filter(square -> square.getPiece().getLegalMoves()!=null)
+            .filter(square -> square.getPiece().getLegalMoves() != null)
             .flatMap(square -> square.getPiece().getLegalMoves().stream())
             .filter(square -> square.getPiece() instanceof King)
             .toList();
@@ -514,7 +517,7 @@ public class Board {
         Arrays.stream(squares)
             .flatMap(Arrays::stream)
             .filter(square -> !square.getPiece().getColour().equals(colour))
-            .filter(square -> square.getPiece() instanceof King)
+            .filter(square -> square.getPiece() instanceof King && !((CastlingHasMoved) square.getPiece()).getHasMoved())
             .forEach(square -> ((King) square.getPiece()).removeCastlingMoves());
     }
 
@@ -598,6 +601,8 @@ public class Board {
             .filter(square -> !square.getPiece().getColour().equals(currentPlayersColour))
             .filter(square -> square.getPiece() instanceof King)
             .toList().stream().findFirst().orElseThrow().getPiece();
+
+        boolean isGameInState = chessGameStateEvaluator(this);
 
         if(kingPiece.getLegalMoves().isEmpty()) {
             setStateOfTheGame(CHECKMATE);

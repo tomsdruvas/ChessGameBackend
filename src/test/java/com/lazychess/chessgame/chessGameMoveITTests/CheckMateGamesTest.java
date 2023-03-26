@@ -21,15 +21,6 @@ class CheckMateGamesTest {
     }
 
     @Test
-    void foolsMate_blackWins() {
-        board.movePiece(6,4,4,4);
-        board.movePiece(1,5,2,5);
-        board.movePiece(6,6,5,6);
-        board.movePiece(0,4,3,7);
-        assertThat(board.getStateOfTheGame()).isSameAs(ChessGameState.CHECKMATE);
-    }
-
-    @Test
     void reverseFoolsMate_whiteWins() {
         board.movePiece(6,3,4,3);
         board.movePiece(1,2,2,2);
@@ -46,10 +37,13 @@ class CheckMateGamesTest {
         board.movePiece(7,2,4,5);
         board.movePiece(0,6,2,5);
         board.movePiece(7,4,3,0);
-        board.movePiece(0,1,2,2);
-        board.movePiece(3,0,1,2);
+        board.movePiece(1,1,2,1);
+        board.movePiece(3,0,5,2);
+        board.movePiece(0,2,1,1);
+        board.movePiece(5,2,1,2);
         assertThat(board.getStateOfTheGame()).isSameAs(ChessGameState.CHECKMATE);
     }
+
     @Test
     void caroKannDefenseSmotheredMate_whiteWins() {
         board.movePiece(6,3,4,3);

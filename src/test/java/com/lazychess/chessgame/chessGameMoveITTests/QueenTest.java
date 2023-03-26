@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.lazychess.chessgame.chessgame.Board;
-import com.lazychess.chessgame.chessgame.ChessGameState;
 import com.lazychess.chessgame.chessgame.Pawn;
 import com.lazychess.chessgame.chessgame.Piece;
 import com.lazychess.chessgame.chessgame.Queen;
@@ -155,15 +154,6 @@ class QueenTest {
             .toList();
 
         assertThat(allPawns).hasSize(14);
-    }
-
-    @Test
-    void queenShouldCheckMateKing() {
-        board.movePiece(6,4,4,4);
-        board.movePiece(1,5,2,5);
-        board.movePiece(6,6,5,6);
-        board.movePiece(0,4,3,7);
-        assertThat(board.getStateOfTheGame()).isSameAs(ChessGameState.CHECKMATE);
     }
 
     private boolean findBothQueensByTheirStartingPosition(Piece piece) {

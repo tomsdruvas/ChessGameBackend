@@ -39,7 +39,8 @@ public class ChessNotationsTest {
 
     private String checkMateGame = "1. Nf3 Nf6 2. c4 e6 3. g3 d5 4. Bg2 Be7 5. d4 O-O 6. Qc2 dxc4 7. Qxc4 a6 8. Qc2 c5 9. dxc5 Qa5+ 10. Bd2 Qxc5 11. Qxc5 Bxc5 12. Ne5 Nbd7 13. Nd3 Bd4 14. Bb4 Re8 15. Nd2 Ne5 16. Nxe5 Bxb2 17. Nd3 Bxa1 18. Nb3 a5 19. Bd2 e5 20. Nxa1 e4 21. Nc5 a4 22. Bg5 Ra5 23. Bxf6 Rxc5 24. Bd4 Rc4 25. e3 Bh3 26. O-O Bf5 27. h3 Rec8 28. g4 Bg6 29. a3 b5 30. Kh2 b4 31. axb4 Rxb4 32. Rd1 h5 33. Kg3 hxg4 34. hxg4 a3 35. Rd2 f6 36. Kf4 Rc1 37. Ra2 Ra4 38. Nc2 Rg1 39. Bxe4 Bxe4 40. Kxe4 Rxg4+ 41. Kf3 f5 42. Rxa3 Rxa3 43. Nxa3 Kf7 44. Nb5 g6 45. Nc3 Rg1 46. Ne2 Rb1 47. Ng3 Rg1 48. Be5 Ke6 49. Bg7 Kf7 50. Bh6 Kf6 51. Kf4 Rg2 52. f3 Rb2 53. e4 fxe4 54. Bg5+ Ke6 55. fxe4 Rf2+ 56. Ke3 Rg2 57. Kf3 Rg1 58. Be3 Rb1 59. Bf4 Rb3+ 60. Kg4 Kf6 61. Nh1 Rb2 62. Bg3 Rb4 63. Nf2 Ra4 64. Bf4 Ra3 65. Nh3 Ra1 66. Bg3 Ra3 67. Kf4 Ra1 68. Bh4+ Ke6 69. Ng5+ Kd6 70. Bg3 Rf1+ 71. Ke3+ Ke7 72. e5 Ra1 73. Bf2 Ra4 74. Kd3 Rf4 75. Be3 Rg4 76. Bc5+ Ke8 77. Ne6 Rh4 78. Nd4 g5 79. e6 Rh6 80. Ke4 g4 81. Ke5 g3 82. Nf5 Rg6 83. Nd6+ Kd8 84. Kf5 Rg8 85. Ne4 g2 86. e7+ Kc7 87. Nf6 Kc6 88. Bg1 Ra8 89. e8=Q+ Rxe8 90. Nxe8 Kd5 91. Nf6+ Kc4 92. Ke4 Kc3 93. Kf3 Kd3 94. Kxg2 Ke2 95. Ne4 Kd3 96. Nd6 Kc3 97. Kf3 Kd3 98. Be3 Kc3 99. Ke2 Kb4 100. Bb6 Kc3 101. Ke3 Kc2 102. Ba5 Kb3 103. Kd3 Ka4 104. Bc3 Kb3 105. Ne4 Ka4 106. Kc4 Ka3 107. Nc5 Ka2 108. Kd3 Kb1 109. Kd2 Ka2 110. Kc2 Ka3 111. Bd2 Ka2 112. Bc1 Ka1 113. Nd3 Ka2 114. Nb4+ Ka1 115. Bb2#";
 
-    private String chessNotationsString = "1. e4 Nf6 2. Nc3 d5 3. e5 d4 4. exf6 dxc3 5. d4 cxb2 6. fxg7 bxa1=Q 7. gxh8=Q Qxa2 8. Nf3 Bf5 9. Ne5 Qa5+ 10. Bd2 Qad5 11. Bc4 Qe4+ 12. Be3 e6 13. O-O Qdh4 14. Bd3 Qd5 15. Bxf5 exf5 16. Re1 Nd7 17. Nf3 Qh5 18. Bg5+ Qe4 19. Qd2 f6 20. Bxf6 Qxe1+ 21. Qxe1+ Kf7 22. Ng5+ Kg6 23. Qg8+";
+    //Casper vs Heckert
+    private String fourQueensByMoves7 = "1. e4 Nf6 2. Nc3 d5 3. e5 d4 4. exf6 dxc3 5. d4 cxb2 6. fxg7 bxa1=Q 7. gxh8=Q Qxa2 8. Nf3 Bf5 9. Ne5 Qa5+ 10. Bd2 Qad5 11. Bc4 Qe4+ 12. Be3 e6 13. O-O Qdh4 14. Bd3 Qd5 15. Bxf5 exf5 16. Re1 Nd7 17. Nf3 Qh5 18. Bg5+ Qe4 19. Qd2 f6 20. Bxf6 Qxe1+ 21. Qxe1+ Kf7 22. Ng5+ Kg6 23. Qg8+";
 
     private String checkMateAndPromotionInOne = "1. e4 e5 2. f4 exf4 3. Nf3 f5 4. e5 d6 5. d4 dxe5 6. Nxe5 Qh4+ 7. g3 fxg3 8. Bg2 gxh2+ 9. Kf1 Nf6 10. Nf3 Qh5 11. Rxh2 Qf7 12. Ne5 Qg8 13. Nc3 c6 14. Bg5 Nbd7 15. Qd3 Nxe5 16. dxe5 Be6 17. Re1 Ne4 18. Nxe4 Bc4 19. Nd6+ Bxd6 20. exd6+ Kd7 21. Re7+ Kc8 22. d7+ Kd8 23. Rf7+ Kc7 24. d8=Q#";
 
@@ -55,7 +56,7 @@ public class ChessNotationsTest {
 
     @Test
     void fourQueensByMove7() {
-        playGameViaChessNotions(chessNotationsString);
+        playGameViaChessNotions(fourQueensByMoves7);
     }
 
     @Test
@@ -95,6 +96,7 @@ public class ChessNotationsTest {
     }
 
     private ChessMoveDto buildMoveWithRowAvailable(ChessMoveNotion chessMoveNotion) {
+        System.out.println(chessMoveNotion);
         List<Square> squares = Arrays.stream(board.getSquares()).flatMap(Arrays::stream)
             .filter(square -> Objects.equals(square.getPiece().getColour(), chessMoveNotion.getPieceColour()) && square.getPiece().getClass() == chessMoveNotion.getPieceClass() && square.getPiece().getPieceRow() == chessMoveNotion.getPieceLocationRow())
             .filter(square -> square.getPiece().getLegalMoves().stream().anyMatch(legalMoveSquare -> legalMoveSquare.getRow() == chessMoveNotion.getRow() && legalMoveSquare.getColumn() == chessMoveNotion.getColumn())).toList();

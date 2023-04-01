@@ -4,6 +4,7 @@ import static com.lazychess.chessgame.chessgame.ChessConstants.BLACK;
 import static com.lazychess.chessgame.chessgame.ChessConstants.WHITE;
 import static com.lazychess.chessgame.chessgame.ChessGameState.CHECKMATE;
 import static com.lazychess.chessgame.chessgame.ChessGameState.ONGOING;
+import static com.lazychess.chessgame.chessgame.ChessGameState.STALEMATE;
 import static com.lazychess.chessgame.config.CustomLegalSquareListMapper.fromSquareToLegalMove;
 
 import java.io.Serializable;
@@ -70,10 +71,8 @@ public class Board implements Serializable {
     public void loadSquares() {
         boolean squareColour = true;
 
-        for(int i=0;i<8;i++)
-        {
-            for(int j=0;j<8;j++)
-            {
+        for(int i=0;i<8;i++) {
+            for(int j=0;j<8;j++) {
                 squares[i][j] = new Square(i,j,squareColour);
                 squareColour = !squareColour;
             }
@@ -92,8 +91,7 @@ public class Board implements Serializable {
         whiteKing = new King("White King",7,3,WHITE);
 
         whitePawn = new Piece[8];
-        for(int i=0;i<8;i++)
-        {
+        for(int i=0;i<8;i++) {
             whitePawn[i] = new Pawn("White Pawn"+(i+1),6 ,i,WHITE);
         }
 
@@ -107,8 +105,7 @@ public class Board implements Serializable {
         blackKing = new King("Black King",0,3,BLACK);
 
         blackPawn = new Piece[8];
-        for(int i=0;i<8;i++)
-        {
+        for(int i=0;i<8;i++) {
             blackPawn[i] = new Pawn("Black Pawn"+(i+1),1,i,BLACK);
         }
 
@@ -121,8 +118,7 @@ public class Board implements Serializable {
         squares[7][6].setPiece(whiteKnight2);
         squares[7][7].setPiece(whiteRook2);
 
-        for(int i=0;i<8;i++)
-        {
+        for(int i=0;i<8;i++) {
             squares[6][i].setPiece(whitePawn[i]);
         }
 
@@ -135,8 +131,7 @@ public class Board implements Serializable {
         squares[0][6].setPiece(blackKnight2);
         squares[0][7].setPiece(blackRook2);
 
-        for(int i=0;i<8;i++)
-        {
+        for(int i=0;i<8;i++) {
             squares[1][i].setPiece(blackPawn[i]);
         }
     }
@@ -199,7 +194,7 @@ public class Board implements Serializable {
         setPawnPromotionPending(false);
         loadPieceLegalMoves(squares);
         removeLegalMovesThatPutKingInDanger(currentPlayerColourState);
-        checkIfOppositeKingIsInCheckMate(currentPlayerColourState, squares);
+        checkIfOppositeKingIsInCheckMateOrPlayerIsInStaleMate(currentPlayerColourState, squares);
         setOppositeColourAsCurrentPlayer();
     }
 
@@ -222,7 +217,7 @@ public class Board implements Serializable {
             ifMoveIsACastlingMoveAlsoMoveRook(pieceToMove, newRow, newColumn);
             ifMoveIsAnEnPassenMoveRemovePawn(pieceToMove, newRow, newColumn);
             checkIfEnPassenIsAvailableForNextMove(pieceToMove, currentPlayersColour, currentRow, currentColumn, newRow, newColumn);
-            checkIfPawnPromotionIsAvailable(pieceToMove, newRow, newColumn);
+            checkIfPawnPromotionIsAvailable(pieceToMove, newRow);
 
             loadPieceLegalMoves(squares);
 
@@ -231,7 +226,7 @@ public class Board implements Serializable {
             if (!squaresTheKingIsInDanger.isEmpty()) {
                 clearLegalMovesThatDontProtectTheKingOfAllPiecesApartFromKingWhenItIsInDanger(currentPlayersColour);
                 clearCastlingMovesFromKingWhenItIsInDanger(currentPlayersColour);
-                checkIfOppositeKingIsInCheckMate(currentPlayersColour, squares);
+                checkIfOppositeKingIsInCheckMateOrPlayerIsInStaleMate(currentPlayersColour, squares);
             }
             else {
                 removeLegalMovesThatPutKingInDanger(currentPlayersColour);
@@ -240,6 +235,7 @@ public class Board implements Serializable {
 
             setOppositeKingsLegalMovesToPreventCheckMateOnItself(currentPlayersColour);
             clearEnPassenForAllPawns(currentPlayersColour);
+            checkIfOppositePlayerIsInStaleMate();
             setOppositeColourAsCurrentPlayer();
             checkIfItIsKingsOrRooksFirstMove(pieceToMove);
         }
@@ -248,7 +244,7 @@ public class Board implements Serializable {
         }
     }
 
-    private void checkIfPawnPromotionIsAvailable(Piece pieceToMove, int newRow, int newColumn) {
+    private void checkIfPawnPromotionIsAvailable(Piece pieceToMove, int newRow) {
         if (pieceToMove instanceof Pawn pawn) {
             if ((Objects.equals(pawn.getColour(), WHITE) && newRow == 0) || (Objects.equals(pawn.getColour(), BLACK) && newRow == 7)) {
                 setPawnPromotionPending(true);
@@ -456,42 +452,46 @@ public class Board implements Serializable {
 
         return piece.getLegalMoves().stream().filter(square -> {
 
-            Board boardClone = SerializationUtils.clone(this);
-            Square[][] squares = boardClone.getSquares();
-            Piece pieceClone = SerializationUtils.clone(piece);
-            Piece enPassenRemovedPiece = null;
-
-            if (pieceClone instanceof Pawn pawn && pawn.enPassenAvailable() && pawn.enPassenMoveToAdd().getRow() == square.getRow() && pawn.enPassenMoveToAdd().getColumn() == square.getColumn()) {
-                enPassenRemovedPiece = SerializationUtils.clone(squares[pawn.enPassenPieceToRemove().getRow()][pawn.enPassenPieceToRemove().getColumn()].getPiece());
-                squares[pawn.enPassenPieceToRemove().getRow()][pawn.enPassenPieceToRemove().getColumn()].clearPiece();
-            }
-
-            int currentPieceRow = pieceClone.getPieceRow();
-            int currentPieceColumn = pieceClone.getPieceColumn();
-            Piece clearedSquarePiece = SerializationUtils.clone(squares[pieceClone.getPieceRow()][pieceClone.getPieceColumn()].getPiece());
-            Piece movedOnToPiece = SerializationUtils.clone(squares[square.getRow()][square.getColumn()].getPiece());
-
-            squares[square.getRow()][square.getColumn()].setPiece(pieceClone);
-            squares[pieceClone.getPieceRow()][pieceClone.getPieceColumn()].clearPiece();
-            pieceClone.setPieceRow(square.getRow());
-            pieceClone.setPieceColumn(square.getColumn());
-
-            boardClone.loadPieceLegalMoves(squares);
-            List<LegalMoveSquare> listOfSquaresWhereKingIsInDanger = listOfSquaresWhereOppositeKingIsInDanger(colour, squares);
-
-            squares[square.getRow()][square.getColumn()].setPiece(movedOnToPiece);
-            squares[clearedSquarePiece.getPieceRow()][clearedSquarePiece.getPieceColumn()].setPiece(clearedSquarePiece);
-            pieceClone.setPieceRow(currentPieceRow);
-            pieceClone.setPieceColumn(currentPieceColumn);
-
-            if (enPassenRemovedPiece != null) {
-                squares[enPassenRemovedPiece.getPieceRow()][enPassenRemovedPiece.getPieceColumn()].setPiece(enPassenRemovedPiece);
-            }
-            boardClone.loadPieceLegalMoves(squares);
+            List<LegalMoveSquare> listOfSquaresWhereKingIsInDanger = simulateAMoveOnTheBoard(piece, colour, square);
 
             return !listOfSquaresWhereKingIsInDanger.isEmpty();
-        })
-            .toList();
+        }).toList();
+    }
+
+    private List<LegalMoveSquare> simulateAMoveOnTheBoard(Piece piece, String colour, LegalMoveSquare square) {
+        Board boardClone = SerializationUtils.clone(this);
+        Square[][] squares = boardClone.getSquares();
+        Piece pieceClone = SerializationUtils.clone(piece);
+        Piece enPassenRemovedPiece = null;
+
+        if (pieceClone instanceof Pawn pawn && pawn.enPassenAvailable() && pawn.enPassenMoveToAdd().getRow() == square.getRow() && pawn.enPassenMoveToAdd().getColumn() == square.getColumn()) {
+            enPassenRemovedPiece = SerializationUtils.clone(squares[pawn.enPassenPieceToRemove().getRow()][pawn.enPassenPieceToRemove().getColumn()].getPiece());
+            squares[pawn.enPassenPieceToRemove().getRow()][pawn.enPassenPieceToRemove().getColumn()].clearPiece();
+        }
+
+        int currentPieceRow = pieceClone.getPieceRow();
+        int currentPieceColumn = pieceClone.getPieceColumn();
+        Piece clearedSquarePiece = SerializationUtils.clone(squares[pieceClone.getPieceRow()][pieceClone.getPieceColumn()].getPiece());
+        Piece movedOnToPiece = SerializationUtils.clone(squares[square.getRow()][square.getColumn()].getPiece());
+
+        squares[square.getRow()][square.getColumn()].setPiece(pieceClone);
+        squares[pieceClone.getPieceRow()][pieceClone.getPieceColumn()].clearPiece();
+        pieceClone.setPieceRow(square.getRow());
+        pieceClone.setPieceColumn(square.getColumn());
+
+        boardClone.loadPieceLegalMoves(squares);
+        List<LegalMoveSquare> listOfSquaresWhereKingIsInDanger = listOfSquaresWhereOppositeKingIsInDanger(colour, squares);
+
+        squares[square.getRow()][square.getColumn()].setPiece(movedOnToPiece);
+        squares[clearedSquarePiece.getPieceRow()][clearedSquarePiece.getPieceColumn()].setPiece(clearedSquarePiece);
+        pieceClone.setPieceRow(currentPieceRow);
+        pieceClone.setPieceColumn(currentPieceColumn);
+
+        if (enPassenRemovedPiece != null) {
+            squares[enPassenRemovedPiece.getPieceRow()][enPassenRemovedPiece.getPieceColumn()].setPiece(enPassenRemovedPiece);
+        }
+        boardClone.loadPieceLegalMoves(squares);
+        return listOfSquaresWhereKingIsInDanger;
     }
 
     private boolean isMoveLegal(List<LegalMoveSquare> legalMoves, int newRow, int newColumn) {
@@ -541,42 +541,10 @@ public class Board implements Serializable {
 
         return piece.getLegalMoves().stream().filter(square -> {
 
-                Board boardClone = SerializationUtils.clone(this);
-                Square[][] squares = boardClone.getSquares();
-                Piece pieceClone = SerializationUtils.clone(piece);
-                Piece enPassenRemovedPiece = null;
+            List<LegalMoveSquare> listOfSquaresWhereKingIsInDanger = simulateAMoveOnTheBoard(piece, colour, square);
 
-                if (pieceClone instanceof Pawn pawn && pawn.enPassenAvailable() && pawn.enPassenMoveToAdd().getRow() == square.getRow() && pawn.enPassenMoveToAdd().getColumn() == square.getColumn()) {
-                    enPassenRemovedPiece = SerializationUtils.clone(squares[pawn.enPassenPieceToRemove().getRow()][pawn.enPassenPieceToRemove().getColumn()].getPiece());
-                    squares[pawn.enPassenPieceToRemove().getRow()][pawn.enPassenPieceToRemove().getColumn()].clearPiece();
-                }
-
-                int currentPieceRow = pieceClone.getPieceRow();
-                int currentPieceColumn = pieceClone.getPieceColumn();
-                Piece clearedSquarePiece = SerializationUtils.clone(squares[pieceClone.getPieceRow()][pieceClone.getPieceColumn()].getPiece());
-                Piece movedOnToPiece = SerializationUtils.clone(squares[square.getRow()][square.getColumn()].getPiece());
-
-                squares[square.getRow()][square.getColumn()].setPiece(pieceClone);
-                squares[pieceClone.getPieceRow()][pieceClone.getPieceColumn()].clearPiece();
-                pieceClone.setPieceRow(square.getRow());
-                pieceClone.setPieceColumn(square.getColumn());
-
-                boardClone.loadPieceLegalMoves(squares);
-                List<LegalMoveSquare> listOfSquaresWhereKingIsInDanger = listOfSquaresWhereOppositeKingIsInDanger(colour, squares);
-
-                squares[square.getRow()][square.getColumn()].setPiece(movedOnToPiece);
-                squares[clearedSquarePiece.getPieceRow()][clearedSquarePiece.getPieceColumn()].setPiece(clearedSquarePiece);
-                pieceClone.setPieceRow(currentPieceRow);
-                pieceClone.setPieceColumn(currentPieceColumn);
-
-                if (enPassenRemovedPiece != null) {
-                    squares[enPassenRemovedPiece.getPieceRow()][enPassenRemovedPiece.getPieceColumn()].setPiece(enPassenRemovedPiece);
-                }
-                boardClone.loadPieceLegalMoves(squares);
-
-                return listOfSquaresWhereKingIsInDanger.isEmpty();
-            })
-            .toList();
+            return listOfSquaresWhereKingIsInDanger.isEmpty();
+            }).toList();
 
     }
 
@@ -671,16 +639,29 @@ public class Board implements Serializable {
         }
     }
 
-    private void checkIfOppositeKingIsInCheckMate(String currentPlayersColour, Square[][] squares) {
+    private void checkIfOppositeKingIsInCheckMateOrPlayerIsInStaleMate(String currentPlayersColour, Square[][] squares) {
         Piece kingPiece = Arrays.stream(squares).flatMap(Arrays::stream)
             .filter(square -> square.getPiece() != null)
             .filter(square -> !square.getPiece().getColour().equals(currentPlayersColour))
             .filter(square -> square.getPiece() instanceof King)
             .toList().stream().findFirst().orElseThrow().getPiece();
 
-        if(kingPiece.getLegalMoves().isEmpty() && listOfPossibleMovesByNextPlayer(currentPlayerColourState).size() == 0) {
-            setStateOfTheGame(CHECKMATE);
+        boolean kingInCheck = listOfPossibleMovesByCurrentPlayer(currentPlayerColourState).stream()
+            .anyMatch(legalMoveSquare -> legalMoveSquare.getPiece() instanceof King);
 
+        if(kingPiece.getLegalMoves().isEmpty() && listOfPossibleMovesByNextPlayer(currentPlayerColourState).isEmpty() && kingInCheck) {
+            setStateOfTheGame(CHECKMATE);
+        } else if (kingPiece.getLegalMoves().isEmpty() && listOfPossibleMovesByNextPlayer(currentPlayerColourState).isEmpty() && !kingInCheck) {
+            setStateOfTheGame(STALEMATE);
+        }
+    }
+
+    private void checkIfOppositePlayerIsInStaleMate() {
+        boolean kingInCheck = listOfPossibleMovesByCurrentPlayer(currentPlayerColourState).stream()
+            .anyMatch(legalMoveSquare -> legalMoveSquare.getPiece() instanceof King);
+
+        if (listOfPossibleMovesByNextPlayer(currentPlayerColourState).isEmpty() && !kingInCheck && getStateOfTheGame() != CHECKMATE) {
+            setStateOfTheGame(STALEMATE);
         }
     }
 

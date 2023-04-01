@@ -202,4 +202,56 @@ class PawnTest {
         assertThat(blackPawn.getLegalMoves())
             .noneMatch(square -> square.getRow() == 2 && square.getColumn() == 4);
     }
+
+    @Test
+    void pawnCannotMoveIfAPieceIsInFrontOfItWhite() {
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(0, 0, 5, 0)
+        );
+        Board board = new Board(preInitChessMoveDtoList);
+        Piece whitePawn = board.getSquares()[6][0].getPiece();
+
+        assertThat(whitePawn).isExactlyInstanceOf(Pawn.class);
+
+        assertThat(whitePawn.getLegalMoves()).isEmpty();
+    }
+
+    @Test
+    void pawnCannotMoveIfAOwnPieceIsInFrontOfItWhite() {
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(7, 1, 5, 0)
+        );
+        Board board = new Board(preInitChessMoveDtoList);
+        Piece whitePawn = board.getSquares()[6][0].getPiece();
+
+        assertThat(whitePawn).isExactlyInstanceOf(Pawn.class);
+
+        assertThat(whitePawn.getLegalMoves()).isEmpty();
+    }
+
+    @Test
+    void pawnCannotMoveIfAPieceIsInFrontOfItBlack() {
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(7, 0, 2, 0)
+        );
+        Board board = new Board(preInitChessMoveDtoList);
+        Piece blackPawn = board.getSquares()[1][0].getPiece();
+
+        assertThat(blackPawn).isExactlyInstanceOf(Pawn.class);
+
+        assertThat(blackPawn.getLegalMoves()).isEmpty();
+    }
+
+    @Test
+    void pawnCannotMoveIfAOwnPieceIsInFrontOfItBlack() {
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(0, 1, 2, 0)
+        );
+        Board board = new Board(preInitChessMoveDtoList);
+        Piece blackPawn = board.getSquares()[1][0].getPiece();
+
+        assertThat(blackPawn).isExactlyInstanceOf(Pawn.class);
+
+        assertThat(blackPawn.getLegalMoves()).isEmpty();
+    }
 }

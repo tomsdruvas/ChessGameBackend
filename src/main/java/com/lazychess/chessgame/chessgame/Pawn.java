@@ -36,6 +36,7 @@ public class Pawn extends Piece implements EnPassenAvailability{
             .filter(this::pawnCannotMoveMoreThanOneSpaceAfterStartingPosition)
             .filter(this::pawnCannotMoveBack)
             .filter(this::twoFilterCombination)
+            .filter(square -> pawnCannotMoveTwoSquaresOnAStraightLineWhenBlockedByAnotherPiece(square, squares))
             .map(CustomLegalSquareListMapper::fromSquareToLegalMove)
             .toList();
 
@@ -118,6 +119,23 @@ public class Pawn extends Piece implements EnPassenAvailability{
 
     private boolean getEmptyLegalDiagonalMoves(Square square) {
         return square.getColumn() != getPieceColumn() && square.getRow() != getPieceRow();
+    }
+
+    private boolean pawnCannotMoveTwoSquaresOnAStraightLineWhenBlockedByAnotherPiece(Square square, Square[][] squares) {
+        if(getPieceRow() == 6 && Objects.equals(getColour(), "white")) {
+            if(square.getColumn() == getPieceColumn()) {
+                if(square.getRow() == 4) {
+                    return squares[5][getPieceColumn()].getPiece().getClass() == EmptyPiece.class;
+                }
+            }
+        } else if (getPieceRow() == 1 && Objects.equals(getColour(), "black")) {
+            if(square.getColumn() == getPieceColumn()) {
+                if(square.getRow() == 3) {
+                    return squares[2][getPieceColumn()].getPiece().getClass() == EmptyPiece.class;
+                }
+            }
+        }
+        return true;
     }
 
     @Override

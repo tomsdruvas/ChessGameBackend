@@ -24,7 +24,7 @@ import testUtil.ChessMoveNotion;
 import testUtil.TypeOfMoveEnum;
 
 @SpringBootTest
-public class ChessNotationsTest {
+class ChessNotationsTest {
 
     private Board board;
 
@@ -44,6 +44,28 @@ public class ChessNotationsTest {
 
     private String checkMateAndPromotionInOne = "1. e4 e5 2. f4 exf4 3. Nf3 f5 4. e5 d6 5. d4 dxe5 6. Nxe5 Qh4+ 7. g3 fxg3 8. Bg2 gxh2+ 9. Kf1 Nf6 10. Nf3 Qh5 11. Rxh2 Qf7 12. Ne5 Qg8 13. Nc3 c6 14. Bg5 Nbd7 15. Qd3 Nxe5 16. dxe5 Be6 17. Re1 Ne4 18. Nxe4 Bc4 19. Nd6+ Bxd6 20. exd6+ Kd7 21. Re7+ Kc8 22. d7+ Kd8 23. Rf7+ Kc7 24. d8=Q#";
 
+    //Alfonso Romero Holmes vs Boris Kantsler
+    private String alfonsoVsBoris = "1. e4 g6 2. Nc3 Bg7 3. h4 h5 4. d4 c6 5. Bc4 d5 6. exd5 b5 7. Bd3 b4 8. Ne4 cxd5 9. Ng5 Nc6 10. N1f3 Bg4 11. c3 Qa5 12. Bd2 Nh6 13. O-O O-O 14. Re1 e6 15. Qc1 bxc3 16. bxc3 Bf5 17. Nh3 Bxd3 18. Bxh6 Rac8 19. Bxg7 Kxg7 20. Qg5 Be4 21. Nf4 Rh8 22. Re3 Qc7 23. Nd2 Bf5 24. Rae1 Ne7 25. Qg3 Bg4 26. Qh2 Nf5 27. Rd3 Nd6 28. Rde3 Bf5 29. Nxd5 exd5 30. Re7 Qc6 31. Qe5+ Kg8 32. Nf3 Ne4 33. Rxa7 Rh7 34. Qe7 Re8 35. Qa3 f6 36. Ra6 Qc8 37. Nd2 Rc7 38. Nxe4 Bxe4 39. Rxf6 Rxc3 40. Qd6 Qg4 41. Rxe4 Qxe4 42. Rxg6+ Kh7 43. Rh6+ Kg8 44. Qf6 Qe1+ 45. Kh2 Qh1+ 46. Kxh1 Re1+ 47. Kh2 Rh1+ 48. Kxh1 Rh3+ 49. Kg1 Rh1+";
+
+    private String vikVsKat = "1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Bf4 Bg7 5. e3 c5 6. dxc5 Qa5 7. Rc1 dxc4 8. Bxc4 O-O 9. Nf3 Qxc5 10. Bb3 Nc6 11. O-O Qa5 12. h3 Bf5 13. Qe2 Ne4 14. Nd5 e5 15. Bg5 Nxg5 16. Nxg5 Qd8 17. h4 h6 18. g4 Bd7 19. Ne4 Qxh4 20. f3 Kh8 21. Rf2 f5 22. Rh2 Qd8 23. Rxh6+ Bxh6 24. Qh2 Kg7 25. Rxc6 Bf4 26. Nxf4 bxc6 27. g5 Rh8 28. Ne6+ Bxe6 29. Qxe5+ Kh7 30. Nf6+ Qxf6 31. Qxf6 Bxb3 32. Qe7+ Kg8 33. Qb7 Rf8 34. Qxb3+ Rf7 35. Qe6 Kg7 36. Qxc6 Rh5 37. f4 Rh8 38. Qc3+ Kh7 39. Qd2 Re8 40. Kf2 Re6 41. b4 a6 42. Qd5 Rfe7 43. Qc5 Rd7 44. Qf8 Rdd6 45. Qf7+ Kh8 46. Kf3 Rc6 47. a4 Rcd6 48. Ke2 Rc6 49. b5 axb5 50. axb5 Rcd6 51. Kf3 Rxe3+ 52. Kxe3 Rd3+ 53. Ke2 Rd2+ 54. Ke1 Rd1+ 55. Kf2 Rd2+ 56. Kg3 Rd3+ 57. Kh4 Rh3+ 58. Kxh3";
+
+    private String levMilmanVsJosephFang = "1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Bf5 5. Ng3 Bg6 6. h4 h6 7. Nf3 Nd7 8. h5 Bh7 9. Bd3 Bxd3 10. Qxd3 e6 11. Bf4 Bb4+ 12. c3 Be7 13. O-O-O Ngf6 14. Kb1 O-O 15. Ne5 c5 16. Qf3 Qb6 17. Nxd7 Nxd7 18. d5 exd5 19. Nf5 Bf6 20. Rxd5 Qe6 21. Bxh6 Ne5 22. Qe4 Nc6 23. Qf3 Ne5 24. Qe4 Nc6 25. Qg4 Qxd5 26. Bxg7 Qd3+ 27. Ka1 Ne5 28. Ne7+ Kh7 29. Qg6+ fxg6 30. hxg6+ Kxg7 31. Rh7#";
+
+    private String irinaKorepanovaVsAlexanderTishkov = "1. b4 e5 2. Bb2 Bxb4 3. Bxe5 Nf6 4. a3 Be7 5. e3 O-O 6. Nf3 Nc6 7. Bb2 a6 8. d4 d5 9. c4 Be6 10. Nbd2 h6 11. Rc1 Na5 12. Ne5 c6 13. c5 Ne4 14. Nxe4 dxe4 15. Rc3 b5 16. Qc2 Bd5 17. Be2 Qe8 18. Bh5 g6 19. Bg4 Kg7 20. Nd7 f5 21. Nxf8 fxg4 22. Nxg6 Qxg6 23. g3 Nb7 24. h3 Rf8 25. h4 h5 26. Rh2 a5 27. a4 b4 28. Rb3 Qe6 29. Qd2 Kg6 30. Rxb4 axb4 31. Qxb4 Qc8 32. Ke2 Bd8 33. Rh1 Ba5 34. Qa3 Qf5 35. Rh2 Qf3+ 36. Kf1 Qd1+ 37. Kg2 Qe1 38. f4 exf3#";
+
+    private String frederickRhinevsNN = "1.d4 d5 2.c4 dxc4 3.e4 c6 4.Bxc4 Nf6 5.Nc3 e6 6.Nf3 Be7 7.O-O O-O 8.Re1 b5 9.Bd3 Nbd7 10.e5 Nd5 11.Bc2 b4 12.Qd3 f5 13.exf6 N7xf6 14.Na4 a5 15.Ng5 Ba6 16.Qh3 h6 17.Qxe6+ Kh8 18.Nf7+ Rxf7 19.Qxf7 Qd6 20.Nc5 Rf8 21.Qe6 Bc8 22.Qxd6 Bxd6 23.Ne6 Bxe6 24.Rxe6 Bf4 25.Rxc6 Bxc1 26.Rxc1 Nf4 27.Re1 Rd8 28.g3 Nh3+ 29.Kg2 Ng5 30.Bg6 Rxd4 31.Rc8+ Ng8 32.h4 Nh7 33.Bf7 Nf6 34.Bxg8 Nxg8 35.Ree8 Rd2 36.Rxg8+ Kh7 37.h5 g5 38.hxg6#";
+
+    private String robertSRobinsonVsFrederickRhine = "1.e4 c5 2.c4 Nc6 3.Nc3 g6 4.d4 cxd4 5.Nce2 Bg7 6.b3 e5 7.Bb2 Nf6 8.Nf3 Nxe4 9.Nxe5 Bxe5 10.Nxd4 Qa5+ 11.b4 Qxb4+ 12.Ke2 Qxb2+ 13.Kf3 Qxf2+ 14.Kxe4 d5+ 15.Kxd5 Be6+ 16.Kc5 Bxd4+ 17.Kd6 O-O-O#";
+
+    private String ivanNikolicVsGoranArsovic = "1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.Nf3 O-O 6.Be2 Nbd7 7.O-O e5 8.Re1 Re8 9.Bf1 h6 10.d5 Nh7 11.Rb1 f5 12.Nd2 f4 13.b4 g5 14.Nb3 Bf8 15.Be2 Ndf6 16.c5 g4 17.cxd6 cxd6 18.a3 Ng5 19.Bf1 Re7 20.Qd3 Rg7 21.Kh1 Qe8 22.Nd2 g3 23.fxg3 fxg3 24.Qxg3 Nh3 25.Qf3 Qg6 26.Nc4 Bd7 27.Bd3 Ng5 28.Bxg5 Qxg5 29.Ne3 Re8 30.Ne2 Be7 31.Rbd1 Rf8 32.Nf5 Ng4 33.Neg3 h5 34.Kg1 h4 35.Qxg4 Qxg4 36.Nh6+ Kh7 37.Nxg4 hxg3 38.Ne3 gxh2+ 39.Kxh2 Rh8 40.Rh1 Kg6+ 41.Kg1 Rc8 42.Be2 Rc3 43.Rd3 Rc1+ 44.Nf1 Bd8 45.Rh8 Bb6+ 46.Kh2 Rh7+ 47.Rxh7 Kxh7 48.Nd2 Bg1+ 49.Kh1 Bd4+ 50.Nf1 Bg4 51.Bxg4 Rxf1+ 52.Kh2 Bg1+ 53.Kh3 Re1 54.Bf5+ Kh6 55.Kg4 Re3 56.Rd1 Bh2 57.Rh1 Rg3+ 58.Kh4 Rxg2 59.Kh3 Rg3+ 60.Kxh2 Rxa3 61.Rg1 Ra6 62.Rg6+ Kh5 63.Kg3 Rb6 64.Rg7 Rxb4 65.Bc8 a5 66.Bxb7 a4 67.Bc6 a3 68.Ra7 Rb3+ 69.Kf2 Kg5 70.Ke2 Kf4 71.Ra4 Rh3 72.Kd2 a2 73.Bb5 Rh1 74.Rxa2 Rh2+ 75.Be2 Kxe4 76.Ra5 Kd4 77.Ke1 Rh1+ 78.Kf2 Rc1 79.Bg4 Rc2+ 80.Ke1 e4 81.Be6 Ke5 82.Bg8 Rc8 83.Bf7 Rc7 84.Be6 Rc2 85.Ra8 Rb2 86.Ra6 Rg2 87.Kd1 Rb2 88.Ra5 Rg2 89.Bd7 Rh2 90.Bc6 Kf4 91.Ra8 e3 92.Re8 Kf3 93.Rf8+ Ke4 94.Rf6 Kd3 95.Bb5+ Kd4 96.Rf5 Rh1+ 97.Ke2 Rh2+ 98.Kd1 Rh1+ 99.Kc2 Rh2+ 100.Kc1 Rh1+ 101.Kc2 Rh2+ 102.Kd1 Rh1+ 103.Ke2 Rh2+ 104.Kf1 Rb2 105.Be2 Ke4 106.Rh5 Rb1+ 107.Kg2 Rb2 108.Rh4+ Kxd5 109.Kf3 Kc5 110.Kxe3 Rb3+ 111.Bd3 d5 112.Rh8 Ra3 113.Re8 Kd6 114.Kd4 Ra4+ 115.Kc3 Ra3+ 116.Kd4 Ra4+ 117.Ke3 Ra3 118.Rh8 Ke5 119.Rh5+ Kd6 120.Rg5 Rb3 121.Kd2 Rb8 122.Bf1 Re8 123.Kd3 Re5 124.Rg8 Rh5 125.Bg2 Kc5 126.Rf8 Rh6 127.Bf3 Rd6 128.Re8 Rc6 129.Ra8 Rb6 130.Rd8 Rd6 131.Rf8 Ra6 132.Rf5 Rd6 133.Kc3 Rd8 134.Rg5 Rd6 135.Rh5 Rd8 136.Rf5 Rd6 137.Rf8 Ra6 138.Re8 Rc6 139.Ra8 Rb6 140.Ra5+ Rb5 141.Ra1 Rb8 142.Rd1 Rd8 143.Rd2 Rd7 144.Bg2 Rd8 145.Kd3 Ra8 146.Ke3 Re8+ 147.Kd3 Ra8 148.Kc3 Rd8 149.Bf3 Rd7 150.Kd3 Ra7 151.Bg2 Ra8 152.Rc2+ Kd6 153.Rc3 Ra2 154.Bf3 Ra8 155.Rb3 Ra5 156.Ke3 Ke5 157.Rd3 Rb5 158.Kd2 Rc5 159.Bg2 Ra5 160.Bf3 Rc5 161.Bd1 Rc8 162.Bb3 Rc5 163.Rh3 Kf4 164.Kd3 Ke5 165.Rh5+ Kf4 166.Kd4 Rb5 167.Bxd5 Rb4+ 168.Bc4 Ra4 169.Rh7 Kg5 170.Rf7 Kg6 171.Rf1 Kg5 172.Kc5 Ra5+ 173.Kc6 Ra4 174.Bd5 Rf4 175.Re1 Rf6+ 176.Kc5 Rf5 177.Kd4 Kf6 178.Re6+ Kg5 179.Be4 Rf6 180.Re8 Kf4 181.Rh8 Rd6+ 182.Bd5 Rf6 183.Rh1 Kf5 184.Be4+ Ke6 185.Ra1 Kd6 186.Ra5 Re6 187.Bf5 Re1 188.Ra6+ Ke7 189.Be4 Rc1 190.Ke5 Rc5+ 191.Bd5 Rc7 192.Rg6 Rd7 193.Rh6 Kd8 194.Be6 Rd2 195.Rh7 Ke8 196.Kf6 Kd8 197.Ke5 Rd1 198.Bd5 Ke8 199.Kd6 Kf8 200.Rf7+ Ke8 201.Rg7 Rf1 202.Rg8+ Rf8 203.Rg7 Rf6+ 204.Be6 Rf2 205.Bd5 Rf6+ 206.Ke5 Rf1 207.Kd6 Rf6+ 208.Be6 Rf2 209.Ra7 Kf8 210.Rc7 Rd2+ 211.Ke5 Ke8 212.Kf6 Rf2+ 213.Bf5 Rd2 214.Rc1 Rd6+ 215.Be6 Rd2 216.Rh1 Kd8 217.Rh7 Rd1 218.Rg7 Rd2 219.Rg8+ Kc7 220.Rc8+ Kb6 221.Ke5 Kb7 222.Rc3 Kb6 223.Bd5 Rh2 224.Kd6 Rh6+ 225.Be6 Rh5 226.Ra3 Ra5 227.Rg3 Rh5 228.Rg2 Ka5 229.Rg3 Kb6 230.Rg4 Rb5 231.Bd5 Rc5 232.Rg8 Rc2 233.Rb8+ Ka5 234.Bb3 Rc3 235.Kd5 Rc7 236.Kd4 Rd7+ 237.Bd5 Re7 238.Rb2 Re8 239.Rb7 Ka6 240.Rb1 Ka5 241.Bc4 Rd8+ 242.Kc3 Rh8 243.Rb5+ Ka4 244.Rb6 Rh3+ 245.Bd3 Rh5 246.Re6 Rg5 247.Rh6 Rc5+ 248.Bc4 Rg5 249.Ra6+ Ra5 250.Rh6 Rg5 251.Rh4 Ka5 252.Rh2 Rg3+ 253.Kd4 Rg5 254.Bd5 Ka4 255.Kc5 Rg3 256.Ra2+ Ra3 257.Rb2 Rg3 258.Rh2 Rc3+ 259.Bc4 Rg3 260.Rb2 Rg5+ 261.Bd5 Rg3 262.Rh2 Rc3+ 263.Bc4 Rg3 264.Rh8 Ka3 265.Ra8+ Kb2 266.Ra2+ Kb1 267.Rf2 Kc1 268.Kd4 Kd1 269.Bd3 Rg7";
+
+    private String staleMateHenryBirdvsBertholdEnglisch = "1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. c3 Nf6 5. b4 Bb6 6. d3 d6 7. O-O O-O 8. Bg5 Be6 9. Nbd2 Qe7 10. a4 a6 11. a5 Ba7 12. Kh1 h6 13. Bh4 Rad8 14. b5 Bxc4 15. Nxc4 axb5 16. Ne3 Bxe3 17. fxe3 Qe6 18. Qb1 g5 19. Bg3 Na7 20. c4 c6 21. c5 Nh5 22. a6 bxa6 23. Rxa6 Qd7 24. d4 Nxg3+ 25. hxg3 Nc8 26. cxd6 f6 27. Rc1 Nxd6 28. Rcxc6 Ne8 29. Qxb5 g4 30. Nh4 exd4 31. exd4 Qxd4 32. Nf5 Qxe4 33. Re6 Rd1+ 34. Kh2 Qb1 35. Qxb1 Rxb1 36. Ra7 Rb5 37. Nxh6+ Kh8 38. Nxg4 Rg5 39. Rxe8 Rh5+ 40. Kg1 Rxe8 41. Nxf6 Rh1+ 42. Kxh1 Re1+ 43. Kh2 Rh1+ 44. Kxh1";
+
+    private String stalemateJensHohmeistervsTenaFrank = "1.d4 e5 2.Qd2 e4 3.Qf4 f5 4.h3 Bb4+ 5.Nd2 d6 6.Qh2 Be6 7.a4 Qh4 8.Ra3 c5 9.Rg3 f4 10.f3 Bb3 11.d5 Ba5 12.c4 e3";
+
+    private String staleMateJohanUpmarkVsRobinJohansson = "1.c4 h5 2.h4 a5 3.Qa4 Ra6 4.Qxa5 Rah6 5.Qxc7 f6 6.Qxd7+ Kf7 7.Qxb7 Qd3 8.Qxb8 Qh7 9.Qxc8 Kg6 10.Qe6";
+
+
     @Test
     void playWorldsLongestGame() {
         playGameViaChessNotions(worldsLongestGame);
@@ -62,6 +84,59 @@ public class ChessNotationsTest {
     @Test
     void checkMateAndPromotionInOne() {
         playGameViaChessNotions(checkMateAndPromotionInOne);
+    }
+
+    @Test
+    void alfonsoVsBoris() {
+        playGameViaChessNotions(alfonsoVsBoris);
+    }
+
+    @Test
+    void vikVsKat() {
+        playGameViaChessNotions(vikVsKat);
+    }
+
+    @Test
+    void levMilmanvsJosephFang() {
+        playGameViaChessNotions(levMilmanVsJosephFang);
+    }
+
+    @Test
+    void irinaKorepanovaVsAlexanderTishkov() {
+        playGameViaChessNotions(irinaKorepanovaVsAlexanderTishkov);
+    }
+
+    @Test
+    void frederickRhinevsNN() {
+        playGameViaChessNotions(frederickRhinevsNN);
+    }
+
+    @Test
+    void robertSRobinsonVsFrederickRhine() {
+        playGameViaChessNotions(robertSRobinsonVsFrederickRhine);
+    }
+
+    @Test
+    void ivanNikolicVsGoranArsovic() {
+        playGameViaChessNotions(ivanNikolicVsGoranArsovic);
+    }
+
+    @Test
+    void staleMateHenryBirdVsBertholdEnglisch() {
+        playGameViaChessNotions(staleMateHenryBirdvsBertholdEnglisch);
+        assertThat(board.getStateOfTheGame()).isSameAs(ChessGameState.STALEMATE);
+    }
+
+    @Test
+    void stalemateJensHohmeisterVsTenaFrank() {
+        playGameViaChessNotions(stalemateJensHohmeistervsTenaFrank);
+        assertThat(board.getStateOfTheGame()).isSameAs(ChessGameState.STALEMATE);
+    }
+
+    @Test
+    void staleMateJohanUpmarkVsRobinJohansson() {
+        playGameViaChessNotions(staleMateJohanUpmarkVsRobinJohansson);
+        assertThat(board.getStateOfTheGame()).isSameAs(ChessGameState.STALEMATE);
     }
 
     void playGameViaChessNotions(String chessNotationsString) {
@@ -145,9 +220,9 @@ public class ChessNotationsTest {
 
     private void assertMovesWasSuccessful(ChessMoveNotion chessMoveNotion, int numberOfPiecesOnTheBoard, int numberOfPawnsCurrentPlayer) {
         if (chessMoveNotion.isShouldTakePiece()) {
-            assertThat(board.getAllPieces().size()).isEqualTo(numberOfPiecesOnTheBoard - 1);
+            assertThat(board.getAllPieces()).hasSize(numberOfPiecesOnTheBoard - 1);
         } else {
-            assertThat(board.getAllPieces().size()).isEqualTo(numberOfPiecesOnTheBoard);
+            assertThat(board.getAllPieces()).hasSize(numberOfPiecesOnTheBoard);
         }
 
         if (chessMoveNotion.isShouldEndInCheck()) {
@@ -159,7 +234,7 @@ public class ChessNotationsTest {
                 .filter(square -> square.getPiece() instanceof King)
                 .toList();
 
-            assertThat(squaresWhereKingIsInCheck.size()).isGreaterThan(0);
+            assertThat(squaresWhereKingIsInCheck).isNotEmpty();
         }
 
         if (chessMoveNotion.isPawnPromotion()) {
@@ -186,7 +261,7 @@ public class ChessNotationsTest {
     }
 
     private static Piece getAndAssertOnePiece(List<Square> squares) {
-        assertThat(squares.size()).isEqualTo(1);
+        assertThat(squares).hasSize(1);
         return squares.get(0).getPiece();
     }
 }

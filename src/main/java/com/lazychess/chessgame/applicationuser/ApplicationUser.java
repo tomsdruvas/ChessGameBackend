@@ -37,10 +37,8 @@ public class ApplicationUser {
     private String id;
 
     @Column(unique = true)
-    @NonNull
     private String username;
 
-    @NonNull
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -51,11 +49,6 @@ public class ApplicationUser {
     private Date lastLogin;
 
     public ApplicationUser() {
-    }
-
-    public ApplicationUser(String username, String password) {
-        this.username = username;
-        this.password = password;
     }
 
     public ApplicationUser(String id, String username, String password) {

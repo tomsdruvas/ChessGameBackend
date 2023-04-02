@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -53,24 +52,19 @@ import jakarta.annotation.PostConstruct;
 public class ApplicationSecurityConfig {
     private final RsaKeyProperties jwtConfigProperties;
 
-    @Autowired
-    private WebApplicationContext applicationContext;
-
-    @Autowired
-    private DataSource dataSource;
-
+    private final WebApplicationContext applicationContext;
+    private final DataSource dataSource;
     private CustomUserDetailsService userDetailsService;
-    private AuthenticationSuccessHandlerImpl authenticationSuccessHandler;
 
     @PostConstruct
     public void completeSetup() {
         userDetailsService = applicationContext.getBean(CustomUserDetailsService.class);
     }
 
-
-    public ApplicationSecurityConfig(RsaKeyProperties jwtConfigProperties, AuthenticationSuccessHandlerImpl authenticationSuccessHandler) {
+    public ApplicationSecurityConfig(RsaKeyProperties jwtConfigProperties, WebApplicationContext applicationContext, DataSource dataSource) {
         this.jwtConfigProperties = jwtConfigProperties;
-        this.authenticationSuccessHandler = authenticationSuccessHandler;
+        this.applicationContext = applicationContext;
+        this.dataSource = dataSource;
     }
 
     @Bean
@@ -125,31 +119,6 @@ public class ApplicationSecurityConfig {
             })
             .httpBasic(withDefaults())
             .build();
-    }
-
-    @Order(1)
-    @Bean
-    public SecurityFilterChain loginSecurityChain(HttpSecurity http) throws Exception {
-        http.securityMatcher(new AntPathRequestMatcher("/login"))
-            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-            .csrf(AbstractHttpConfigurer::disable)
-            .formLogin(form -> form
-                .loginPage("/login")
-                .loginProcessingUrl("/login")
-                .failureUrl("/login?error=true")
-                .successHandler(authenticationSuccessHandler)
-                .permitAll());
-
-        return http.build();
-    }
-
-    @Order(1)
-    @Bean
-    public SecurityFilterChain logoutSecurityChain(HttpSecurity http) throws Exception {
-        http.securityMatcher("/revoke", "/register/**")
-            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-            .csrf(AbstractHttpConfigurer::disable);
-        return http.build();
     }
 
     @Bean

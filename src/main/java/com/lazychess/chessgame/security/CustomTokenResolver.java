@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public class CustomTokenResolver implements BearerTokenResolver {
 
-    private static final Pattern authorizationPattern = Pattern.compile("^Bearer (?<token>[a-zA-Z0-9-._~+/]+=*)$", 2);
+    private static final Pattern authorizationPattern = Pattern.compile("^Bearer (?<token>[A-Z0-9-._~+/]+=*)$", Pattern.CASE_INSENSITIVE);
     private boolean allowFormEncodedBodyParameter = false;
     private boolean allowUriQueryParameter = false;
     private String bearerTokenHeaderName = "Authorization";

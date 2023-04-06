@@ -122,18 +122,10 @@ public class Pawn extends Piece implements EnPassenAvailability{
     }
 
     private boolean pawnCannotMoveTwoSquaresOnAStraightLineWhenBlockedByAnotherPiece(Square square, Square[][] squares) {
-        if(getPieceRow() == 6 && Objects.equals(getColour(), "white")) {
-            if(square.getColumn() == getPieceColumn()) {
-                if(square.getRow() == 4) {
-                    return squares[5][getPieceColumn()].getPiece().getClass() == EmptyPiece.class;
-                }
-            }
-        } else if (getPieceRow() == 1 && Objects.equals(getColour(), "black")) {
-            if(square.getColumn() == getPieceColumn()) {
-                if(square.getRow() == 3) {
-                    return squares[2][getPieceColumn()].getPiece().getClass() == EmptyPiece.class;
-                }
-            }
+        if(getPieceRow() == 6 && Objects.equals(getColour(), "white") && (square.getColumn() == getPieceColumn() && (square.getRow() == 4))) {
+            return squares[5][getPieceColumn()].getPiece().getClass() == EmptyPiece.class;
+        } else if (getPieceRow() == 1 && Objects.equals(getColour(), "black") && (square.getColumn() == getPieceColumn() && (square.getRow() == 3))) {
+            return squares[2][getPieceColumn()].getPiece().getClass() == EmptyPiece.class;
         }
         return true;
     }

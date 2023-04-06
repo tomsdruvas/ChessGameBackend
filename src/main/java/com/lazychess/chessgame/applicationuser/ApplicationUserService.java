@@ -1,7 +1,5 @@
 package com.lazychess.chessgame.applicationuser;
 
-import java.util.List;
-
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -9,7 +7,6 @@ import com.lazychess.chessgame.dto.RegistrationDto;
 import com.lazychess.chessgame.dto.RegistrationResponseDto;
 import com.lazychess.chessgame.exception.PasswordsDontMatchException;
 import com.lazychess.chessgame.exception.UsernameAlreadyExistsException;
-import com.lazychess.chessgame.models.Role;
 
 @Service
 public class ApplicationUserService {
@@ -22,7 +19,6 @@ public class ApplicationUserService {
 
     public RegistrationResponseDto saveUser(RegistrationDto registrationDto) {
         validateRegistrationDto(registrationDto);
-//        List<Role> allRoles = List.of(new Role("ROLE_ADMIN"));
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         ApplicationUser user = new ApplicationUser(registrationDto.getUsername(), passwordEncoder.encode(registrationDto.getPassword()));
         ApplicationUser savedUser = applicationUserRepository.save(user);

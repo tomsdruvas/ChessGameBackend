@@ -44,7 +44,7 @@ public class BoardFacade {
     public BoardDao persistPlayerTwoAddedBoard(String boardGameId, ApplicationUser applicationUser) {
         String playersUsername = applicationUser.getUsername();
         String playerTwoId = applicationUser.getId();
-        BoardDao boardDao = boardRepository.findById(boardGameId).orElseThrow(() -> new BoardNotFoundException("This board does not exist"));
+        BoardDao boardDao = boardRepository.findById(boardGameId).orElseThrow(() -> new BoardNotFoundException(boardGameId));
         PlayersDao playersDao = boardDao.getPlayersDao();
         checkIfPlayerAlreadyPartOfThisGame(playersDao, playersUsername);
         playersDao.setPlayerTwoAppUsername(playersUsername);
@@ -56,7 +56,7 @@ public class BoardFacade {
 
     @Transactional
     public BoardDao persistChessMove(String boardGameId, String playersUsername, ChessMoveDto chessMoveDto) {
-        BoardDao boardDao = boardRepository.findById(boardGameId).orElseThrow(() -> new BoardNotFoundException("This board does not exist"));
+        BoardDao boardDao = boardRepository.findById(boardGameId).orElseThrow(() -> new BoardNotFoundException(boardGameId));
         checkIfGameIsInACheckMateState(boardDao);
         checkIfPlayerTwoHasJoined(boardDao);
         checkIfPlayerIsPartOfThisGame(boardDao, playersUsername);
@@ -74,7 +74,7 @@ public class BoardFacade {
 
     @Transactional
     public BoardDao persistUpgradedPawn(String boardGameId, String playersUsername, String promotePawnTo) {
-        BoardDao boardDao = boardRepository.findById(boardGameId).orElseThrow(() -> new BoardNotFoundException("This board does not exist"));
+        BoardDao boardDao = boardRepository.findById(boardGameId).orElseThrow(() -> new BoardNotFoundException(boardGameId));
         checkIfGameIsInACheckMateState(boardDao);
         checkIfPlayerTwoHasJoined(boardDao);
         checkIfPlayerIsPartOfThisGame(boardDao, playersUsername);

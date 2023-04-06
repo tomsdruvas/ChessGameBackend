@@ -12,7 +12,7 @@ import com.lazychess.chessgame.applicationuser.ApplicationUser;
 
 public class AppUserPrincipal implements UserDetails {
 
-    private final ApplicationUser user;
+    private final transient ApplicationUser user;
 
     public AppUserPrincipal(ApplicationUser user) {
         this.user = user;

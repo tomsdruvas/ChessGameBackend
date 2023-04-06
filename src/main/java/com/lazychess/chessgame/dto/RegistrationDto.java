@@ -20,6 +20,4 @@ public class RegistrationDto {
 
     @NotBlank(message = "Confirm Password is mandatory")
     private CharSequence confirmPassword;
-
-
 }

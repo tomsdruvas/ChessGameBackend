@@ -16,7 +16,7 @@ public interface ApplicationUserRepository extends JpaRepository<ApplicationUser
 
     ApplicationUser findByUsername(String username);
 
-    Boolean existsByUsername(String username);
+    boolean existsByUsername(String username);
 
     @Query("UPDATE ApplicationUser u SET u.lastLogin=:lastLogin WHERE u.username = ?#{ principal?.username }")
     @Modifying

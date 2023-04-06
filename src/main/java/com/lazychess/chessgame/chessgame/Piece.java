@@ -3,11 +3,13 @@ package com.lazychess.chessgame.chessgame;
 import static com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import static com.lazychess.chessgame.chessgame.ChessConstants.EMPTY_PIECE;
 
+import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -30,7 +32,7 @@ import lombok.NoArgsConstructor;
 public abstract class Piece implements Serializable {
 
     @Serial
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 3963038001873827698L;
 
     String name;
     private String colour;
@@ -79,7 +81,7 @@ public abstract class Piece implements Serializable {
 
         this.legalMoves = squareArrayList.stream()
             .filter(square -> !(square.getRow() == row && square.getColumn() == column))
-            .toList();
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public void addLegalMove(LegalMoveSquare square) {
@@ -158,4 +160,13 @@ public abstract class Piece implements Serializable {
         return true;
     }
 
+    @Serial
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+    }
+
+    @Serial
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+    }
 }

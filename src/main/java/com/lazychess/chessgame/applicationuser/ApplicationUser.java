@@ -20,6 +20,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -37,6 +38,7 @@ public class ApplicationUser {
     private String id;
 
     @Column(unique = true)
+    @NotBlank
     private String username;
 
     private String password;

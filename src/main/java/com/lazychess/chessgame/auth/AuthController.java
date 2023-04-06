@@ -5,12 +5,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.lazychess.chessgame.security.TokenService;
 
-@Controller
+@RestController
 public class AuthController {
     private static final Logger LOG = LoggerFactory.getLogger(AuthController.class);
 

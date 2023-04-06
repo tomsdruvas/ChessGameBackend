@@ -22,20 +22,19 @@ import com.lazychess.chessgame.security.RsaKeyProperties;
 @ConfigurationPropertiesScan
 public class ChessGameApplication {
 
-	@Autowired
-	private ApplicationUserRepository applicationUserRepository;
+//	@Autowired
+//	private ApplicationUserRepository applicationUserRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ChessGameApplication.class, args);
 	}
 
-	@Profile("!test")
-	@Bean
-	public CommandLineRunner loadDataForUsers() {
-		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-		List<Role> allRoles = List.of(new Role("ROLE_ADMIN"));
-		ApplicationUser applicationUser2 = new ApplicationUser("admin2", passwordEncoder.encode("admin2"), allRoles);
-
-		return args -> applicationUserRepository.saveAllAndFlush((List.of(applicationUser2)));
-	}
+//	@Profile("!test")
+//	@Bean
+//	public CommandLineRunner loadDataForUsers() {
+//		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+//		ApplicationUser applicationUser2 = new ApplicationUser("admin2", passwordEncoder.encode("admin2"));
+//
+//		return args -> applicationUserRepository.saveAllAndFlush((List.of(applicationUser2)));
+//	}
 }

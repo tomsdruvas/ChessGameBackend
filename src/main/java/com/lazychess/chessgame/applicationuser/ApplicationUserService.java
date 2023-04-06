@@ -22,9 +22,9 @@ public class ApplicationUserService {
 
     public RegistrationResponseDto saveUser(RegistrationDto registrationDto) {
         validateRegistrationDto(registrationDto);
-        List<Role> allRoles = List.of(new Role("ROLE_ADMIN"));
+//        List<Role> allRoles = List.of(new Role("ROLE_ADMIN"));
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        ApplicationUser user = new ApplicationUser(registrationDto.getUsername(), passwordEncoder.encode(registrationDto.getPassword()), allRoles);
+        ApplicationUser user = new ApplicationUser(registrationDto.getUsername(), passwordEncoder.encode(registrationDto.getPassword()));
         ApplicationUser savedUser = applicationUserRepository.save(user);
         return new RegistrationResponseDto(savedUser.getUsername());
 

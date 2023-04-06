@@ -59,9 +59,8 @@ public class ApplicationUser {
         this.password = password;
     }
 
-    public ApplicationUser(@NonNull String username, @NonNull String password, List<Role> roles) {
+    public ApplicationUser(@NonNull String username, @NonNull String password) {
         this.username = username;
         this.password = password;
-        this.roles = roles;
     }
 }

@@ -1,4 +1,4 @@
-package com.lazychess.chessgame.chessGameMoveITTests;
+package com.lazychess.chessgame.chessGameMoveTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

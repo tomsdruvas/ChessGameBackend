@@ -3,9 +3,6 @@ db:
     host: localhost
     name: chess_db
 spring:
-    sql:
-        init:
-            mode: always
     datasource:
         url: jdbc:postgresql://${db.host}/${db.name}
         username: postgres

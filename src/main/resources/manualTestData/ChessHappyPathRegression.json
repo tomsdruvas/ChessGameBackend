@@ -1,0 +1,680 @@
+{
+	"info": {
+		"_postman_id": "78c50db2-f0b5-4aa1-87f4-44056a884384",
+		"name": "Chess",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Register User1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Username message present\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.username).to.eql(\"test_user1\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"test_user1\",\r\n    \"password\": \"admin\",\r\n    \"confirmPassword\": \"admin\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/registration",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"registration"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register User2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Username message present\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.username).to.eql(\"test_user2\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"test_user2\",\r\n    \"password\": \"admin\",\r\n    \"confirmPassword\": \"admin\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/registration",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"registration"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateNewBoardWithPlayerOne",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.collectionVariables.set(\"chessBoardId\", pm.response.json().BoardId);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{PlayerOneAccessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/board",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"board"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Player2JoinsGame",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"const chessBoardId = pm.collectionVariables.get(\"chessBoardId\");\r",
+							"\r",
+							"pm.test(\"Chess board Id is matching path variable\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.BoardId).to.eql(chessBoardId);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Player two should not be null\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.Players.PlayerTwoUsername).to.eql(\"test_user2\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{PlayerTwoAccessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/add-player-two-board/{{chessBoardId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"add-player-two-board",
+						"{{chessBoardId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PlayerOneMakesMove",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"const chessBoardId = pm.collectionVariables.get(\"chessBoardId\");\r",
+							"\r",
+							"pm.test(\"Source square should be emptypiece\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.Squares[6][3].piece.type).to.eql(\"emptypiece\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Destination square should be pawn\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.Squares[4][3].piece.type).to.eql(\"pawn\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{PlayerOneAccessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"currentRow\": 6,\r\n    \"currentColumn\": 3,\r\n    \"newRow\": 4,\r\n    \"newColumn\": 3\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/make-a-move/{{chessBoardId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"make-a-move",
+						"{{chessBoardId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PlayerTwoMakesMove",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Source square should be emptypiece\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.Squares[1][2].piece.type).to.eql(\"emptypiece\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Destination square should be pawn\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.Squares[2][2].piece.type).to.eql(\"pawn\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{PlayerTwoAccessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"currentRow\": 1,\r\n    \"currentColumn\": 2,\r\n    \"newRow\": 2,\r\n    \"newColumn\": 2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/make-a-move/{{chessBoardId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"make-a-move",
+						"{{chessBoardId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PlayerOneMakesMove2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Source square should be emptypiece\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.Squares[6][4].piece.type).to.eql(\"emptypiece\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Destination square should be pawn\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.Squares[4][4].piece.type).to.eql(\"pawn\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{PlayerOneAccessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"currentRow\": 6,\r\n    \"currentColumn\": 4,\r\n    \"newRow\": 4,\r\n    \"newColumn\": 4\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/make-a-move/{{chessBoardId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"make-a-move",
+						"{{chessBoardId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PlayerTwoMakesMove2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Source square should be emptypiece\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.Squares[1][1].piece.type).to.eql(\"emptypiece\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Destination square should be queen\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.Squares[3][1].piece.type).to.eql(\"pawn\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{PlayerTwoAccessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"currentRow\": 1,\r\n    \"currentColumn\": 1,\r\n    \"newRow\": 3,\r\n    \"newColumn\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/make-a-move/{{chessBoardId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"make-a-move",
+						"{{chessBoardId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PlayerOneMakesMove3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Source square should be emptypiece\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.Squares[7][4].piece.type).to.eql(\"emptypiece\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Destination square should be pawn\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.Squares[3][0].piece.type).to.eql(\"queen\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Winner should be available\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.WinnerUsername).to.eql(\"test_user1\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{PlayerOneAccessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"currentRow\": 7,\r\n    \"currentColumn\": 4,\r\n    \"newRow\": 3,\r\n    \"newColumn\": 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/make-a-move/{{chessBoardId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"make-a-move",
+						"{{chessBoardId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"var playerOneTokenCreatedAt = pm.collectionVariables.get(\"PlayerOneAccessToken_CreatedAt\");",
+					"",
+					"if (!playerOneTokenCreatedAt) {",
+					"    playerOneTokenCreatedAt = new Date(new Date().setDate(new Date().getDate() - 1))",
+					"}",
+					"",
+					"var playerOneTokenExpiresIn = pm.collectionVariables.get(\"PlayerOneAccessToken_ExpiresIn\");",
+					"",
+					"if (!playerOneTokenExpiresIn) {",
+					"    playerOneTokenExpiresIn = 5000;",
+					"}",
+					"",
+					"var playerOneTokenCreatedTime = (new Date() - Date.parse(playerOneTokenCreatedAt))",
+					"",
+					"if (playerOneTokenCreatedTime >= playerOneTokenExpiresIn) {",
+					"",
+					"    console.log(\"The Player One token has expired. Attempting to request a new token.\");",
+					"",
+					"pm.sendRequest({",
+					"    url: 'http://localhost:8080/token',",
+					"    method: 'POST',",
+					"    header: {",
+					"        'Authorization':'Basic dGVzdF91c2VyMTphZG1pbg==',",
+					"        'content-type': 'application/x-www-form-urlencoded'",
+					"    },",
+					"    body:{",
+					"   mode:\"urlencoded\",",
+					"   urlencoded:[",
+					"      {",
+					"         key:\"grant_type\",",
+					"         value:\"password\"",
+					"      },",
+					"      {",
+					"         key:\"username\",",
+					"         value:\"test_user1\"",
+					"      },",
+					"      {",
+					"         key:\"password\",",
+					"         value:\"admin\"",
+					"      }",
+					"   ]",
+					"}",
+					"}, function(error, response) {",
+					"        console.log(\"PlayerOneAccessToken: \" + response.json().access_token);",
+					"        ",
+					"        pm.collectionVariables.set(\"PlayerOneAccessToken_CreatedAt\", new Date());",
+					"        pm.collectionVariables.set(\"PlayerOneAccessToken\", response.json().access_token);",
+					"",
+					"        pm.collectionVariables.set(\"PlayerOneAccessToken_ExpiresIn\", 100000000);",
+					"    });",
+					"}",
+					"",
+					"//-----------------------------------------------------------------------------------",
+					"",
+					"var playerTwoTokenCreatedAt = pm.collectionVariables.get(\"PlayerTwoAccessToken_CreatedAt\");",
+					"",
+					"if (!playerTwoTokenCreatedAt) {",
+					"    playerTwoTokenCreatedAt = new Date(new Date().setDate(new Date().getDate() - 1))",
+					"}",
+					"",
+					"var playerTwoTokenExpiresIn = pm.collectionVariables.get(\"PlayerTwoAccessToken_ExpiresIn\");",
+					"",
+					"if (!playerTwoTokenExpiresIn) {",
+					"    playerTwoTokenExpiresIn = 5000;",
+					"}",
+					"",
+					"var playerTwoTokenCreatedTime = (new Date() - Date.parse(playerTwoTokenCreatedAt))",
+					"",
+					"if (playerTwoTokenCreatedTime >= playerTwoTokenExpiresIn) {",
+					"",
+					"    console.log(\"The Player Two token has expired. Attempting to request a new token.\");",
+					"",
+					"pm.sendRequest({",
+					"    url: 'http://localhost:8080/token',",
+					"    method: 'POST',",
+					"    header: {",
+					"        'Authorization':'Basic dGVzdF91c2VyMjphZG1pbg==',",
+					"        'content-type': 'application/x-www-form-urlencoded'",
+					"    },",
+					"    body:{",
+					"   mode:\"urlencoded\",",
+					"   urlencoded:[",
+					"      {",
+					"         key:\"grant_type\",",
+					"         value:\"password\"",
+					"      },",
+					"      {",
+					"         key:\"username\",",
+					"         value:\"test_user2\"",
+					"      },",
+					"      {",
+					"         key:\"password\",",
+					"         value:\"admin\"",
+					"      }",
+					"   ]",
+					"}",
+					"}, function(error, response) {",
+					"        console.log(\"PlayerTwoAccessToken: \" + response.json().access_token);",
+					"        ",
+					"        pm.collectionVariables.set(\"PlayerTwoAccessToken_CreatedAt\", new Date());",
+					"        pm.collectionVariables.set(\"PlayerTwoAccessToken\", response.json().access_token);",
+					"",
+					"        pm.collectionVariables.set(\"PlayerTwoAccessToken_ExpiresIn\", 100000000);",
+					"    });",
+					"}",
+					"",
+					"",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "PlayerOneAccessToken",
+			"value": "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoidGVzdF91c2VyMSIsImV4cCI6MTY4NDM5MTM2MSwiaWF0IjoxNjgwNzkxMzYxLCJzY29wZSI6IlVzZXIifQ.xjo7oj0KyLHgeD44m6ecGIqKHyM0q9EsYPO7CEXiq3Pu1nCrMvNmkUx1Caje6BEApnP5rdqKiVOz_RB0JkLYcr_ZTcgAsBnxMum8PgCe8gvW-HAzz8aYLhPKTSbUU_MMds4xoVHroHiOSuwQx2bYKIN72WYBX7LLsI3xXEhjYmNBTNN998yVjc8zgBB-3bnq73ZQ4fK3QitrHmhrjIlvLkBwXrmPaVK1tIXmCl4F1ZW10b1viTC8a_uX2rAYlK_b3visFW8lesDmABK5hhTnMlK6CBhhmwFkLhPvv3rzF2SUgNwCuQP8l59oLxp6DJoxqhUuQOpOxehvS_gvopRQBg",
+			"type": "default"
+		},
+		{
+			"key": "PlayerTwoAccessToken",
+			"value": "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoidGVzdF91c2VyMiIsImV4cCI6MTY4NDM5MTcwMiwiaWF0IjoxNjgwNzkxNzAyLCJzY29wZSI6IlVzZXIifQ.rGc2drBfQfQsIFa9Q4UsnLO6Xj5hnWATIhzl4XqYixjLCTkP6ZlH5ryjN04zx2DNmKUtLV5twFZ6n_nKAwU4eTSpqRWh5wv_q4FLhVYyJrcLN9IQRX_SPW-8bwD6MZfOK20Ptlsj_4ek_xX_1_6tEFgnUMoV6T2mfViYvWqOSXt0gz-jRE2CllZok3-_F1dn7von0NqNeCqvDuEvr7G0xruhpWcGQVO4ublsv8lqDfktGEc1XLgsvX1VTBdajQ4LaCgsBvE08xN1EQ3-O9iPEFEnMXIlMLWc2RIVCjAI78MOmxN43PHwswMu_rDnlJig3pC6kW5m9b8HG_j5dCiUzw",
+			"type": "default"
+		},
+		{
+			"key": "PlayerOneAccessToken_CreatedAt",
+			"value": "2023-04-06T14:24:44.706Z",
+			"type": "default"
+		},
+		{
+			"key": "PlayerTwoAccessToken_CreatedAt",
+			"value": "2023-04-06T14:24:44.709Z",
+			"type": "default"
+		},
+		{
+			"key": "PlayerOneAccessToken_ExpiresIn",
+			"value": 100000000,
+			"type": "default"
+		},
+		{
+			"key": "PlayerTwoAccessToken_ExpiresIn",
+			"value": 100000000,
+			"type": "default"
+		},
+		{
+			"key": "chessBoardId",
+			"value": "9a8d55ad-dcb0-483d-8269-c44c80e7cc4e",
+			"type": "default"
+		}
+	]
+}

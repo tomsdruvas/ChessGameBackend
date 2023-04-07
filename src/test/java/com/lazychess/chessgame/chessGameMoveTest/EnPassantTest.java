@@ -15,7 +15,7 @@ import com.lazychess.chessgame.chessgame.Piece;
 import com.lazychess.chessgame.dto.ChessMoveDto;
 
 @SpringBootTest
-class enPassantTest {
+class EnPassantTest {
 
     private Board board;
 

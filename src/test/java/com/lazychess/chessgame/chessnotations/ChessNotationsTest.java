@@ -24,6 +24,7 @@ import testUtil.ChessMoveNotion;
 import testUtil.TypeOfMoveEnum;
 
 @SpringBootTest
+//@Disabled
 class ChessNotationsTest {
 
     private Board board;

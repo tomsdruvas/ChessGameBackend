@@ -24,7 +24,7 @@ import com.lazychess.chessgame.dto.ChessMoveDto;
 @SpringBootTest
 class PawnTest {
 
-    private static Board board;
+    private Board board;
 
     @BeforeEach
     public void loadChess() {

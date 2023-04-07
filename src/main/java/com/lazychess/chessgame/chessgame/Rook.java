@@ -3,11 +3,8 @@ package com.lazychess.chessgame.chessgame;
 import java.util.Arrays;
 import java.util.List;
 
-import com.lazychess.chessgame.config.CustomLegalSquareListMapper;
+import com.lazychess.chessgame.repository.mapper.CustomLegalSquareMapper;
 
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor
 public class Rook extends Piece implements CastlingHasMoved {
 
     private boolean hasMoved = false;
@@ -22,7 +19,7 @@ public class Rook extends Piece implements CastlingHasMoved {
             .filter(this::rookCanMoveToSameColumnOrRow)
             .filter(this::filterSquaresWithSameColourPiece)
             .filter(square -> piecesInTheWayStraight(squares, square))
-            .map(CustomLegalSquareListMapper::fromSquareToLegalMove)
+            .map(CustomLegalSquareMapper::fromSquareToLegalMove)
             .toList();
 
         setLegalMoves(legalMoves);

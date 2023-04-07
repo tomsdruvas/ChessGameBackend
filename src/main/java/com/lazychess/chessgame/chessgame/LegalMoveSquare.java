@@ -1,14 +1,12 @@
 package com.lazychess.chessgame.chessgame;
 
 import java.io.Serializable;
+import java.util.Objects;
 
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor
 public final class LegalMoveSquare implements Serializable {
 
-    private int row;
-    private int column;
+    private final int row;
+    private final int column;
     private Piece piece;
 
     public LegalMoveSquare(int row, int column, Piece piece) {
@@ -46,7 +44,7 @@ public final class LegalMoveSquare implements Serializable {
 
     @Override
     public int hashCode() {
-        return 0;
+        return Objects.hash(row, column);
     }
 
     @Override

@@ -5,7 +5,7 @@ import static com.lazychess.chessgame.chessgame.ChessConstants.WHITE;
 import static com.lazychess.chessgame.chessgame.ChessGameState.CHECKMATE;
 import static com.lazychess.chessgame.chessgame.ChessGameState.ONGOING;
 import static com.lazychess.chessgame.chessgame.ChessGameState.STALEMATE;
-import static com.lazychess.chessgame.config.CustomLegalSquareListMapper.fromSquareToLegalMove;
+import static com.lazychess.chessgame.repository.mapper.CustomLegalSquareMapper.fromSquareToLegalMove;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -211,7 +211,7 @@ public class Board implements Serializable {
             }
 
             setOppositeKingsLegalMovesToPreventCheckMateOnItself(currentPlayersColour);
-            clearenPassantForAllPawns(currentPlayersColour);
+            clearEnPassantForAllPawns(currentPlayersColour);
             checkIfOppositePlayerIsInStaleMate();
             setOppositeColourAsCurrentPlayer();
             checkIfItIsKingsOrRooksFirstMove(pieceToMove);
@@ -255,8 +255,8 @@ public class Board implements Serializable {
 
     private void enPassantAndCastlingActions(int currentRow, int newRow, int newColumn, Piece pieceToMove, String currentPlayersColour) {
         ifMoveIsACastlingMoveAlsoMoveRook(pieceToMove, newRow, newColumn);
-        ifMoveIsAnenPassantMoveRemovePawn(pieceToMove, newRow, newColumn);
-        checkIfenPassantIsAvailableForNextMove(pieceToMove, currentPlayersColour, currentRow, newRow, newColumn);
+        ifMoveIsAnEnPassantMoveRemovePawn(pieceToMove, newRow, newColumn);
+        checkIfEnPassantIsAvailableForNextMove(pieceToMove, currentPlayersColour, currentRow, newRow, newColumn);
         checkIfPawnPromotionIsAvailable(pieceToMove, newRow);
     }
 
@@ -314,56 +314,56 @@ public class Board implements Serializable {
         }
     }
 
-    private void ifMoveIsAnenPassantMoveRemovePawn(Piece pieceToMove, int newRow, int newColumn) {
+    private void ifMoveIsAnEnPassantMoveRemovePawn(Piece pieceToMove, int newRow, int newColumn) {
         if(pieceToMove instanceof Pawn pawn && pawn.enPassantAvailable() && pawn.enPassantMoveToAdd().getRow() == newRow && pawn.enPassantMoveToAdd().getColumn() == newColumn) {
             squares[((Pawn) pieceToMove).enPassantPieceToRemove().getRow()][((Pawn) pieceToMove).enPassantPieceToRemove().getColumn()].setPiece(new EmptyPiece());
         }
     }
 
-    private void clearenPassantForAllPawns(String currentPlayersColour) {
+    private void clearEnPassantForAllPawns(String currentPlayersColour) {
         Arrays.stream(squares)
             .flatMap(Arrays::stream)
             .filter(square -> square.getPiece().getColour().equals(currentPlayersColour))
             .filter(square -> (square.getPiece() instanceof Pawn))
-            .forEach(square -> ((Pawn) square.getPiece()).clearenPassant());
+            .forEach(square -> ((Pawn) square.getPiece()).clearEnPassant());
     }
 
-    private void checkIfenPassantIsAvailableForNextMove(Piece pieceToMove, String currentPlayersColour, int currentRow, int newRow, int newColumn) {
+    private void checkIfEnPassantIsAvailableForNextMove(Piece pieceToMove, String currentPlayersColour, int currentRow, int newRow, int newColumn) {
         if (pieceToMove instanceof Pawn && (currentRow == 1 || currentRow == 6) && (Math.abs(currentRow - newRow) == 2)) {
-                List<Piece> piecesToAddenPassantMovesTo = findPiecesAvailableForenPassantMove(newRow, newColumn, currentPlayersColour);
+                List<Piece> piecesToAddEnPassantMovesTo = findPiecesAvailableForEnPassantMove(newRow, newColumn, currentPlayersColour);
                 if (newRow == 3) {
                     if (squares[newRow - 1][newColumn].getPiece() instanceof EmptyPiece) {
                         LegalMoveSquare enPassantSquareToAddToLegalMoves = fromSquareToLegalMove(squares[newRow - 1][newColumn]);
-                        piecesToAddenPassantMovesTo.forEach(piece -> {
-                            ((enPassantAvailability) piece).setenPassantAvailable();
-                            ((enPassantAvailability) piece).setenPassantMoveToAdd(enPassantSquareToAddToLegalMoves);
-                            ((enPassantAvailability) piece).setenPassantPieceToRemove(new LegalMoveSquare(newRow, newColumn));
+                        piecesToAddEnPassantMovesTo.forEach(piece -> {
+                            ((EnPassantAvailability) piece).setEnPassantAvailable();
+                            ((EnPassantAvailability) piece).setEnPassantMoveToAdd(enPassantSquareToAddToLegalMoves);
+                            ((EnPassantAvailability) piece).setEnPassantPieceToRemove(new LegalMoveSquare(newRow, newColumn));
 
                         });
                     }
                 } else if (newRow == 4 && (squares[newRow + 1][newColumn].getPiece() instanceof EmptyPiece)) {
                         LegalMoveSquare enPassantSquareToAddToLegalMoves = fromSquareToLegalMove(squares[newRow + 1][newColumn]);
-                        piecesToAddenPassantMovesTo.forEach(piece -> {
-                            ((enPassantAvailability) piece).setenPassantAvailable();
-                            ((enPassantAvailability) piece).setenPassantMoveToAdd(enPassantSquareToAddToLegalMoves);
-                            ((enPassantAvailability) piece).setenPassantPieceToRemove(new LegalMoveSquare(newRow, newColumn));
+                        piecesToAddEnPassantMovesTo.forEach(piece -> {
+                            ((EnPassantAvailability) piece).setEnPassantAvailable();
+                            ((EnPassantAvailability) piece).setEnPassantMoveToAdd(enPassantSquareToAddToLegalMoves);
+                            ((EnPassantAvailability) piece).setEnPassantPieceToRemove(new LegalMoveSquare(newRow, newColumn));
                         });
                 }
         }
     }
 
-    private List<Piece> findPiecesAvailableForenPassantMove(int newRow, int newColumn, String currentPlayersColour) {
-        List<Piece> piecesToAddenPassantMovesTo = new ArrayList<>();
+    private List<Piece> findPiecesAvailableForEnPassantMove(int newRow, int newColumn, String currentPlayersColour) {
+        List<Piece> piecesToAddEnPassantMovesTo = new ArrayList<>();
         if (newColumn == 0) {
-            piecesToAddenPassantMovesTo.add(squares[newRow][newColumn + 1].getPiece());
+            piecesToAddEnPassantMovesTo.add(squares[newRow][newColumn + 1].getPiece());
         } else if (newColumn == 7) {
-            piecesToAddenPassantMovesTo.add(squares[newRow][newColumn - 1].getPiece());
+            piecesToAddEnPassantMovesTo.add(squares[newRow][newColumn - 1].getPiece());
         } else {
-            piecesToAddenPassantMovesTo.add(squares[newRow][newColumn + 1].getPiece());
-            piecesToAddenPassantMovesTo.add(squares[newRow][newColumn - 1].getPiece());
+            piecesToAddEnPassantMovesTo.add(squares[newRow][newColumn + 1].getPiece());
+            piecesToAddEnPassantMovesTo.add(squares[newRow][newColumn - 1].getPiece());
         }
 
-        return piecesToAddenPassantMovesTo.stream().filter(piece -> checkIfItIsOppositeColourPawn(piece, currentPlayersColour)).toList();
+        return piecesToAddEnPassantMovesTo.stream().filter(piece -> checkIfItIsOppositeColourPawn(piece, currentPlayersColour)).toList();
     }
 
     private boolean checkIfItIsOppositeColourPawn(Piece piece, String currentPlayersColour) {
@@ -475,7 +475,7 @@ public class Board implements Serializable {
     }
 
     private void removeLegalMovesThatPutKingInCheck(String colour) {
-        List<MovesDto> movesDtos = Arrays.stream(squares)
+        List<MovesDto> movesDtoList = Arrays.stream(squares)
             .flatMap(Arrays::stream)
             .map(Square::getPiece)
             .filter(piece -> !piece.getColour().equals(colour))
@@ -488,7 +488,7 @@ public class Board implements Serializable {
             .filter(movesDto -> !movesDto.moves().isEmpty())
             .toList();
 
-        movesDtos
+        movesDtoList
             .forEach(movesDto -> getPieceByName(movesDto.pieceName()).getLegalMoves().forEach(square -> {
                 if(movesDto.moves().contains(square)){
                     getPieceByName(movesDto.pieceName()).removeLegalMove(square.getRow(), square.getColumn());
@@ -558,7 +558,7 @@ public class Board implements Serializable {
 
     private void clearLegalMovesThatDontProtectTheKingOfAllPiecesApartFromKingWhenItIsInDanger(String colour) {
 
-        List<MovesDto> movesDtos = movesThatCanSaveTheKingFromCheckmate(colour);
+        List<MovesDto> movesDtoList = movesThatCanSaveTheKingFromCheckmate(colour);
 
         Arrays.stream(squares)
             .flatMap(Arrays::stream)
@@ -566,7 +566,7 @@ public class Board implements Serializable {
             .filter(square -> square.getPiece().getLegalMoves() != null)
             .forEach(square -> square.getPiece().clearLegalMoves());
 
-        movesDtos
+        movesDtoList
             .forEach(movesDto -> getPieceByName(movesDto.pieceName()).setLegalMoves(movesDto.moves()));
     }
 

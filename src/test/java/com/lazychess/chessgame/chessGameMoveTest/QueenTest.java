@@ -19,7 +19,7 @@ import com.lazychess.chessgame.dto.ChessMoveDto;
 @SpringBootTest
 class QueenTest {
 
-    private static Board board;
+    private Board board;
 
     @BeforeEach
     public void loadChess() {

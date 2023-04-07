@@ -3,7 +3,6 @@ package com.lazychess.chessgame.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static testUtil.GenericComparators.notNullComparator;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -18,10 +17,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.lazychess.chessgame.applicationuser.ApplicationUser;
 import com.lazychess.chessgame.chessgame.Board;
-import com.lazychess.chessgame.dto.ChessMoveDto;
+import com.lazychess.chessgame.json.JsonObjectBoardResponse;
 import com.lazychess.chessgame.repository.entity.BoardDao;
 import com.lazychess.chessgame.repository.entity.PlayersDao;
 import com.lazychess.chessgame.repository.mapper.BoardDaoMapper;
+import com.lazychess.chessgame.service.BoardService;
 
 @RunWith(SpringRunner.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -35,11 +35,11 @@ class BoardDaoRepositoryIntegrationTest {
 
     @Autowired
     private BoardRepository boardRepository;
-    private BoardFacade boardFacade;
+    private BoardService boardService;
 
     @BeforeEach
     public void setup() {
-        boardFacade = new BoardFacade(boardRepository, new BoardDaoMapper());
+        boardService = new BoardService(boardRepository, new BoardDaoMapper());
     }
 
     @Test
@@ -52,14 +52,12 @@ class BoardDaoRepositoryIntegrationTest {
     }
 
     @Test
-    void insertBoardUsingBoardFacade() {
-        Board board = createBoard();
+    void insertBoardUsingBoardService() {
+        JsonObjectBoardResponse boardDao = boardService.createInitialBoardGame(new ApplicationUser("Player1Id", "Player1Username", "Test"));
 
-        BoardDao boardDao = boardFacade.persistCreatedBoard(board, new ApplicationUser("Player1Id", "Player1Username", "Test"));
+        assertThat(boardDao.getBoardId()).isNotBlank();
 
-        assertThat(boardDao.getId()).isNotBlank();
-
-        Optional<BoardDao> retrievedOptional = boardRepository.findById(boardDao.getId());
+        Optional<BoardDao> retrievedOptional = boardRepository.findById(boardDao.getBoardId());
 
         assertThat(retrievedOptional.get()).isNotNull();
         BoardDao retrievedBoardDao = retrievedOptional.get();
@@ -70,34 +68,8 @@ class BoardDaoRepositoryIntegrationTest {
             .isEqualTo(createBoardDaoEntity());
     }
 
-    @Test
-    void insertChangedBoardUsingBoardFacade() {
-        Board board = createChangedBoard();
-
-        BoardDao boardDao = boardFacade.persistCreatedBoard(board, new ApplicationUser("Player1Id", "Player1Username", "Test"));
-
-        assertThat(boardDao.getId()).isNotBlank();
-
-        Optional<BoardDao> retrievedOptional = boardRepository.findById(boardDao.getId());
-
-        assertThat(retrievedOptional.get()).isNotNull();
-        BoardDao retrievedBoardDao = retrievedOptional.get();
-
-        assertThat(retrievedBoardDao)
-            .usingRecursiveComparison()
-            .withComparatorForFields(notNullComparator(), DYNAMIC_FIELDS)
-            .isEqualTo(createChangedBoardDaoEntity());
-    }
-
     private Board createBoard() {
         return new Board();
-    }
-
-    private Board createChangedBoard() {
-        List<ChessMoveDto> chessMoveDtos = List.of(
-            new ChessMoveDto(1, 0, 3, 0),
-            new ChessMoveDto(6, 6, 4, 6));
-        return new Board(chessMoveDtos);
     }
 
     private BoardDao createBoardDaoEntity() {
@@ -106,22 +78,6 @@ class BoardDaoRepositoryIntegrationTest {
         playersDao.setPlayerOneAppUsername("Player1Username");
         playersDao.setActivePlayerUsername(playersDao.getPlayerOneAppUsername());
         Board board = createBoard();
-        BoardDao boardDao = new BoardDao();
-
-        boardDao.setSquares(board.getSquares());
-        boardDao.setStateOfTheGame(board.getStateOfTheGame());
-        boardDao.setCurrentPlayerColour(board.getCurrentPlayerColourState());
-        boardDao.setPlayersDao(playersDao);
-
-        return boardDao;
-    }
-
-    private BoardDao createChangedBoardDaoEntity() {
-        PlayersDao playersDao = new PlayersDao();
-        playersDao.setPlayerOneAppUserId("Player1Id");
-        playersDao.setPlayerOneAppUsername("Player1Username");
-        playersDao.setActivePlayerUsername(playersDao.getPlayerOneAppUsername());
-        Board board = createChangedBoard();
         BoardDao boardDao = new BoardDao();
 
         boardDao.setSquares(board.getSquares());

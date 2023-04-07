@@ -3,7 +3,6 @@ package com.lazychess.chessgame.chessGameMoveTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -60,11 +59,22 @@ class CheckMateGamesTest {
         assertThat(board.getStateOfTheGame()).isSameAs(ChessGameState.CHECKMATE);
     }
 
-    @Disabled
     @Test
     void italianGameSmotheredMate_blackWins() {
         board.movePiece(6,3,4,3);
-
+        board.movePiece(1,3,3,3);
+        board.movePiece(7,1,5,2);
+        board.movePiece(0,6,2,5);
+        board.movePiece(7,2,4,5);
+        board.movePiece(2,5,4,4);
+        board.movePiece(5,2,3,3);
+        board.movePiece(0,4,3,1);
+        board.movePiece(3,3,1,2);
+        board.movePiece(3,1,6,1);
+        board.movePiece(7,0,7,2);
+        board.movePiece(6,1,4,3);
+        board.movePiece(4,5,6,3);
+        board.movePiece(4,4,5,2);
         assertThat(board.getStateOfTheGame()).isSameAs(ChessGameState.CHECKMATE);
     }
 

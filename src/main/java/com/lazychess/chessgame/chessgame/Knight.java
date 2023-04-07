@@ -3,11 +3,8 @@ package com.lazychess.chessgame.chessgame;
 import java.util.Arrays;
 import java.util.List;
 
-import com.lazychess.chessgame.config.CustomLegalSquareListMapper;
+import com.lazychess.chessgame.repository.mapper.CustomLegalSquareMapper;
 
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor
 public class Knight extends Piece {
 
     public Knight(String name, int row, int column, String colour) {
@@ -19,7 +16,7 @@ public class Knight extends Piece {
         List<LegalMoveSquare> legalMoves = Arrays.stream(squares).flatMap(Arrays::stream)
             .filter(this::filterSquaresWithSameColourPiece)
             .filter(this::knightCanMoveOneRowTwoColumnsOrOpposite)
-            .map(CustomLegalSquareListMapper::fromSquareToLegalMove)
+            .map(CustomLegalSquareMapper::fromSquareToLegalMove)
             .toList();
 
         setLegalMoves(legalMoves);

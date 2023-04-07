@@ -23,11 +23,8 @@ import com.lazychess.chessgame.exception.NotYourTurnException;
 @SpringBootTest
 class PawnPromotionTest {
 
-    private Board board;
-
     @BeforeEach
     public void loadChess() {
-        board = new Board();
     }
 
     @Test

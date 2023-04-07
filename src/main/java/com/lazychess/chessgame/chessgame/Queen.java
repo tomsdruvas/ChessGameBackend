@@ -3,11 +3,8 @@ package com.lazychess.chessgame.chessgame;
 import java.util.Arrays;
 import java.util.List;
 
-import com.lazychess.chessgame.config.CustomLegalSquareListMapper;
+import com.lazychess.chessgame.repository.mapper.CustomLegalSquareMapper;
 
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor
 public class Queen extends Piece {
 
     public Queen(String name, int row, int column, String colour) {
@@ -20,7 +17,7 @@ public class Queen extends Piece {
             .filter(this::filterSquaresWithSameColourPiece)
             .filter(this::queenLegalMoves)
             .filter(square -> checkForPiecesInWay(squares, square))
-            .map(CustomLegalSquareListMapper::fromSquareToLegalMove)
+            .map(CustomLegalSquareMapper::fromSquareToLegalMove)
             .toList();
 
         setLegalMoves(legalMoves);
@@ -37,12 +34,11 @@ public class Queen extends Piece {
         boolean legalDiagonalMove = false;
 
         if(bishopLegalMoves(square)) {
-            legalStraightMove = piecesInTheWayDiagonally(squares, square);
+            legalDiagonalMove = piecesInTheWayDiagonally(squares, square);
         }
 
         if (rookCanMoveToSameColumnOrRow(square)) {
-            legalDiagonalMove = piecesInTheWayStraight(squares, square);
-
+            legalStraightMove = piecesInTheWayStraight(squares, square);
         }
 
         return legalStraightMove || legalDiagonalMove;

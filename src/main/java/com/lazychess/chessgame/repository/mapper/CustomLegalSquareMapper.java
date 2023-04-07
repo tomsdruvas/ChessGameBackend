@@ -1,6 +1,4 @@
-package com.lazychess.chessgame.config;
-
-import java.util.List;
+package com.lazychess.chessgame.repository.mapper;
 
 import org.springframework.util.SerializationUtils;
 
@@ -8,13 +6,9 @@ import com.lazychess.chessgame.chessgame.LegalMoveSquare;
 import com.lazychess.chessgame.chessgame.Piece;
 import com.lazychess.chessgame.chessgame.Square;
 
-public class CustomLegalSquareListMapper {
+public class CustomLegalSquareMapper {
 
-    private CustomLegalSquareListMapper() {
-    }
-
-    public static List<LegalMoveSquare> fromSquaresList(List<Square> squares) {
-        return squares.stream().map(square -> new LegalMoveSquare(square.getRow(), square.getColumn(), removeLegalMovesField(square.getPiece()))).toList();
+    private CustomLegalSquareMapper() {
     }
 
     public static LegalMoveSquare fromSquareToLegalMove(Square square) {

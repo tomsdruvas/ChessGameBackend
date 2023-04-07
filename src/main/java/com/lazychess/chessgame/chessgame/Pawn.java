@@ -11,15 +11,12 @@ import java.util.Objects;
 
 import org.apache.commons.collections4.ListUtils;
 
-import com.lazychess.chessgame.config.CustomLegalSquareListMapper;
+import com.lazychess.chessgame.repository.mapper.CustomLegalSquareMapper;
 
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor
-public class Pawn extends Piece implements enPassantAvailability{
+public class Pawn extends Piece implements EnPassantAvailability {
 
     private boolean enPassantAvailable = false;
-    private LegalMoveSquare availableenPassantMove;
+    private LegalMoveSquare availableEnPassantMove;
     private LegalMoveSquare enPassantPieceToRemove;
 
     public Pawn(String name, int row, int column, String colour) {
@@ -37,15 +34,15 @@ public class Pawn extends Piece implements enPassantAvailability{
             .filter(this::pawnCannotMoveBack)
             .filter(this::twoFilterCombination)
             .filter(square -> pawnCannotMoveTwoSquaresOnAStraightLineWhenBlockedByAnotherPiece(square, squares))
-            .map(CustomLegalSquareListMapper::fromSquareToLegalMove)
+            .map(CustomLegalSquareMapper::fromSquareToLegalMove)
             .toList();
 
-        List<LegalMoveSquare> legalMoveSquaresWithenPassantMoves = addenPassantMovesIfItIsAvailable(legalMoves);
+        List<LegalMoveSquare> legalMoveSquaresWithEnPassantMoves = addEnPassantMovesIfItIsAvailable(legalMoves);
 
-        setLegalMoves(legalMoveSquaresWithenPassantMoves);
+        setLegalMoves(legalMoveSquaresWithEnPassantMoves);
     }
 
-    private List<LegalMoveSquare> addenPassantMovesIfItIsAvailable(List<LegalMoveSquare> legalMoves) {
+    private List<LegalMoveSquare> addEnPassantMovesIfItIsAvailable(List<LegalMoveSquare> legalMoves) {
         if (enPassantAvailable) {
             List<LegalMoveSquare> enPassantMoveToAddList = Collections.singletonList(enPassantMoveToAdd());
             return ListUtils.union(legalMoves, enPassantMoveToAddList);
@@ -99,9 +96,6 @@ public class Pawn extends Piece implements enPassantAvailability{
     }
 
     public List<LegalMoveSquare> generateStraightLegalMoves() {
-        if(legalMoves == null) {
-            return List.of();
-        }
         return legalMoves.stream().filter(square -> square.getColumn() == getPieceColumn()).toList();
     }
 
@@ -113,7 +107,7 @@ public class Pawn extends Piece implements enPassantAvailability{
             .filter(this::pawnCannotMoveMoreThanOneSpaceAfterStartingPosition)
             .filter(this::pawnCannotMoveBack)
             .filter(this::getEmptyLegalDiagonalMoves)
-            .map(CustomLegalSquareListMapper::fromSquareToLegalMove)
+            .map(CustomLegalSquareMapper::fromSquareToLegalMove)
             .toList();
     }
 
@@ -136,22 +130,22 @@ public class Pawn extends Piece implements enPassantAvailability{
     }
 
     @Override
-    public void setenPassantAvailable() {
+    public void setEnPassantAvailable() {
         this.enPassantAvailable = true;
     }
 
     @Override
     public LegalMoveSquare enPassantMoveToAdd() {
-        return availableenPassantMove;
+        return availableEnPassantMove;
     }
 
     @Override
-    public void setenPassantMoveToAdd(LegalMoveSquare legalMoveSquare) {
-        this.availableenPassantMove = legalMoveSquare;
+    public void setEnPassantMoveToAdd(LegalMoveSquare legalMoveSquare) {
+        this.availableEnPassantMove = legalMoveSquare;
     }
 
     @Override
-    public void setenPassantPieceToRemove(LegalMoveSquare legalMoveSquare) {
+    public void setEnPassantPieceToRemove(LegalMoveSquare legalMoveSquare) {
         this.enPassantPieceToRemove = legalMoveSquare;
     }
 
@@ -161,8 +155,8 @@ public class Pawn extends Piece implements enPassantAvailability{
     }
 
     @Override
-    public void clearenPassant() {
+    public void clearEnPassant() {
         this.enPassantAvailable = false;
-        this.availableenPassantMove = null;
+        this.availableEnPassantMove = null;
     }
 }

@@ -21,7 +21,7 @@ import com.lazychess.chessgame.dto.ChessMoveDto;
 @SpringBootTest
 class KnightTest {
 
-    private static Board board;
+    private Board board;
 
     @BeforeEach
     public void loadChess() {

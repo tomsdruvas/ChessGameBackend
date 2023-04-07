@@ -1,6 +1,6 @@
 package com.lazychess.chessgame.chessgame;
 
-import static com.lazychess.chessgame.config.CustomLegalSquareListMapper.fromSquareToLegalMove;
+import static com.lazychess.chessgame.repository.mapper.CustomLegalSquareMapper.fromSquareToLegalMove;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,14 +8,11 @@ import java.util.List;
 
 import org.apache.commons.collections4.ListUtils;
 
-import com.lazychess.chessgame.config.CustomLegalSquareListMapper;
+import com.lazychess.chessgame.repository.mapper.CustomLegalSquareMapper;
 
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor
 public class King extends Piece implements CastlingHasMoved {
 
-    private boolean hasMoved = false;
+    private boolean hasMoved;
 
     public King(String name, int row, int column, String colour) {
         super(name, row, column, colour);
@@ -27,7 +24,7 @@ public class King extends Piece implements CastlingHasMoved {
         List<LegalMoveSquare> legalMoves = Arrays.stream(squares).flatMap(Arrays::stream)
             .filter(this::filterSquaresWithSameColourPiece)
             .filter(this::kingLegalMoves)
-            .map(CustomLegalSquareListMapper::fromSquareToLegalMove)
+            .map(CustomLegalSquareMapper::fromSquareToLegalMove)
             .toList();
 
         List<LegalMoveSquare> castlingMoves = generateCastlingSquares(squares);

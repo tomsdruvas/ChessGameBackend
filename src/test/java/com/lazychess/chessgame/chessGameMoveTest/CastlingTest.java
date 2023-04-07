@@ -479,6 +479,25 @@ class CastlingTest {
 
     @Test
     void castlingShouldNotBeAvailable_whenRookOrKingHasBeenMoved_andTheyAreInTheirOriginalPosition() {
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(7, 1, 3, 7),
+            new ChessMoveDto(7, 2, 5, 2),
+
+            new ChessMoveDto(7, 4, 5, 4),
+            new ChessMoveDto(7, 5, 5, 5),
+            new ChessMoveDto(7, 6, 5, 6)
+        );
+        Board board = new Board(preInitChessMoveDtoList);
+        board.movePiece(7,3,7,2);
+        board.movePiece(1,7,2,7);
+        board.movePiece(7,2,7,3);
+
+        Piece whiteKing = board.getSquares()[7][3].getPiece();
+
+        assertThat(whiteKing).isExactlyInstanceOf(King.class);
+        assertThat(whiteKing.getLegalMoves())
+            .noneMatch(square -> square.getRow() == 7 && square.getColumn() == 1)
+            .noneMatch(square -> square.getRow() == 7 && square.getColumn() == 5);
     }
 
     @Test

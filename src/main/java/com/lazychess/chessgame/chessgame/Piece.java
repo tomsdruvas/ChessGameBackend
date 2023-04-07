@@ -84,13 +84,6 @@ public abstract class Piece implements Serializable {
             .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public void addLegalMove(LegalMoveSquare square) {
-        ArrayList<LegalMoveSquare> squareArrayList = new ArrayList<>(legalMoves);
-        squareArrayList.add(square);
-
-        this.legalMoves = squareArrayList;
-    }
-
     public void generateLegalMoves(Square[][] squares) {
     }
 
@@ -150,7 +143,7 @@ public abstract class Piece implements Serializable {
                     return false;
                 }
             }
-        }else if(currentColumn == newColumn){
+        } else if(currentColumn == newColumn){
             for(int x = Math.min(currentRow, newRow) + 1; x < Math.max(currentRow, newRow); x++){
                 if(!Objects.equals(squares[x][currentColumn].getPiece().getColour(), EMPTY_PIECE)) {
                     return false;

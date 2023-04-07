@@ -5,11 +5,8 @@ import static java.util.Arrays.stream;
 import java.util.Arrays;
 import java.util.List;
 
-import com.lazychess.chessgame.config.CustomLegalSquareListMapper;
+import com.lazychess.chessgame.repository.mapper.CustomLegalSquareMapper;
 
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor
 public class Bishop extends Piece {
 
     public Bishop(String name, int row, int column, String colour) {
@@ -24,7 +21,7 @@ public class Bishop extends Piece {
             .filter(this::bishopLegalMoves)
             .filter(this::filterSquaresWithSameColourPiece)
             .filter(square -> piecesInTheWayDiagonally(squares, square))
-            .map(CustomLegalSquareListMapper::fromSquareToLegalMove)
+            .map(CustomLegalSquareMapper::fromSquareToLegalMove)
             .toList();
 
         setLegalMoves(legalMoves);

@@ -16,11 +16,11 @@ import com.lazychess.chessgame.config.CustomLegalSquareListMapper;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class Pawn extends Piece implements EnPassenAvailability{
+public class Pawn extends Piece implements enPassantAvailability{
 
-    private boolean enPassenAvailable = false;
-    private LegalMoveSquare availableEnPassenMove;
-    private LegalMoveSquare enPassenPieceToRemove;
+    private boolean enPassantAvailable = false;
+    private LegalMoveSquare availableenPassantMove;
+    private LegalMoveSquare enPassantPieceToRemove;
 
     public Pawn(String name, int row, int column, String colour) {
         super(name, row, column, colour);
@@ -40,15 +40,15 @@ public class Pawn extends Piece implements EnPassenAvailability{
             .map(CustomLegalSquareListMapper::fromSquareToLegalMove)
             .toList();
 
-        List<LegalMoveSquare> legalMoveSquaresWithEnPassenMoves = addEnPassenMovesIfItIsAvailable(legalMoves);
+        List<LegalMoveSquare> legalMoveSquaresWithenPassantMoves = addenPassantMovesIfItIsAvailable(legalMoves);
 
-        setLegalMoves(legalMoveSquaresWithEnPassenMoves);
+        setLegalMoves(legalMoveSquaresWithenPassantMoves);
     }
 
-    private List<LegalMoveSquare> addEnPassenMovesIfItIsAvailable(List<LegalMoveSquare> legalMoves) {
-        if (enPassenAvailable) {
-            List<LegalMoveSquare> enPassenMoveToAddList = Collections.singletonList(enPassenMoveToAdd());
-            return ListUtils.union(legalMoves, enPassenMoveToAddList);
+    private List<LegalMoveSquare> addenPassantMovesIfItIsAvailable(List<LegalMoveSquare> legalMoves) {
+        if (enPassantAvailable) {
+            List<LegalMoveSquare> enPassantMoveToAddList = Collections.singletonList(enPassantMoveToAdd());
+            return ListUtils.union(legalMoves, enPassantMoveToAddList);
         }
         return legalMoves;
     }
@@ -131,38 +131,38 @@ public class Pawn extends Piece implements EnPassenAvailability{
     }
 
     @Override
-    public boolean enPassenAvailable() {
-        return enPassenAvailable;
+    public boolean enPassantAvailable() {
+        return enPassantAvailable;
     }
 
     @Override
-    public void setEnPassenAvailable() {
-        this.enPassenAvailable = true;
+    public void setenPassantAvailable() {
+        this.enPassantAvailable = true;
     }
 
     @Override
-    public LegalMoveSquare enPassenMoveToAdd() {
-        return availableEnPassenMove;
+    public LegalMoveSquare enPassantMoveToAdd() {
+        return availableenPassantMove;
     }
 
     @Override
-    public void setEnPassenMoveToAdd(LegalMoveSquare legalMoveSquare) {
-        this.availableEnPassenMove = legalMoveSquare;
+    public void setenPassantMoveToAdd(LegalMoveSquare legalMoveSquare) {
+        this.availableenPassantMove = legalMoveSquare;
     }
 
     @Override
-    public void setEnPassenPieceToRemove(LegalMoveSquare legalMoveSquare) {
-        this.enPassenPieceToRemove = legalMoveSquare;
+    public void setenPassantPieceToRemove(LegalMoveSquare legalMoveSquare) {
+        this.enPassantPieceToRemove = legalMoveSquare;
     }
 
     @Override
-    public LegalMoveSquare enPassenPieceToRemove() {
-        return enPassenPieceToRemove;
+    public LegalMoveSquare enPassantPieceToRemove() {
+        return enPassantPieceToRemove;
     }
 
     @Override
-    public void clearEnPassen() {
-        this.enPassenAvailable = false;
-        this.availableEnPassenMove = null;
+    public void clearenPassant() {
+        this.enPassantAvailable = false;
+        this.availableenPassantMove = null;
     }
 }

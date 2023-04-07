@@ -15,7 +15,7 @@ import com.lazychess.chessgame.chessgame.Piece;
 import com.lazychess.chessgame.dto.ChessMoveDto;
 
 @SpringBootTest
-class EnPassenTest {
+class enPassantTest {
 
     private Board board;
 
@@ -25,7 +25,7 @@ class EnPassenTest {
     }
 
     @Test
-    void enPassenMoveShouldBeAvailable_white() {
+    void enPassantMoveShouldBeAvailable_white() {
         board.movePiece(6, 2, 4, 2);
 
         board.movePiece(1, 6, 2, 6);
@@ -41,7 +41,7 @@ class EnPassenTest {
     }
 
     @Test
-    void enPassenMoveShouldBeAvailable_black() {
+    void enPassantMoveShouldBeAvailable_black() {
         board.movePiece(6, 6, 5, 6);
 
         board.movePiece(1, 2, 3, 2);
@@ -59,7 +59,7 @@ class EnPassenTest {
     }
 
     @Test
-    void enPassenMoveShouldBeAvailable_ThenDisappearInNextRound_white() {
+    void enPassantMoveShouldBeAvailable_ThenDisappearInNextRound_white() {
         board.movePiece(6, 2, 4, 2);
 
         board.movePiece(1, 6, 2, 6);
@@ -83,7 +83,7 @@ class EnPassenTest {
     }
 
     @Test
-    void enPassenMoveShouldBeAvailable_ThenDisappearInNextRound_black() {
+    void enPassantMoveShouldBeAvailable_ThenDisappearInNextRound_black() {
         board.movePiece(6, 6, 5, 6);
 
         board.movePiece(1, 2, 3, 2);
@@ -109,7 +109,7 @@ class EnPassenTest {
     }
 
     @Test
-    void enPassenMoveShouldBeAvailable_andPieceShouldBeRemoved_white() {
+    void enPassantMoveShouldBeAvailable_andPieceShouldBeRemoved_white() {
         board.movePiece(6, 2, 4, 2);
 
         board.movePiece(1, 6, 2, 6);
@@ -132,7 +132,7 @@ class EnPassenTest {
     }
 
     @Test
-    void enPassenMoveShouldBeAvailable_andPieceShouldBeRemoved_black() {
+    void enPassantMoveShouldBeAvailable_andPieceShouldBeRemoved_black() {
         board.movePiece(6, 6, 5, 6);
 
         board.movePiece(1, 2, 3, 2);
@@ -156,7 +156,7 @@ class EnPassenTest {
     }
 
     @Test
-    void enPassenMoveShouldBeAvailableWhenPieceOnTheEdgeColumn0_white() {
+    void enPassantMoveShouldBeAvailableWhenPieceOnTheEdgeColumn0_white() {
         board.movePiece(6, 0, 4, 0);
 
         board.movePiece(1, 6, 2, 6);
@@ -172,7 +172,7 @@ class EnPassenTest {
     }
 
     @Test
-    void enPassenMoveShouldBeAvailableWhenPieceOnTheEdgeColumn0_black() {
+    void enPassantMoveShouldBeAvailableWhenPieceOnTheEdgeColumn0_black() {
         board.movePiece(6, 6, 5, 6);
 
         board.movePiece(1, 0, 3, 0);
@@ -190,7 +190,7 @@ class EnPassenTest {
     }
 
     @Test
-    void enPassenMoveShouldBeAvailableWhenPieceOnTheEdgeColumn7_white() {
+    void enPassantMoveShouldBeAvailableWhenPieceOnTheEdgeColumn7_white() {
         board.movePiece(6, 7, 4, 7);
 
         board.movePiece(1, 0, 2, 0);
@@ -206,7 +206,7 @@ class EnPassenTest {
     }
 
     @Test
-    void enPassenMoveShouldBeAvailableWhenPieceOnTheEdgeColumn7_black() {
+    void enPassantMoveShouldBeAvailableWhenPieceOnTheEdgeColumn7_black() {
         board.movePiece(6, 0, 5, 0);
 
         board.movePiece(1, 7, 3, 7);
@@ -224,7 +224,7 @@ class EnPassenTest {
     }
 
     @Test
-    void enPassenMoveShouldNotBeAvailableIfItPutsOwnKingInCheck_vertical_white() {
+    void enPassantMoveShouldNotBeAvailableIfItPutsOwnKingInCheck_vertical_white() {
         List<ChessMoveDto> preInitChessMoveDtos = List.of(
             new ChessMoveDto(7, 3, 3, 0),
             new ChessMoveDto(7, 7, 4, 6),
@@ -248,7 +248,7 @@ class EnPassenTest {
     }
 
     @Test
-    void enPassenMoveShouldNotBeAvailableIfItPutsOwnKingInCheck_horizontal_white() {
+    void enPassantMoveShouldNotBeAvailableIfItPutsOwnKingInCheck_horizontal_white() {
         List<ChessMoveDto> preInitChessMoveDtos = List.of(
             new ChessMoveDto(7, 3, 2, 2),
             new ChessMoveDto(0, 0, 5, 2),
@@ -267,7 +267,7 @@ class EnPassenTest {
     }
 
     @Test
-    void enPassenMoveShouldNotBeAvailableIfItPutsOwnKingInCheck_vertical_black() {
+    void enPassantMoveShouldNotBeAvailableIfItPutsOwnKingInCheck_vertical_black() {
         List<ChessMoveDto> preInitChessMoveDtos = List.of(
             new ChessMoveDto(0, 3, 4, 0),
             new ChessMoveDto(7, 7, 4, 7),

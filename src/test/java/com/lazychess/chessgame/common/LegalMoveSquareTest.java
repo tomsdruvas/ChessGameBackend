@@ -7,6 +7,7 @@ import com.jparams.verifier.tostring.ToStringVerifier;
 import com.lazychess.chessgame.chessgame.LegalMoveSquare;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 
 class LegalMoveSquareTest {
 
@@ -15,6 +16,7 @@ class LegalMoveSquareTest {
         EqualsVerifier
             .forClass(LegalMoveSquare.class)
             .withIgnoredFields("piece")
+            .suppress(Warning.NONFINAL_FIELDS)
             .withPrefabValues(LegalMoveSquare.class, new LegalMoveSquare(1,2), new LegalMoveSquare(2,3))
             .verify();
     }

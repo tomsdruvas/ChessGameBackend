@@ -47,7 +47,7 @@ public class BoardService {
     public JsonObjectBoardResponse playerTwoJoinsGame(String boardGameId, ApplicationUser applicationUser) {
         String playersUsername = applicationUser.getUsername();
         String playerTwoId = applicationUser.getId();
-        BoardDao boardDao = boardRepository.findById(boardGameId).orElseThrow(() -> new BoardNotFoundException(boardGameId));
+        BoardDao boardDao = findChessGameById(boardGameId);
         PlayersDao playersDao = boardDao.getPlayersDao();
         checkIfPlayerAlreadyPartOfThisGame(playersDao, playersUsername);
         playersDao.setPlayerTwoAppUsername(playersUsername);
@@ -58,7 +58,7 @@ public class BoardService {
     }
 
     public JsonObjectBoardResponse processChessMove(String boardGameId, String playersUsername, ChessMoveDto chessMoveDto) {
-        BoardDao boardDao = boardRepository.findById(boardGameId).orElseThrow(() -> new BoardNotFoundException(boardGameId));
+        BoardDao boardDao = findChessGameById(boardGameId);
         checkIfGameIsInACheckMateState(boardDao);
         checkIfPlayerTwoHasJoined(boardDao);
         checkIfPlayerIsPartOfThisGame(boardDao, playersUsername);
@@ -75,7 +75,7 @@ public class BoardService {
     }
 
     public JsonObjectBoardResponse processPawnPromotion(String boardGameId, String playersUsername, String promotePawnTo) {
-        BoardDao boardDao = boardRepository.findById(boardGameId).orElseThrow(() -> new BoardNotFoundException(boardGameId));
+        BoardDao boardDao = findChessGameById(boardGameId);
         checkIfGameIsInACheckMateState(boardDao);
         checkIfPlayerTwoHasJoined(boardDao);
         checkIfPlayerIsPartOfThisGame(boardDao, playersUsername);
@@ -92,6 +92,10 @@ public class BoardService {
         return buildJsonObjectBoardResponse(updatedBoardDao);
     }
 
+    private BoardDao findChessGameById(String boardGameId) {
+        return boardRepository.findById(boardGameId).orElseThrow(() -> new BoardNotFoundException(boardGameId));
+    }
+
     private JsonObjectBoardResponse buildJsonObjectBoardResponse(BoardDao boardDao) {
         return JsonObjectBoardResponse.newBuilder()
             .boardId(boardDao.getId())
@@ -99,6 +103,7 @@ public class BoardService {
             .gameState(boardDao.getStateOfTheGame().toString())
             .currentPlayerColour(boardDao.getCurrentPlayerColour())
             .players(buildJsonObjectPlayersResponseData(boardDao.getPlayersDao()))
+            .pawnPromotionPending(boardDao.isPawnPromotionPending())
             .winner(boardDao.getWinnerUsername())
             .build();
     }

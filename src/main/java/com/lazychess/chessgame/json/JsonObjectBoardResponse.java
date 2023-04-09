@@ -132,7 +132,7 @@ public class JsonObjectBoardResponse {
         }
 
         @JsonProperty(PAWN_PROMOTION_PENDING)
-        public Builder winner(boolean val) {
+        public Builder pawnPromotionPending(boolean val) {
             pawnPromotionPending = val;
             return this;
         }

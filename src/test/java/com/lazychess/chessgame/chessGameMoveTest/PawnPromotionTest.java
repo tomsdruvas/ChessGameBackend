@@ -11,14 +11,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.lazychess.chessgame.chessgame.Bishop;
 import com.lazychess.chessgame.chessgame.Board;
+import com.lazychess.chessgame.chessgame.Knight;
 import com.lazychess.chessgame.chessgame.Piece;
 import com.lazychess.chessgame.chessgame.Queen;
 import com.lazychess.chessgame.chessgame.Rook;
 import com.lazychess.chessgame.chessgame.Square;
 import com.lazychess.chessgame.dto.ChessMoveDto;
 import com.lazychess.chessgame.exception.InvalidChessPieceForPawnPromotionException;
-import com.lazychess.chessgame.exception.NotYourTurnException;
+import com.lazychess.chessgame.exception.WrongColourPieceOnSquareException;
 
 @SpringBootTest
 class PawnPromotionTest {
@@ -40,8 +42,8 @@ class PawnPromotionTest {
         assertThat(board.getCurrentPlayerColourState()).isEqualTo("white");
         assertThat(board.isPawnPromotionPending()).isTrue();
 
-        assertThatThrownBy(() -> board.movePiece(1,6,2,6)).isInstanceOf(NotYourTurnException.class)
-            .hasMessage("It is not the black's turn");
+        assertThatThrownBy(() -> board.movePiece(1,6,2,6)).isInstanceOf(WrongColourPieceOnSquareException.class)
+            .hasMessage("Source square does not have your colour piece on it");
     }
 
     @Test
@@ -58,8 +60,8 @@ class PawnPromotionTest {
         assertThat(board.getCurrentPlayerColourState()).isEqualTo("black");
         assertThat(board.isPawnPromotionPending()).isTrue();
 
-        assertThatThrownBy(() -> board.movePiece(6,4,5,4)).isInstanceOf(NotYourTurnException.class)
-            .hasMessage("It is not the white's turn");
+        assertThatThrownBy(() -> board.movePiece(6,4,5,4)).isInstanceOf(WrongColourPieceOnSquareException.class)
+            .hasMessage("Source square does not have your colour piece on it");
     }
 
     @Test
@@ -84,6 +86,78 @@ class PawnPromotionTest {
         assertThat(board.getCurrentPlayerColourState()).isEqualTo("black");
         assertThat(board.isPawnPromotionPending()).isFalse();
         assertThat(allWhiteQueens).hasSize(2);
+    }
+
+    @Test
+    void pawnPromotionPendingPropertyOnBoardShouldFalse_andHaveExtraBishop_white() {
+        List<ChessMoveDto> preInitChessMoveDtos = List.of(
+            new ChessMoveDto(0, 0, 2, 7),
+            new ChessMoveDto(1, 0, 3, 7),
+            new ChessMoveDto(6, 0, 1, 0)
+        );
+        Board board = new Board(preInitChessMoveDtos);
+        board.movePiece(1, 0, 0, 0);
+
+        board.promoteAPawn("Bishop");
+
+        List<Piece> allWhiteBishops = Arrays.stream(board.getSquares())
+            .flatMap(Arrays::stream)
+            .map(Square::getPiece)
+            .filter(piece -> piece instanceof Bishop)
+            .filter(piece -> Objects.equals(piece.getColour(), "white"))
+            .toList();
+
+        assertThat(board.getCurrentPlayerColourState()).isEqualTo("black");
+        assertThat(board.isPawnPromotionPending()).isFalse();
+        assertThat(allWhiteBishops).hasSize(3);
+    }
+
+    @Test
+    void pawnPromotionPendingPropertyOnBoardShouldFalse_andHaveExtraRook_white() {
+        List<ChessMoveDto> preInitChessMoveDtos = List.of(
+            new ChessMoveDto(0, 0, 2, 7),
+            new ChessMoveDto(1, 0, 3, 7),
+            new ChessMoveDto(6, 0, 1, 0)
+        );
+        Board board = new Board(preInitChessMoveDtos);
+        board.movePiece(1, 0, 0, 0);
+
+        board.promoteAPawn("Rook");
+
+        List<Piece> allWhiteRooks = Arrays.stream(board.getSquares())
+            .flatMap(Arrays::stream)
+            .map(Square::getPiece)
+            .filter(piece -> piece instanceof Rook)
+            .filter(piece -> Objects.equals(piece.getColour(), "white"))
+            .toList();
+
+        assertThat(board.getCurrentPlayerColourState()).isEqualTo("black");
+        assertThat(board.isPawnPromotionPending()).isFalse();
+        assertThat(allWhiteRooks).hasSize(3);
+    }
+
+    @Test
+    void pawnPromotionPendingPropertyOnBoardShouldFalse_andHaveExtraKnight_white() {
+        List<ChessMoveDto> preInitChessMoveDtos = List.of(
+            new ChessMoveDto(0, 0, 2, 7),
+            new ChessMoveDto(1, 0, 3, 7),
+            new ChessMoveDto(6, 0, 1, 0)
+        );
+        Board board = new Board(preInitChessMoveDtos);
+        board.movePiece(1, 0, 0, 0);
+
+        board.promoteAPawn("Knight");
+
+        List<Piece> allWhiteKnights = Arrays.stream(board.getSquares())
+            .flatMap(Arrays::stream)
+            .map(Square::getPiece)
+            .filter(piece -> piece instanceof Knight)
+            .filter(piece -> Objects.equals(piece.getColour(), "white"))
+            .toList();
+
+        assertThat(board.getCurrentPlayerColourState()).isEqualTo("black");
+        assertThat(board.isPawnPromotionPending()).isFalse();
+        assertThat(allWhiteKnights).hasSize(3);
     }
 
     @Test

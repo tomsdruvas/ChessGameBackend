@@ -18,7 +18,9 @@ import com.lazychess.chessgame.chessgame.Pawn;
 import com.lazychess.chessgame.chessgame.Piece;
 import com.lazychess.chessgame.chessgame.Queen;
 import com.lazychess.chessgame.chessgame.Rook;
-import com.lazychess.chessgame.exception.NotYourTurnException;
+import com.lazychess.chessgame.exception.EmptySourceSquareException;
+import com.lazychess.chessgame.exception.IllegalMoveException;
+import com.lazychess.chessgame.exception.WrongColourPieceOnSquareException;
 
 @SpringBootTest
 class ChessBoardTest {
@@ -182,7 +184,21 @@ class ChessBoardTest {
 
     @Test
     void exceptionThrownIfWrongColourTriesToPlay() {
-        assertThatThrownBy(() -> board.movePiece(1,0,2,0)).isInstanceOf(NotYourTurnException.class)
-            .hasMessage("It is not the black's turn");
+        assertThatThrownBy(() -> board.movePiece(1,0,2,0)).isInstanceOf(WrongColourPieceOnSquareException.class)
+            .hasMessage("Source square does not have your colour piece on it");
     }
+
+    @Test
+    void exceptionThrownIfMoveIsNotALegalMove() {
+        assertThatThrownBy(() -> board.movePiece(6,0,5,1)).isInstanceOf(IllegalMoveException.class)
+            .hasMessage("That is not a legal move for a Pawn");
+    }
+
+    @Test
+    void exceptionThrownIfSourceSquareIsEmpty() {
+        assertThatThrownBy(() -> board.movePiece(5,0,4,0)).isInstanceOf(EmptySourceSquareException.class)
+            .hasMessage("Source square does not have a piece on it");
+    }
+
+
 }

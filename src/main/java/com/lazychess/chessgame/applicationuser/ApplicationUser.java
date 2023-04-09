@@ -1,7 +1,6 @@
 package com.lazychess.chessgame.applicationuser;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.hibernate.annotations.Generated;
@@ -23,12 +22,10 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 
 @Entity
 @Table(name = "chess_game_user")
 @Getter
-@Setter
 public class ApplicationUser {
 
     @Id
@@ -47,8 +44,6 @@ public class ApplicationUser {
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "cgb_app_user_roles", referencedColumnName = "cgb_app_user_id"),
         inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<Role> roles = new ArrayList<>();
-
-    private Date lastLogin;
 
     public ApplicationUser() {
     }

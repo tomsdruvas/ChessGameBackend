@@ -22,7 +22,6 @@ import com.lazychess.chessgame.exception.EmptySourceSquareException;
 import com.lazychess.chessgame.exception.GameIsNotInOnGoingStateException;
 import com.lazychess.chessgame.exception.IllegalMoveException;
 import com.lazychess.chessgame.exception.InvalidChessPieceForPawnPromotionException;
-import com.lazychess.chessgame.exception.NotYourTurnException;
 import com.lazychess.chessgame.exception.WrongColourPieceOnSquareException;
 
 public class Board implements Serializable {
@@ -191,7 +190,7 @@ public class Board implements Serializable {
         List<LegalMoveSquare> legalMoves = pieceToMove.getLegalMoves();
         String currentPlayersColour = pieceToMove.getColour();
 
-        validateMove(currentRow, currentColumn, pieceToMove);
+        validateMove(pieceToMove);
 
         if(isMoveInLegalMoves(legalMoves, newRow, newColumn)) {
             movePieceAction(currentRow, currentColumn, newRow, newColumn, pieceToMove);
@@ -221,16 +220,15 @@ public class Board implements Serializable {
         }
     }
 
-    private void validateMove(int currentRow, int currentColumn, Piece pieceToMove) {
-        checkIfSourceSquareIsEmpty(pieceToMove);
-        checkIfItIsColoursTurn(pieceToMove);
-        checkIfSourceSquareHasCurrentPlayersPieceOnIt(currentRow, currentColumn);
-    }
-
     private void checkIfGameIsOnGoing() {
         if(getStateOfTheGame() != ONGOING) {
             throw new GameIsNotInOnGoingStateException("The game is not in the ongoing state");
         }
+    }
+
+    private void validateMove(Piece pieceToMove) {
+        checkIfSourceSquareIsEmpty(pieceToMove);
+        checkIfSourceSquareHasCurrentPlayersPieceOnIt(pieceToMove);
     }
 
     private void checkIfSourceSquareIsEmpty(Piece piece) {
@@ -239,10 +237,10 @@ public class Board implements Serializable {
         }
     }
 
-    private void checkIfItIsColoursTurn(Piece pieceOnSquare) {
-        String colour = pieceOnSquare.getColour();
-        if(!Objects.equals(getCurrentPlayerColourState(), colour)) {
-            throw new NotYourTurnException("It is not the " + colour +"'s turn");
+    private void checkIfSourceSquareHasCurrentPlayersPieceOnIt(Piece pieceToMove) {
+        String colour = pieceToMove.getColour();
+        if (!Objects.equals(colour, getCurrentPlayerColourState())) {
+            throw new WrongColourPieceOnSquareException("Source square does not have your colour piece on it");
         }
     }
 
@@ -448,15 +446,6 @@ public class Board implements Serializable {
     private void checkIfItIsKingsOrRooksFirstMove(Piece pieceToMove) {
         if(pieceToMove instanceof CastlingHasMoved piece && (!piece.getHasMoved())) {
             piece.hasMoved();
-        }
-    }
-
-    private void checkIfSourceSquareHasCurrentPlayersPieceOnIt(int currentRow, int currentColumn) {
-        String colour = getSquares()[currentRow][currentColumn].getPiece().getColour();
-        if (Objects.equals(colour, "empty")) {
-            throw new EmptySourceSquareException("Source square does not have a piece on it");
-        } else if (!Objects.equals(colour, getCurrentPlayerColourState())) {
-            throw new WrongColourPieceOnSquareException("Source square does not have your colour piece on it");
         }
     }
 

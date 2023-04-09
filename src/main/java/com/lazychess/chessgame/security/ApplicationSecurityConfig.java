@@ -47,7 +47,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 import jakarta.annotation.PostConstruct;
 
 @Configuration
-@EnableWebSecurity(debug = false)
+@EnableWebSecurity(debug = true)
 @EnableMethodSecurity(prePostEnabled = false)
 public class ApplicationSecurityConfig {
     private final RsaKeyProperties jwtConfigProperties;

@@ -41,18 +41,6 @@ public class JsonObjectBoardResponse {
         return new Builder();
     }
 
-    public static Builder newBuilder(JsonObjectBoardResponse copy) {
-        Builder builder = new Builder();
-        builder.boardId = copy.getBoardId();
-        builder.squares = copy.getSquares();
-        builder.gameState = copy.getGameState();
-        builder.currentPlayerColour = copy.getCurrentPlayerColour();
-        builder.players = copy.getPlayers();
-        builder.winner = copy.getWinner();
-
-        return builder;
-    }
-
     @JsonProperty(BOARD_ID_JSON_PROPERTY)
     public String getBoardId() {
         return boardId;

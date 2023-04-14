@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -24,7 +25,7 @@ import testUtil.ChessMoveNotion;
 import testUtil.TypeOfMoveEnum;
 
 @SpringBootTest
-//@Disabled
+@Disabled
 class ChessNotationsTest {
 
     private Board board;

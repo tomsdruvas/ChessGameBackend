@@ -11,7 +11,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +46,6 @@ import wiremock.com.jayway.jsonpath.JsonPath;
 @ContextConfiguration
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
-@Disabled
 class BoardControllerIntegrationTest {
 
     private static final MediaType APPLICATION_JSON_UTF8 = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), StandardCharsets.UTF_8);

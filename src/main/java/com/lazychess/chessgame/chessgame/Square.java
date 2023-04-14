@@ -7,11 +7,14 @@ import static com.lazychess.chessgame.chessgame.ChessConstants.WHITE;
 import java.io.Serializable;
 import java.util.Objects;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public final class Square implements Serializable {
 
-    private final int row;
-    private final int column;
-    private final String colour;
+    private int row;
+    private int column;
+    private String colour;
     private Piece piece;
 
     public Square(int row, int column, boolean squareColor) {
@@ -53,7 +56,7 @@ public final class Square implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Square square)) return false;
-        return row == square.row && column == square.column && Objects.equals(colour, square.colour);
+        return row == square.row && column == square.column && Objects.equals(colour, square.colour) && Objects.equals(piece, square.getPiece());
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.lazychess.chessgame.chessgame.LegalMoveSquare;
 import com.lazychess.chessgame.chessgame.Square;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 
 class SquareTest {
 
@@ -17,6 +18,7 @@ class SquareTest {
             .forClass(Square.class)
             .withIgnoredFields("piece")
             .withPrefabValues(LegalMoveSquare.class, new LegalMoveSquare(1,2), new LegalMoveSquare(2,3))
+            .suppress(Warning.NONFINAL_FIELDS)
             .verify();
     }
 

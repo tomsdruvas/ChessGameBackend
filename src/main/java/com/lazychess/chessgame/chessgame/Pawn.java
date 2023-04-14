@@ -13,6 +13,9 @@ import org.apache.commons.collections4.ListUtils;
 
 import com.lazychess.chessgame.repository.mapper.CustomLegalSquareMapper;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class Pawn extends Piece implements EnPassantAvailability {
 
     private boolean enPassantAvailable = false;

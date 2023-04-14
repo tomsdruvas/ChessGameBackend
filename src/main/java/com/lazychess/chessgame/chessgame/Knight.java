@@ -5,6 +5,9 @@ import java.util.List;
 
 import com.lazychess.chessgame.repository.mapper.CustomLegalSquareMapper;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class Knight extends Piece {
 
     public Knight(String name, int row, int column, String colour) {

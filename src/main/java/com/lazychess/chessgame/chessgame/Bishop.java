@@ -7,6 +7,9 @@ import java.util.List;
 
 import com.lazychess.chessgame.repository.mapper.CustomLegalSquareMapper;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class Bishop extends Piece {
 
     public Bishop(String name, int row, int column, String colour) {

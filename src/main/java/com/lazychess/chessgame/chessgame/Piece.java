@@ -34,7 +34,7 @@ public abstract class Piece implements Serializable {
     @Serial
     private static final long serialVersionUID = 3963038001873827698L;
 
-    String name;
+    private String name;
     private String colour;
     private int row;
     private int column;
@@ -151,6 +151,18 @@ public abstract class Piece implements Serializable {
             }
         }
         return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Piece piece)) return false;
+        return row == piece.row && column == piece.column && Objects.equals(name, piece.name) && Objects.equals(colour, piece.colour);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, colour, row, column);
     }
 
     @Serial

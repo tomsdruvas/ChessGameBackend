@@ -61,7 +61,7 @@ public final class Square implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(row, column, colour);
+        return Objects.hash(row, column, colour, piece);
     }
 
     @Override

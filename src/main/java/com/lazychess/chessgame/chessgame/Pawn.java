@@ -162,4 +162,31 @@ public class Pawn extends Piece implements EnPassantAvailability {
         this.enPassantAvailable = false;
         this.availableEnPassantMove = null;
     }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Pawn pawn)) return false;
+        return getPieceRow() == pawn.getPieceRow() &&
+            getPieceColumn() == pawn.getPieceColumn() &&
+            Objects.equals(getName(), pawn.getName()) &&
+            Objects.equals(getColour(), pawn.getColour()) &&
+            enPassantAvailable() == pawn.enPassantAvailable();
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(getPieceRow(), getPieceColumn(), getName(), getColour(), enPassantAvailable());
+    }
+
+    @Override
+    public String toString() {
+        return "Pawn{" +
+            "name='" + getName() + '\'' +
+            ", colour='" + getColour() + '\'' +
+            ", row=" + getPieceRow() +
+            ", column=" + getPieceColumn() +
+            ", enPassantAvailable=" + enPassantAvailable() +
+            '}';
+    }
 }

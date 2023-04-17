@@ -5,6 +5,7 @@ import static com.lazychess.chessgame.repository.mapper.CustomLegalSquareMapper.
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.collections4.ListUtils;
 
@@ -90,5 +91,32 @@ public class King extends Piece implements CastlingHasMoved {
             removeLegalMove(0,1);
             removeLegalMove(0,5);
         }
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof King king)) return false;
+        return getPieceRow() == king.getPieceRow() &&
+            getPieceColumn() == king.getPieceColumn() &&
+            Objects.equals(getName(), king.getName()) &&
+            Objects.equals(getColour(), king.getColour()) &&
+            getHasMoved() == king.getHasMoved();
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(getPieceRow(), getPieceColumn(), getName(), getColour(), getHasMoved());
+    }
+
+    @Override
+    public String toString() {
+        return "King{" +
+            "name='" + getName() + '\'' +
+            ", colour='" + getColour() + '\'' +
+            ", row=" + getPieceRow() +
+            ", column=" + getPieceColumn() +
+            ", hasMoved=" + hasMoved +
+            '}';
     }
 }

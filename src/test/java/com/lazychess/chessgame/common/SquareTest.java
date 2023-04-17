@@ -16,7 +16,6 @@ class SquareTest {
     void equalsAndHashCodeTest() {
         EqualsVerifier
             .forClass(Square.class)
-            .withIgnoredFields("piece")
             .withPrefabValues(LegalMoveSquare.class, new LegalMoveSquare(1,2), new LegalMoveSquare(2,3))
             .suppress(Warning.NONFINAL_FIELDS)
             .verify();

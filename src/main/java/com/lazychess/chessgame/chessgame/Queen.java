@@ -2,6 +2,7 @@ package com.lazychess.chessgame.chessgame;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import com.lazychess.chessgame.repository.mapper.CustomLegalSquareMapper;
 
@@ -45,5 +46,30 @@ public class Queen extends Piece {
         }
 
         return legalStraightMove || legalDiagonalMove;
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Queen queen)) return false;
+        return getPieceRow() == queen.getPieceRow() &&
+            getPieceColumn() == queen.getPieceColumn() &&
+            Objects.equals(getName(), queen.getName()) &&
+            Objects.equals(getColour(), queen.getColour());
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(getPieceRow(), getPieceColumn(), getName(), getColour());
+    }
+
+    @Override
+    public String toString() {
+        return "Queen{" +
+            "name='" + getName() + '\'' +
+            ", colour='" + getColour() + '\'' +
+            ", row=" + getPieceRow() +
+            ", column=" + getPieceColumn() +
+            '}';
     }
 }

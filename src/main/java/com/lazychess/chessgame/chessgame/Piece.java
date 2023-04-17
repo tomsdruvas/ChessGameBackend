@@ -153,18 +153,6 @@ public abstract class Piece implements Serializable {
         return true;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Piece piece)) return false;
-        return row == piece.row && column == piece.column && Objects.equals(name, piece.name) && Objects.equals(colour, piece.colour);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, colour, row, column);
-    }
-
     @Serial
     private void writeObject(java.io.ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();

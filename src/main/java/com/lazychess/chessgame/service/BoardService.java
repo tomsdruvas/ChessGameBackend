@@ -1,5 +1,8 @@
 package com.lazychess.chessgame.service;
 
+import static com.lazychess.chessgame.chessgame.ChessConstants.BLACK;
+import static com.lazychess.chessgame.chessgame.ChessConstants.WHITE;
+
 import java.util.Objects;
 
 import org.springframework.stereotype.Service;
@@ -180,13 +183,12 @@ public class BoardService {
             PlayersDao playersDao = boardDao.getPlayersDao();
             String playerOneAppUsername = playersDao.getPlayerOneAppUsername();
             String playerTwoAppUsername = playersDao.getPlayerTwoAppUsername();
-            String activePlayerUsername = playersDao.getActivePlayerUsername();
+            String activePlayerColour = boardDao.getCurrentPlayerColour();
 
-            if (Objects.equals(activePlayerUsername, playerOneAppUsername)) {
+            if (Objects.equals(activePlayerColour, BLACK)) {
                 playersDao.setActivePlayerUsername(playerTwoAppUsername);
-            } else if (Objects.equals(activePlayerUsername, playerTwoAppUsername)) {
+            } else if (Objects.equals(activePlayerColour, WHITE)) {
                 playersDao.setActivePlayerUsername(playerOneAppUsername);
-
             }
             boardDao.setPlayersDao(playersDao);
         }

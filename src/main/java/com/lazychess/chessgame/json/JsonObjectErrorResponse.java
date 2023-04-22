@@ -23,13 +23,6 @@ public class JsonObjectErrorResponse {
         return new Builder();
     }
 
-    public static Builder newBuilder(JsonObjectErrorResponse copy) {
-        Builder builder = new Builder();
-        builder.message = copy.message;
-
-        return builder;
-    }
-
     @JsonProperty(MESSAGE_JSON_PROPERTY)
     public String getMessage() {
         return message;

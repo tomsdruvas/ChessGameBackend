@@ -9,7 +9,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -91,7 +93,7 @@ class BoardControllerIntegrationTest {
 
     @Test
     void existentUserShouldBeAbleToJoinAChessSession() throws Exception {
-        createABoardWithOneUsersAndReturnBoardId();
+        createABoardWithOneUsers();
         MvcResult mvcResult = mockMvc.perform(post("/add-player-two-board/" + savedBoardDao.getId())
                 .header("Authorization", "Bearer " + getPlayerTwoAccessToken()))
             .andExpect(status().isCreated())
@@ -200,6 +202,219 @@ class BoardControllerIntegrationTest {
         });
     }
 
+    @Test
+    void playerOneOfTheBoardShouldBeAbleToMakeAMoveAndTheResultShouldBePendingPawnPromotion() throws Exception {
+        createACustomBoardWithTwoUsersForUserOneMove(
+            List.of(
+                new ChessMoveDto(1,0,2,7),
+                new ChessMoveDto(0,0,3,7),
+                new ChessMoveDto(6,0,1,0)
+            )
+        );
+
+        MvcResult mvcResult = mockMvc.perform(post("/make-a-move/" + savedBoardDao.getId())
+                .contentType(APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + getPlayerOneAccessToken())
+                .content(getMoveJsonRequestBody(1, 0, 0, 0)))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.Players.PlayerOneUsername").value("test_user1"))
+            .andExpect(jsonPath("$.Players.PlayerTwoUsername").value("test_user2"))
+            .andExpect(jsonPath("$.Players.ActivePlayerUsername").value("test_user1"))
+            .andExpect(jsonPath("$.PawnPromotionPending").value("true"))
+            .andReturn();
+
+        Square[][] squaresFromResponseBody = getSquaresFromResponseBody(mvcResult);
+
+        assertThat(squaresFromResponseBody).satisfies(squares -> {
+            assertThat(squares[1][0].getPiece()).isExactlyInstanceOf(EmptyPiece.class);
+            assertThat(squares[0][0].getPiece()).isExactlyInstanceOf(Pawn.class);
+        });
+    }
+
+    @Test
+    void playerOneShouldBeAbleToPickANewPieceForPawnPromotion() throws Exception {
+        createACustomBoardWithTwoUsersForUserOneMove(
+            List.of(
+                new ChessMoveDto(1,0,2,7),
+                new ChessMoveDto(0,0,3,7),
+                new ChessMoveDto(6,0,1,0)
+            )
+        );
+
+        mockMvc.perform(post("/make-a-move/" + savedBoardDao.getId())
+                .contentType(APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + getPlayerOneAccessToken())
+                .content(getMoveJsonRequestBody(1, 0, 0, 0))).andReturn();
+
+        Map<String,Object> body = new HashMap<>();
+        body.put("upgradedPieceName", "Queen");
+
+        MvcResult mvcResult = mockMvc.perform(post("/promote-pawn/" + savedBoardDao.getId())
+                .contentType(APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + getPlayerOneAccessToken())
+                .content(new ObjectMapper().writeValueAsString(body)))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.Players.PlayerOneUsername").value("test_user1"))
+            .andExpect(jsonPath("$.Players.PlayerTwoUsername").value("test_user2"))
+            .andExpect(jsonPath("$.Players.ActivePlayerUsername").value("test_user2"))
+            .andExpect(jsonPath("$.PawnPromotionPending").value("false"))
+            .andReturn();
+
+        Square[][] squaresFromResponseBody = getSquaresFromResponseBody(mvcResult);
+
+        assertThat(squaresFromResponseBody).satisfies(squares -> {
+            assertThat(squares[0][0].getPiece()).isExactlyInstanceOf(Queen.class);
+        });
+    }
+
+    @Test
+    void playerTwoShouldNotBeAbleToPickANewPieceForPawnPromotionWhenItIsPlayerOnesTurn() throws Exception {
+        createACustomBoardWithTwoUsersForUserOneMove(
+            List.of(
+                new ChessMoveDto(1,0,2,7),
+                new ChessMoveDto(0,0,3,7),
+                new ChessMoveDto(6,0,1,0)
+            )
+        );
+
+        mockMvc.perform(post("/make-a-move/" + savedBoardDao.getId())
+            .contentType(APPLICATION_JSON_UTF8)
+            .header("Authorization", "Bearer " + getPlayerOneAccessToken())
+            .content(getMoveJsonRequestBody(1, 0, 0, 0))).andReturn();
+
+        Map<String,Object> body = new HashMap<>();
+        body.put("upgradedPieceName", "Queen");
+
+        mockMvc.perform(post("/promote-pawn/" + savedBoardDao.getId())
+                .contentType(APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + getPlayerTwoAccessToken())
+                .content(new ObjectMapper().writeValueAsString(body)))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.Message").value("The Player Username does not match active Player Username"))
+            .andReturn();
+    }
+
+    @Test
+    void playerTwoShouldNotBeAbleToPickANewPieceForPawnPromotionWhenWrongPieceNameGiven() throws Exception {
+        createACustomBoardWithTwoUsersForUserOneMove(
+            List.of(
+                new ChessMoveDto(1,0,2,7),
+                new ChessMoveDto(0,0,3,7),
+                new ChessMoveDto(6,0,1,0)
+            )
+        );
+
+        mockMvc.perform(post("/make-a-move/" + savedBoardDao.getId())
+            .contentType(APPLICATION_JSON_UTF8)
+            .header("Authorization", "Bearer " + getPlayerOneAccessToken())
+            .content(getMoveJsonRequestBody(1, 0, 0, 0))).andReturn();
+
+        Map<String,Object> body = new HashMap<>();
+        body.put("upgradedPieceName", "test");
+
+        mockMvc.perform(post("/promote-pawn/" + savedBoardDao.getId())
+                .contentType(APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + getPlayerTwoAccessToken())
+                .content(new ObjectMapper().writeValueAsString(body)))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.Message").value("That is not a valid piece name"))
+            .andReturn();
+    }
+
+    @Test
+    void playerOneShouldNotBeAbleToPickANewPieceForPawnPromotion() throws Exception {
+        createACustomBoardWithTwoUsersForUserOneMove(
+            List.of(
+                new ChessMoveDto(1,0,2,7),
+                new ChessMoveDto(0,0,3,7),
+                new ChessMoveDto(6,0,1,0)
+            )
+        );
+
+        Map<String,Object> body = new HashMap<>();
+        body.put("upgradedPieceName", "Bishop");
+
+        mockMvc.perform(post("/promote-pawn/" + savedBoardDao.getId())
+                .contentType(APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + getPlayerOneAccessToken())
+                .content(new ObjectMapper().writeValueAsString(body)))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.Message").value("Cannot promote a pawn at this time"))
+            .andReturn();
+    }
+
+    @Test
+    void playerOneCannotMakeAMoveUntilPlayerTwoHasJoined() throws Exception {
+        createABoardWithOneUsers();
+         mockMvc.perform(post("/make-a-move/" + savedBoardDao.getId())
+                .contentType(APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + getPlayerOneAccessToken())
+                .content(getMoveJsonRequestBody(6, 3, 4, 3)))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.Message").value("Cannot make a move until player 2 has joined"))
+            .andReturn();
+    }
+
+    @Test
+    void playerTwoCannotMakeAMoveWhenItIsPlayerOnesTurn() throws Exception {
+        createABoardWithTwoUsers();
+        mockMvc.perform(post("/make-a-move/" + savedBoardDao.getId())
+                .contentType(APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + getPlayerTwoAccessToken())
+                .content(getMoveJsonRequestBody(6, 3, 4, 3)))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.Message").value("The Player Username does not match active Player Username"))
+            .andReturn();
+    }
+
+    @Test
+    void playerOneCannotMakeAMoveWithOutOfBoundLocation() throws Exception {
+        createABoardWithTwoUsers();
+        mockMvc.perform(post("/make-a-move/" + savedBoardDao.getId())
+                .contentType(APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + getPlayerOneAccessToken())
+                .content(getMoveJsonRequestBody(9, 9, 9, 9)))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.Message").value("Number needs to be between 0 and 7"))
+            .andReturn();
+    }
+
+    @Test
+    void playerOneCannotMakeAnIllegalMove() throws Exception {
+        createABoardWithTwoUsers();
+        mockMvc.perform(post("/make-a-move/" + savedBoardDao.getId())
+                .contentType(APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + getPlayerOneAccessToken())
+                .content(getMoveJsonRequestBody(6, 0, 5, 1)))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.Message").value("That is not a legal move for a Pawn"))
+            .andReturn();
+    }
+
+    @Test
+    void playerOneCannotMakeAMoveWithPlayerTwoPiece() throws Exception {
+        createABoardWithTwoUsers();
+        mockMvc.perform(post("/make-a-move/" + savedBoardDao.getId())
+                .contentType(APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + getPlayerOneAccessToken())
+                .content(getMoveJsonRequestBody(1, 0, 2, 0)))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.Message").value("Source square does not have your colour piece on it"))
+            .andReturn();
+    }
+
+    @Test
+    void playerOneCannotMakeAMoveWithNonExistentBoardId() throws Exception {
+        createABoardWithTwoUsers();
+        mockMvc.perform(post("/make-a-move/" + "non-existant-board")
+                .contentType(APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + getPlayerOneAccessToken())
+                .content(getMoveJsonRequestBody(6, 0, 5, 0)))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.Message").value("Board with ID: non-existant-board does not exist"))
+            .andReturn();
+    }
+
     private Square[][] getSquaresFromResponseBody(MvcResult mvcResult) throws UnsupportedEncodingException {
         String response = mvcResult.getResponse().getContentAsString();
         String squaresString = JsonPath.parse(response).read("$['Squares']").toString();
@@ -207,11 +422,16 @@ class BoardControllerIntegrationTest {
     }
 
     private String getMoveJsonRequestBody(int currentRow, int currentColumn, int newRow, int newColumn) throws JsonProcessingException {
-        ChessMoveDto chessMoveDto = new ChessMoveDto(currentRow, currentColumn, newRow, newColumn);
+        Map<String,Object> body = new HashMap<>();
+        body.put("currentRow", currentRow);
+        body.put("currentColumn", currentColumn);
+        body.put("newRow", newRow);
+        body.put("newColumn", newColumn);
+
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-        return ow.writeValueAsString(chessMoveDto);
+        return ow.writeValueAsString(body);
     }
 
     private void createABoardWithTwoUsers() {
@@ -234,7 +454,7 @@ class BoardControllerIntegrationTest {
         savedBoardDao = boardRepository.saveAndFlush(boardDao);
     }
 
-    private void createABoardWithOneUsersAndReturnBoardId() {
+    private void createABoardWithOneUsers() {
         createUserOne();
         createUserTwo();
 

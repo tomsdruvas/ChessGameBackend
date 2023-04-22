@@ -35,17 +35,6 @@ public class JsonObjectPlayersResponseData {
         return new Builder();
     }
 
-    public static JsonObjectPlayersResponseData.Builder newBuilder(JsonObjectPlayersResponseData copy) {
-        JsonObjectPlayersResponseData.Builder builder = new JsonObjectPlayersResponseData.Builder();
-        builder.playerOneAppUserId = copy.getPlayerOneAppUserId();
-        builder.playerOneUsername = copy.getPlayerOneUsername();
-        builder.playerTwoAppUserId = copy.getPlayerTwoAppUserId();
-        builder.playerTwoUsername = copy.getPlayerTwoUsername();
-        builder.activePlayerUsername = copy.getActivePlayerUsername();
-
-        return builder;
-    }
-
     @JsonProperty(PLAYER_ONE_ID_JSON_PROPERTY)
     public String getPlayerOneAppUserId() {
         return playerOneAppUserId;

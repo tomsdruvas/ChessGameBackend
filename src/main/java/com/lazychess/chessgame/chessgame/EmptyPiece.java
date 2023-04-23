@@ -21,13 +21,12 @@ public class EmptyPiece extends Piece {
         if (!(o instanceof EmptyPiece emptyPiece)) return false;
         return getPieceRow() == emptyPiece.getPieceRow() &&
             getPieceColumn() == emptyPiece.getPieceColumn() &&
-            Objects.equals(getName(), emptyPiece.getName()) &&
-            Objects.equals(getColour(), emptyPiece.getColour());
+            Objects.equals(getName(), emptyPiece.getName());
     }
 
     @Override
     public final int hashCode() {
-        return Objects.hash(getPieceRow(), getPieceColumn(), getName(), getColour());
+        return Objects.hash(getPieceRow(), getPieceColumn(), getName());
     }
 
     @Override

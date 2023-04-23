@@ -16,6 +16,7 @@ import com.lazychess.chessgame.exception.GameHasFinishedException;
 import com.lazychess.chessgame.exception.PawnPromotionStatusNotPendingException;
 import com.lazychess.chessgame.exception.PlayerAlreadyPartOfGameException;
 import com.lazychess.chessgame.exception.PlayerNotPartOfGameException;
+import com.lazychess.chessgame.exception.PlayerTwoAlreadyPartOfGame;
 import com.lazychess.chessgame.exception.PlayerTwoHasNotJoinedException;
 import com.lazychess.chessgame.exception.WrongPlayerMakingAMoveException;
 import com.lazychess.chessgame.json.JsonObjectBoardResponse;
@@ -53,6 +54,7 @@ public class BoardService {
         BoardDao boardDao = findChessGameById(boardGameId);
         PlayersDao playersDao = boardDao.getPlayersDao();
         checkIfPlayerAlreadyPartOfThisGame(playersDao, playersUsername);
+        checkIfPlayerTwoIsAlreadyAdded(playersDao);
         playersDao.setPlayerTwoAppUsername(playersUsername);
         playersDao.setPlayerTwoAppUserId(playerTwoId);
         boardDao.setPlayersDao(playersDao);
@@ -199,6 +201,13 @@ public class BoardService {
         String playerTwoAppUsername = playersDao.getPlayerTwoAppUsername();
         if(Objects.equals(playerOneAppUsername, playersUsername) || Objects.equals(playerTwoAppUsername, playersUsername)) {
             throw new PlayerAlreadyPartOfGameException("Player is already part of the game");
+        }
+    }
+
+    private void checkIfPlayerTwoIsAlreadyAdded(PlayersDao playersDao) {
+        String playerTwoAppUsername = playersDao.getPlayerTwoAppUsername();
+        if(playerTwoAppUsername != null) {
+            throw new PlayerTwoAlreadyPartOfGame("Game already has 2 players");
         }
     }
 }

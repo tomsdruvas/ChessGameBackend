@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import com.lazychess.chessgame.chessgame.Bishop;
+import com.lazychess.chessgame.chessgame.EmptyPiece;
 import com.lazychess.chessgame.chessgame.King;
 import com.lazychess.chessgame.chessgame.Knight;
 import com.lazychess.chessgame.chessgame.LegalMoveSquare;
@@ -128,6 +129,25 @@ class PieceTest {
         ToStringVerifier.forClass(Knight.class)
             .withClassName(NameStyle.SIMPLE_NAME)
             .withIgnoredFields("legalMoves")
+            .verify();
+    }
+
+    @Test
+    void equalsAndHashCodeEmptyPieceTest() {
+        EqualsVerifier
+            .forClass(EmptyPiece.class)
+            .withRedefinedSuperclass()
+            .suppress(Warning.NONFINAL_FIELDS)
+            .withIgnoredFields("legalMoves", "colour")
+            .withPrefabValues(LegalMoveSquare.class, new LegalMoveSquare(1,2), new LegalMoveSquare(2,3))
+            .verify();
+    }
+
+    @Test
+    void testToStringEmptyPiece() {
+        ToStringVerifier.forClass(EmptyPiece.class)
+            .withClassName(NameStyle.SIMPLE_NAME)
+            .withIgnoredFields("legalMoves", "colour")
             .verify();
     }
 }

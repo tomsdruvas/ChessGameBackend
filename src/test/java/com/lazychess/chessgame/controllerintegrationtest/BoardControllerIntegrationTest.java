@@ -32,6 +32,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import com.lazychess.chessgame.applicationuser.ApplicationUser;
 import com.lazychess.chessgame.applicationuser.ApplicationUserRepository;
 import com.lazychess.chessgame.chessgame.Board;
+import com.lazychess.chessgame.chessgame.ChessGameState;
 import com.lazychess.chessgame.chessgame.EmptyPiece;
 import com.lazychess.chessgame.chessgame.Pawn;
 import com.lazychess.chessgame.chessgame.Queen;
@@ -404,6 +405,19 @@ class BoardControllerIntegrationTest {
     }
 
     @Test
+    void playerThreeShouldNotBeAbleToMakeAMove() throws Exception {
+        createABoardWithTwoUsers();
+        createUserThree();
+        mockMvc.perform(post("/make-a-move/" + savedBoardDao.getId())
+                .contentType(APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + getPlayerThreeAccessToken())
+                .content(getMoveJsonRequestBody(1, 0, 2, 0)))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.Message").value("Submitting player is not part of this game"))
+            .andReturn();
+    }
+
+    @Test
     void playerOneCannotMakeAMoveWithNonExistentBoardId() throws Exception {
         createABoardWithTwoUsers();
         mockMvc.perform(post("/make-a-move/" + "non-existant-board")
@@ -412,6 +426,39 @@ class BoardControllerIntegrationTest {
                 .content(getMoveJsonRequestBody(6, 0, 5, 0)))
             .andExpect(status().is4xxClientError())
             .andExpect(jsonPath("$.Message").value("Board with ID: non-existant-board does not exist"))
+            .andReturn();
+    }
+
+    @Test
+    void playerOneCannotMakeAMoveWhenGameStateIsCheckMate() throws Exception {
+        createABoardWithTwoUsersWithCheckmateState();
+        mockMvc.perform(post("/make-a-move/" + savedBoardDao.getId())
+                .contentType(APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + getPlayerOneAccessToken())
+                .content(getMoveJsonRequestBody(1, 0, 2, 0)))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.Message").value("The game has finished"))
+            .andReturn();
+    }
+
+    @Test
+    void playerOneShouldNotBeAbleToJoinAGameAsPlayerTwoThatTheyArePlayerOneAlready() throws Exception {
+        createABoardWithOneUsers();
+        mockMvc.perform(post("/add-player-two-board/" + savedBoardDao.getId())
+                .header("Authorization", "Bearer " + getPlayerOneAccessToken()))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.Message").value("Player is already part of the game"))
+            .andReturn();
+    }
+
+    @Test
+    void playerThreeShouldNotBeAbleToJoinAGameThatAlreadyHasTwoPlayers() throws Exception {
+        createABoardWithTwoUsers();
+        createUserThree();
+        mockMvc.perform(post("/add-player-two-board/" + savedBoardDao.getId())
+                .header("Authorization", "Bearer " + getPlayerThreeAccessToken()))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.Message").value("Game already has 2 players"))
             .andReturn();
     }
 
@@ -439,6 +486,27 @@ class BoardControllerIntegrationTest {
         createUserTwo();
 
         Board board = new Board();
+        BoardDao boardDao = new BoardDao();
+        boardDao.setStateOfTheGame(board.getStateOfTheGame());
+        boardDao.setCurrentPlayerColour(board.getCurrentPlayerColourState());
+        boardDao.setPawnPromotionPending(board.isPawnPromotionPending());
+        boardDao.setSquares(board.getSquares());
+        PlayersDao playersDao = new PlayersDao();
+        playersDao.setPlayerOneAppUserId(applicationUser.getId());
+        playersDao.setPlayerTwoAppUserId(applicationUser2.getId());
+        playersDao.setPlayerOneAppUsername(applicationUser.getUsername());
+        playersDao.setPlayerTwoAppUsername(applicationUser2.getUsername());
+        playersDao.setActivePlayerUsername(applicationUser.getUsername());
+        boardDao.setPlayersDao(playersDao);
+        savedBoardDao = boardRepository.saveAndFlush(boardDao);
+    }
+
+    private void createABoardWithTwoUsersWithCheckmateState() {
+        createUserOne();
+        createUserTwo();
+
+        Board board = new Board();
+        board.setStateOfTheGame(ChessGameState.CHECKMATE);
         BoardDao boardDao = new BoardDao();
         boardDao.setStateOfTheGame(board.getStateOfTheGame());
         boardDao.setCurrentPlayerColour(board.getCurrentPlayerColourState());
@@ -524,6 +592,11 @@ class BoardControllerIntegrationTest {
         applicationUser2 = applicationUserRepository.saveAndFlush(testUser2);
     }
 
+    private void createUserThree() {
+        ApplicationUser testUser3 = new ApplicationUser("test-user-data-id3", "test_user3", "$2a$10$0gJXCjduBg9FgnvFm8E7I.VWOejHp7J/Xpa/DMLu9xENiOm61FUxS");
+        applicationUser2 = applicationUserRepository.saveAndFlush(testUser3);
+    }
+
     private String getPlayerOneAccessToken() throws Exception {
         String username = "test_user1";
         String password = "admin";
@@ -539,6 +612,19 @@ class BoardControllerIntegrationTest {
 
     private String getPlayerTwoAccessToken() throws Exception {
         String username = "test_user2";
+        String password = "admin";
+
+        MvcResult result = mockMvc.perform(post("/token")
+                .with(httpBasic(username, password)))
+            .andExpect(status().isOk()).andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        JacksonJsonParser jsonParser = new JacksonJsonParser();
+        return jsonParser.parseMap(response).get("access_token").toString();
+    }
+
+    private String getPlayerThreeAccessToken() throws Exception {
+        String username = "test_user3";
         String password = "admin";
 
         MvcResult result = mockMvc.perform(post("/token")

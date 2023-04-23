@@ -5,8 +5,6 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 import java.util.Objects;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -20,8 +18,6 @@ import com.lazychess.chessgame.json.JsonObjectErrorResponse;
 @Order(HIGHEST_PRECEDENCE)
 public class BoardControllerAdvice {
 
-    private static final Logger logger = LoggerFactory.getLogger(BoardControllerAdvice.class);
-    
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<JsonObjectErrorResponse> invalidChessMove(RuntimeException e) {

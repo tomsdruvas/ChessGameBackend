@@ -9,7 +9,6 @@ import java.util.Objects;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import com.lazychess.chessgame.chessgame.Bishop;
 import com.lazychess.chessgame.chessgame.Board;
@@ -22,7 +21,6 @@ import com.lazychess.chessgame.dto.ChessMoveDto;
 import com.lazychess.chessgame.exception.InvalidChessPieceForPawnPromotionException;
 import com.lazychess.chessgame.exception.WrongColourPieceOnSquareException;
 
-@SpringBootTest
 class PawnPromotionTest {
 
     @BeforeEach

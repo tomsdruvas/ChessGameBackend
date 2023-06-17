@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import com.lazychess.chessgame.chessgame.Board;
 import com.lazychess.chessgame.chessgame.Pawn;
@@ -16,7 +15,6 @@ import com.lazychess.chessgame.chessgame.Queen;
 import com.lazychess.chessgame.chessgame.Square;
 import com.lazychess.chessgame.dto.ChessMoveDto;
 
-@SpringBootTest
 class QueenTest {
 
     private Board board;

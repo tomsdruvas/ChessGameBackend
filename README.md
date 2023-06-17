@@ -1,4 +1,4 @@
-# ChessGameBackend
+# chess-game-backend
  Java Springboot Chess game backend
 
 To run e2e tests

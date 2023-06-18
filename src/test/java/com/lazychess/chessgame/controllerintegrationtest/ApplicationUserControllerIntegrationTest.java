@@ -23,7 +23,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.lazychess.chessgame.applicationuser.ApplicationUserRepository;
+import com.lazychess.chessgame.repository.ApplicationUserRepository;
 
 import wiremock.com.fasterxml.jackson.core.JsonProcessingException;
 import wiremock.com.fasterxml.jackson.databind.ObjectMapper;

@@ -29,8 +29,8 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import com.lazychess.chessgame.applicationuser.ApplicationUser;
-import com.lazychess.chessgame.applicationuser.ApplicationUserRepository;
+import com.lazychess.chessgame.repository.entity.ApplicationUser;
+import com.lazychess.chessgame.repository.ApplicationUserRepository;
 import com.lazychess.chessgame.chessgame.Board;
 import com.lazychess.chessgame.chessgame.ChessGameState;
 import com.lazychess.chessgame.chessgame.EmptyPiece;

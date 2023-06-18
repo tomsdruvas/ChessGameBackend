@@ -15,7 +15,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.lazychess.chessgame.applicationuser.ApplicationUser;
+import com.lazychess.chessgame.repository.entity.ApplicationUser;
 import com.lazychess.chessgame.chessgame.Board;
 import com.lazychess.chessgame.json.JsonObjectBoardResponse;
 import com.lazychess.chessgame.repository.entity.BoardDao;

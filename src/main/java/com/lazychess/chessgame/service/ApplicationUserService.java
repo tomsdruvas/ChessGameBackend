@@ -1,8 +1,10 @@
-package com.lazychess.chessgame.applicationuser;
+package com.lazychess.chessgame.service;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.lazychess.chessgame.repository.entity.ApplicationUser;
+import com.lazychess.chessgame.repository.ApplicationUserRepository;
 import com.lazychess.chessgame.dto.RegistrationDto;
 import com.lazychess.chessgame.dto.RegistrationResponseDto;
 import com.lazychess.chessgame.exception.PasswordsDontMatchException;

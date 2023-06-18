@@ -1,4 +1,4 @@
-package com.lazychess.chessgame.auth;
+package com.lazychess.chessgame.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

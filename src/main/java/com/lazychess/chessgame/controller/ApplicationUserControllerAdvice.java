@@ -1,4 +1,4 @@
-package com.lazychess.chessgame.applicationuser;
+package com.lazychess.chessgame.controller;
 
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;

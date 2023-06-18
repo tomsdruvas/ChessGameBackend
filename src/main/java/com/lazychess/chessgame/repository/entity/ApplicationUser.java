@@ -1,4 +1,4 @@
-package com.lazychess.chessgame.applicationuser;
+package com.lazychess.chessgame.repository.entity;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -17,7 +17,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.lazychess.chessgame.applicationuser.ApplicationUser;
+import com.lazychess.chessgame.repository.entity.ApplicationUser;
 import com.lazychess.chessgame.chessgame.Board;
 import com.lazychess.chessgame.chessgame.ChessGameState;
 import com.lazychess.chessgame.dto.ChessMoveDto;

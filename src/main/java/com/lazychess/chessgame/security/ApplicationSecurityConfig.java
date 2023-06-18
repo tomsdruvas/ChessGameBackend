@@ -2,6 +2,7 @@ package com.lazychess.chessgame.security;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -102,6 +103,8 @@ public class ApplicationSecurityConfig {
             .exceptionHandling(
                 ex -> ex.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
                     .accessDeniedHandler(new BearerTokenAccessDeniedHandler()))
+            .cors()
+            .and()
             .build();
     }
 
@@ -118,6 +121,8 @@ public class ApplicationSecurityConfig {
                 ex.accessDeniedHandler(new BearerTokenAccessDeniedHandler());
             })
             .httpBasic(withDefaults())
+            .cors()
+            .and()
             .build();
     }
 
@@ -125,6 +130,8 @@ public class ApplicationSecurityConfig {
     @Bean
     public SecurityFilterChain registrationsFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/registration", "/error")
+            .cors()
+            .and()
             .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
             .csrf(AbstractHttpConfigurer::disable);
         return http.build();
@@ -145,9 +152,11 @@ public class ApplicationSecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("https://localhost:3000"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000/"));
         configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET"));
+        configuration.setAllowedMethods(List.of("*"));
+        configuration.setExposedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

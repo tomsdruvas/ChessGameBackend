@@ -7,8 +7,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.lazychess.chessgame.applicationuser.ApplicationUser;
-import com.lazychess.chessgame.applicationuser.ApplicationUserRepository;
+import com.lazychess.chessgame.repository.entity.ApplicationUser;
+import com.lazychess.chessgame.repository.ApplicationUserRepository;
 
 import jakarta.annotation.PostConstruct;
 

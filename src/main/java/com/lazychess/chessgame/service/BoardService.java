@@ -7,7 +7,7 @@ import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
-import com.lazychess.chessgame.applicationuser.ApplicationUser;
+import com.lazychess.chessgame.repository.entity.ApplicationUser;
 import com.lazychess.chessgame.chessgame.Board;
 import com.lazychess.chessgame.chessgame.ChessGameState;
 import com.lazychess.chessgame.dto.ChessMoveDto;

@@ -62,7 +62,9 @@ public class ApplicationSecurityConfig {
         userDetailsService = applicationContext.getBean(CustomUserDetailsService.class);
     }
 
-    public ApplicationSecurityConfig(RsaKeyProperties jwtConfigProperties, WebApplicationContext applicationContext, DataSource dataSource) {
+    public ApplicationSecurityConfig(RsaKeyProperties jwtConfigProperties,
+                                     WebApplicationContext applicationContext,
+                                     DataSource dataSource) {
         this.jwtConfigProperties = jwtConfigProperties;
         this.applicationContext = applicationContext;
         this.dataSource = dataSource;
@@ -129,7 +131,7 @@ public class ApplicationSecurityConfig {
     @Order(1)
     @Bean
     public SecurityFilterChain registrationsFilterChain(HttpSecurity http) throws Exception {
-        http.securityMatcher("/registration", "/error")
+        http.securityMatcher("/registration", "/error","/refreshtoken")
             .cors()
             .and()
             .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())

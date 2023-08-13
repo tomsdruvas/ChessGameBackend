@@ -8,6 +8,8 @@ import com.lazychess.chessgame.repository.entity.ApplicationUser;
 @Repository
 public interface ApplicationUserRepository extends JpaRepository<ApplicationUser, Long> {
 
+    ApplicationUser findById(String id);
+
     ApplicationUser findByUsername(String username);
 
     boolean existsByUsername(String username);

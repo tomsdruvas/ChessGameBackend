@@ -31,7 +31,7 @@ public class BoardControllerAdvice {
         return ResponseEntity.badRequest().body(buildJsonObjectErrorResponse(defaultMessage));
     }
 
-    public static JsonObjectErrorResponse buildJsonObjectErrorResponse(String message) {
+    private static JsonObjectErrorResponse buildJsonObjectErrorResponse(String message) {
         return JsonObjectErrorResponse.newBuilder()
             .message(message)
             .build();

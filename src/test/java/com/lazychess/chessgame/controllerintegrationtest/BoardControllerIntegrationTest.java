@@ -76,7 +76,7 @@ class BoardControllerIntegrationTest {
 
     @AfterEach
     void tearDown() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "user_roles", "chess_game_board", "chess_game_user");
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "refresh_token", "user_roles", "chess_game_board", "chess_game_user");
     }
 
     @Test
@@ -139,7 +139,7 @@ class BoardControllerIntegrationTest {
     void playerTwoOfTheBoardShouldBeAbleToMakeAMove() throws Exception {
         createACustomBoardWithTwoUsersForUserTwoMove(
             List.of(
-                new ChessMoveDto(6,3,4,3)
+                new ChessMoveDto(6, 3, 4, 3)
             )
         );
         MvcResult mvcResult = mockMvc.perform(post("/make-a-move/" + savedBoardDao.getId())
@@ -177,10 +177,10 @@ class BoardControllerIntegrationTest {
     void playerTwoOfTheBoardShouldBeAbleToMakeAMoveAndTheResultShouldBeCheckmate() throws Exception {
         createACustomBoardWithTwoUsersForUserOneMove(
             List.of(
-                new ChessMoveDto(6,3,4,3),
-                new ChessMoveDto(1,2,2,2),
-                new ChessMoveDto(6,4,4,4),
-                new ChessMoveDto(1,1,3,1)
+                new ChessMoveDto(6, 3, 4, 3),
+                new ChessMoveDto(1, 2, 2, 2),
+                new ChessMoveDto(6, 4, 4, 4),
+                new ChessMoveDto(1, 1, 3, 1)
             )
         );
         MvcResult mvcResult = mockMvc.perform(post("/make-a-move/" + savedBoardDao.getId())
@@ -207,9 +207,9 @@ class BoardControllerIntegrationTest {
     void playerOneOfTheBoardShouldBeAbleToMakeAMoveAndTheResultShouldBePendingPawnPromotion() throws Exception {
         createACustomBoardWithTwoUsersForUserOneMove(
             List.of(
-                new ChessMoveDto(1,0,2,7),
-                new ChessMoveDto(0,0,3,7),
-                new ChessMoveDto(6,0,1,0)
+                new ChessMoveDto(1, 0, 2, 7),
+                new ChessMoveDto(0, 0, 3, 7),
+                new ChessMoveDto(6, 0, 1, 0)
             )
         );
 
@@ -236,18 +236,18 @@ class BoardControllerIntegrationTest {
     void playerOneShouldBeAbleToPickANewPieceForPawnPromotion() throws Exception {
         createACustomBoardWithTwoUsersForUserOneMove(
             List.of(
-                new ChessMoveDto(1,0,2,7),
-                new ChessMoveDto(0,0,3,7),
-                new ChessMoveDto(6,0,1,0)
+                new ChessMoveDto(1, 0, 2, 7),
+                new ChessMoveDto(0, 0, 3, 7),
+                new ChessMoveDto(6, 0, 1, 0)
             )
         );
 
         mockMvc.perform(post("/make-a-move/" + savedBoardDao.getId())
-                .contentType(APPLICATION_JSON_UTF8)
-                .header("Authorization", "Bearer " + getPlayerOneAccessToken())
-                .content(getMoveJsonRequestBody(1, 0, 0, 0))).andReturn();
+            .contentType(APPLICATION_JSON_UTF8)
+            .header("Authorization", "Bearer " + getPlayerOneAccessToken())
+            .content(getMoveJsonRequestBody(1, 0, 0, 0))).andReturn();
 
-        Map<String,Object> body = new HashMap<>();
+        Map<String, Object> body = new HashMap<>();
         body.put("upgradedPieceName", "Queen");
 
         MvcResult mvcResult = mockMvc.perform(post("/promote-pawn/" + savedBoardDao.getId())
@@ -272,9 +272,9 @@ class BoardControllerIntegrationTest {
     void playerTwoShouldNotBeAbleToPickANewPieceForPawnPromotionWhenItIsPlayerOnesTurn() throws Exception {
         createACustomBoardWithTwoUsersForUserOneMove(
             List.of(
-                new ChessMoveDto(1,0,2,7),
-                new ChessMoveDto(0,0,3,7),
-                new ChessMoveDto(6,0,1,0)
+                new ChessMoveDto(1, 0, 2, 7),
+                new ChessMoveDto(0, 0, 3, 7),
+                new ChessMoveDto(6, 0, 1, 0)
             )
         );
 
@@ -283,7 +283,7 @@ class BoardControllerIntegrationTest {
             .header("Authorization", "Bearer " + getPlayerOneAccessToken())
             .content(getMoveJsonRequestBody(1, 0, 0, 0))).andReturn();
 
-        Map<String,Object> body = new HashMap<>();
+        Map<String, Object> body = new HashMap<>();
         body.put("upgradedPieceName", "Queen");
 
         mockMvc.perform(post("/promote-pawn/" + savedBoardDao.getId())
@@ -299,9 +299,9 @@ class BoardControllerIntegrationTest {
     void playerTwoShouldNotBeAbleToPickANewPieceForPawnPromotionWhenWrongPieceNameGiven() throws Exception {
         createACustomBoardWithTwoUsersForUserOneMove(
             List.of(
-                new ChessMoveDto(1,0,2,7),
-                new ChessMoveDto(0,0,3,7),
-                new ChessMoveDto(6,0,1,0)
+                new ChessMoveDto(1, 0, 2, 7),
+                new ChessMoveDto(0, 0, 3, 7),
+                new ChessMoveDto(6, 0, 1, 0)
             )
         );
 
@@ -310,7 +310,7 @@ class BoardControllerIntegrationTest {
             .header("Authorization", "Bearer " + getPlayerOneAccessToken())
             .content(getMoveJsonRequestBody(1, 0, 0, 0))).andReturn();
 
-        Map<String,Object> body = new HashMap<>();
+        Map<String, Object> body = new HashMap<>();
         body.put("upgradedPieceName", "test");
 
         mockMvc.perform(post("/promote-pawn/" + savedBoardDao.getId())
@@ -326,13 +326,13 @@ class BoardControllerIntegrationTest {
     void playerOneShouldNotBeAbleToPickANewPieceForPawnPromotion() throws Exception {
         createACustomBoardWithTwoUsersForUserOneMove(
             List.of(
-                new ChessMoveDto(1,0,2,7),
-                new ChessMoveDto(0,0,3,7),
-                new ChessMoveDto(6,0,1,0)
+                new ChessMoveDto(1, 0, 2, 7),
+                new ChessMoveDto(0, 0, 3, 7),
+                new ChessMoveDto(6, 0, 1, 0)
             )
         );
 
-        Map<String,Object> body = new HashMap<>();
+        Map<String, Object> body = new HashMap<>();
         body.put("upgradedPieceName", "Bishop");
 
         mockMvc.perform(post("/promote-pawn/" + savedBoardDao.getId())
@@ -347,7 +347,7 @@ class BoardControllerIntegrationTest {
     @Test
     void playerOneCannotMakeAMoveUntilPlayerTwoHasJoined() throws Exception {
         createABoardWithOneUsers();
-         mockMvc.perform(post("/make-a-move/" + savedBoardDao.getId())
+        mockMvc.perform(post("/make-a-move/" + savedBoardDao.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerOneAccessToken())
                 .content(getMoveJsonRequestBody(6, 3, 4, 3)))
@@ -469,7 +469,7 @@ class BoardControllerIntegrationTest {
     }
 
     private String getMoveJsonRequestBody(int currentRow, int currentColumn, int newRow, int newColumn) throws JsonProcessingException {
-        Map<String,Object> body = new HashMap<>();
+        Map<String, Object> body = new HashMap<>();
         body.put("currentRow", currentRow);
         body.put("currentColumn", currentColumn);
         body.put("newRow", newRow);

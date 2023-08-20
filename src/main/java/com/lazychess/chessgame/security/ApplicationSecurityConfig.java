@@ -2,7 +2,6 @@ package com.lazychess.chessgame.security;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -114,7 +113,7 @@ public class ApplicationSecurityConfig {
     @Bean
     SecurityFilterChain tokenSecurityFilterChain(HttpSecurity http) throws Exception {
         return http
-            .securityMatcher(new AntPathRequestMatcher("/token"))
+            .securityMatcher(new AntPathRequestMatcher("/login"))
             .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .csrf(AbstractHttpConfigurer::disable)
@@ -131,7 +130,7 @@ public class ApplicationSecurityConfig {
     @Order(1)
     @Bean
     public SecurityFilterChain registrationsFilterChain(HttpSecurity http) throws Exception {
-        http.securityMatcher("/registration", "/error","/refreshtoken")
+        http.securityMatcher("/registration", "/error","/refresh-token")
             .cors()
             .and()
             .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())

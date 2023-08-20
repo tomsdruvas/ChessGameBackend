@@ -1,5 +1,8 @@
 package com.lazychess.chessgame.controller;
 
+import static com.lazychess.chessgame.controller.ControllerConstants.BASE_PATH;
+import static com.lazychess.chessgame.controller.ControllerConstants.REGISTRATION_PATH;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,7 +17,7 @@ import com.lazychess.chessgame.dto.RegistrationResponseDto;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping(path = "/")
+@RequestMapping(path = BASE_PATH)
 public class ApplicationUserController {
 
     private final ApplicationUserService applicationUserService;
@@ -23,7 +26,7 @@ public class ApplicationUserController {
         this.applicationUserService = applicationUserService;
     }
 
-    @PostMapping(path = "registration")
+    @PostMapping(path = REGISTRATION_PATH)
     @ResponseStatus(HttpStatus.ACCEPTED)
     public RegistrationResponseDto registerNewUser(@Valid @RequestBody RegistrationDto registrationDto) {
         return applicationUserService.saveUser(registrationDto);

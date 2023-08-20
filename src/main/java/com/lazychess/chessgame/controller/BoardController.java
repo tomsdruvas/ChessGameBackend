@@ -1,5 +1,9 @@
 package com.lazychess.chessgame.controller;
 
+import static com.lazychess.chessgame.controller.ControllerConstants.*;
+import static com.lazychess.chessgame.controller.ControllerConstants.ADD_PLAYER_TWO_TO_BOARD_PATH;
+import static com.lazychess.chessgame.controller.ControllerConstants.MAKE_A_MOVE_PATH;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,14 +38,16 @@ public class BoardController {
     private final CustomUserDetailsService customUserDetailsService;
     private final ResponseEntityFactory responseEntityFactory;
 
-    public BoardController(BoardService boardService, CustomUserDetailsService customUserDetailsService, ResponseEntityFactory responseEntityFactory) {
+    public BoardController(BoardService boardService,
+                           CustomUserDetailsService customUserDetailsService,
+                           ResponseEntityFactory responseEntityFactory) {
         this.boardService = boardService;
         this.customUserDetailsService = customUserDetailsService;
         this.responseEntityFactory = responseEntityFactory;
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(value = "board")
+    @PostMapping(value = BOARD_PATH)
     public ResponseEntity<JsonObjectBoardResponse> createBoard() {
         Authentication principal = SecurityContextHolder.getContext().getAuthentication();
         AppUserPrincipal appUserPrincipal = customUserDetailsService.loadUserByUsername(principal.getName());
@@ -51,7 +57,7 @@ public class BoardController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(value = "add-player-two-board/{boardGameId}")
+    @PostMapping(value = ADD_PLAYER_TWO_TO_BOARD_PATH)
     public ResponseEntity<JsonObjectBoardResponse> playerTwoJoinsBoard(@PathVariable @NotBlank @ValidUuid String boardGameId) {
         Authentication principal = SecurityContextHolder.getContext().getAuthentication();
         AppUserPrincipal appUserPrincipal = customUserDetailsService.loadUserByUsername(principal.getName());
@@ -61,7 +67,7 @@ public class BoardController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(value = "make-a-move/{boardGameId}")
+    @PostMapping(value = MAKE_A_MOVE_PATH)
     public ResponseEntity<JsonObjectBoardResponse> makeAMove(@PathVariable String boardGameId, @Valid @RequestBody ChessMoveDto chessMoveDto) {
         Authentication principal = SecurityContextHolder.getContext().getAuthentication();
         AppUserPrincipal appUserPrincipal = customUserDetailsService.loadUserByUsername(principal.getName());
@@ -71,7 +77,7 @@ public class BoardController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(value = "promote-pawn/{boardGameId}")
+    @PostMapping(value = PROMOTE_PAWN_PATH)
     public ResponseEntity<JsonObjectBoardResponse> promotePawn(@PathVariable String boardGameId, @Valid @RequestBody PawnPromotionDto pawnPromotionDto) {
         Authentication principal = SecurityContextHolder.getContext().getAuthentication();
         AppUserPrincipal appUserPrincipal = customUserDetailsService.loadUserByUsername(principal.getName());

@@ -30,7 +30,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
 @RestController
-@RequestMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = BASE_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 @Validated
 public class BoardController {
 

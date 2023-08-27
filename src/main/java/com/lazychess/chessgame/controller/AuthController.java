@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lazychess.chessgame.dto.AccessTokenDto;
-import com.lazychess.chessgame.repository.entity.RefreshToken;
 import com.lazychess.chessgame.security.AppUserPrincipal;
 import com.lazychess.chessgame.security.TokenService;
 
@@ -45,7 +44,7 @@ public class AuthController {
         ResponseCookie refreshTokenCookie = tokenService.createAndPersistRefreshTokenCookie(userId);
 
         logger.debug("Token requested for user: '{}'", authentication.getName());
-        String token = tokenService.generateToken(username);
+        String token = tokenService.generateAccessToken(username);
         logger.debug("Token granted: {}", token);
 
         return ResponseEntity.ok()

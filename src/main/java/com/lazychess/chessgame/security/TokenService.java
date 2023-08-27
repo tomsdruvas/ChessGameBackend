@@ -43,7 +43,7 @@ public class TokenService {
         this.applicationUserRepository = applicationUserRepository;
     }
 
-    public String generateToken(String username) {
+    public String generateAccessToken(String username) {
         Instant now = Instant.now();
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
@@ -62,7 +62,7 @@ public class TokenService {
                 .map(this::verifyExpiration)
                 .map(RefreshToken::getApplicationUser)
                 .map(user -> {
-                    String accessToken = generateToken(user.getUsername());
+                    String accessToken = generateAccessToken(user.getUsername());
                     return ResponseEntity.ok()
                         .body(new AccessTokenDto(accessToken));
                 })

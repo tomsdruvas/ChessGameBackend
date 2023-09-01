@@ -1,5 +1,6 @@
 package com.lazychess.chessgame.security;
 
+import static com.lazychess.chessgame.controller.ControllerConstants.REFRESH_TOKEN_PATH;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 import java.util.List;

@@ -12,6 +12,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,7 +53,7 @@ public class AuthController {
             .body(new AccessTokenDto(token));
     }
 
-    @PostMapping(REFRESH_TOKEN_PATH)
+    @GetMapping(REFRESH_TOKEN_PATH)
     public ResponseEntity<AccessTokenDto> refreshToken(HttpServletRequest request) {
         return tokenService.refreshAccessToken(request);
     }

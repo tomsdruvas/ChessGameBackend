@@ -4,6 +4,7 @@ import static com.lazychess.chessgame.controller.ControllerConstants.REFRESH_TOK
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.WebUtils;
 
-import com.lazychess.chessgame.dto.AccessTokenDto;
+import com.lazychess.chessgame.dto.AuthDetailsDto;
 import com.lazychess.chessgame.exception.RefreshTokenException;
 import com.lazychess.chessgame.repository.ApplicationUserRepository;
 import com.lazychess.chessgame.repository.RefreshTokenRepository;
@@ -48,13 +49,13 @@ public class TokenService {
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now)
-                .expiresAt(now.plus(1000, ChronoUnit.HOURS))
+                .expiresAt(now.plus(15, ChronoUnit.HOURS))
                 .subject(username)
                 .build();
         return encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 
-    public ResponseEntity<AccessTokenDto> refreshAccessToken(HttpServletRequest request) {
+    public ResponseEntity<AuthDetailsDto> refreshAccessToken(HttpServletRequest request) {
         String refreshToken = getJwtRefreshFromCookies(request);
 
         if(refreshToken != null && !refreshToken.isEmpty()) {
@@ -64,7 +65,7 @@ public class TokenService {
                 .map(user -> {
                     String accessToken = generateAccessToken(user.getUsername());
                     return ResponseEntity.ok()
-                        .body(new AccessTokenDto(accessToken));
+                        .body(new AuthDetailsDto(accessToken, user.getUsername(), List.of("User")));
                 })
                 .orElseThrow(() -> new RefreshTokenException(refreshToken +
                     "Refresh token is not in database!"));

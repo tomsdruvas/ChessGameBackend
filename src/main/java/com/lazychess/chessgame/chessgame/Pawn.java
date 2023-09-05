@@ -18,12 +18,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Pawn extends Piece implements EnPassantAvailability {
 
-    private boolean enPassantAvailable = false;
+    private boolean enPassantAvailable;
     private LegalMoveSquare availableEnPassantMove;
     private LegalMoveSquare enPassantPieceToRemove;
 
     public Pawn(String name, int row, int column, String colour) {
         super(name, row, column, colour);
+        this.enPassantAvailable = false;
     }
 
     @Override
@@ -47,7 +48,7 @@ public class Pawn extends Piece implements EnPassantAvailability {
 
     private List<LegalMoveSquare> addEnPassantMovesIfItIsAvailable(List<LegalMoveSquare> legalMoves) {
         if (enPassantAvailable) {
-            List<LegalMoveSquare> enPassantMoveToAddList = Collections.singletonList(enPassantMoveToAdd());
+            List<LegalMoveSquare> enPassantMoveToAddList = Collections.singletonList(getEnPassantMoveToAdd());
             return ListUtils.union(legalMoves, enPassantMoveToAddList);
         }
         return legalMoves;
@@ -128,7 +129,7 @@ public class Pawn extends Piece implements EnPassantAvailability {
     }
 
     @Override
-    public boolean enPassantAvailable() {
+    public boolean getEnPassantAvailable() {
         return enPassantAvailable;
     }
 
@@ -138,7 +139,7 @@ public class Pawn extends Piece implements EnPassantAvailability {
     }
 
     @Override
-    public LegalMoveSquare enPassantMoveToAdd() {
+    public LegalMoveSquare getEnPassantMoveToAdd() {
         return availableEnPassantMove;
     }
 
@@ -153,7 +154,7 @@ public class Pawn extends Piece implements EnPassantAvailability {
     }
 
     @Override
-    public LegalMoveSquare enPassantPieceToRemove() {
+    public LegalMoveSquare getEnPassantPieceToRemove() {
         return enPassantPieceToRemove;
     }
 
@@ -171,12 +172,12 @@ public class Pawn extends Piece implements EnPassantAvailability {
             getPieceColumn() == pawn.getPieceColumn() &&
             Objects.equals(getName(), pawn.getName()) &&
             Objects.equals(getColour(), pawn.getColour()) &&
-            enPassantAvailable() == pawn.enPassantAvailable();
+            getEnPassantAvailable() == pawn.getEnPassantAvailable();
     }
 
     @Override
     public final int hashCode() {
-        return Objects.hash(getPieceRow(), getPieceColumn(), getName(), getColour(), enPassantAvailable());
+        return Objects.hash(getPieceRow(), getPieceColumn(), getName(), getColour(), getEnPassantAvailable());
     }
 
     @Override
@@ -186,7 +187,7 @@ public class Pawn extends Piece implements EnPassantAvailability {
             ", colour='" + getColour() + '\'' +
             ", row=" + getPieceRow() +
             ", column=" + getPieceColumn() +
-            ", enPassantAvailable=" + enPassantAvailable() +
+            ", enPassantAvailable=" + getEnPassantAvailable() +
             '}';
     }
 }

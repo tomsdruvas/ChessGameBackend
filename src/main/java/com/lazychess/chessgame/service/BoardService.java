@@ -7,13 +7,13 @@ import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
-import com.lazychess.chessgame.repository.entity.ApplicationUser;
 import com.lazychess.chessgame.chessgame.Board;
 import com.lazychess.chessgame.chessgame.ChessGameState;
 import com.lazychess.chessgame.dto.ChessMoveDto;
 import com.lazychess.chessgame.exception.BoardNotFoundException;
 import com.lazychess.chessgame.exception.GameHasFinishedException;
 import com.lazychess.chessgame.exception.PawnPromotionStatusNotPendingException;
+import com.lazychess.chessgame.exception.PawnPromotionStatusPendingException;
 import com.lazychess.chessgame.exception.PlayerAlreadyPartOfGameException;
 import com.lazychess.chessgame.exception.PlayerNotPartOfGameException;
 import com.lazychess.chessgame.exception.PlayerTwoAlreadyPartOfGame;
@@ -22,6 +22,7 @@ import com.lazychess.chessgame.exception.WrongPlayerMakingAMoveException;
 import com.lazychess.chessgame.json.JsonObjectBoardResponse;
 import com.lazychess.chessgame.json.JsonObjectPlayersResponseData;
 import com.lazychess.chessgame.repository.BoardRepository;
+import com.lazychess.chessgame.repository.entity.ApplicationUser;
 import com.lazychess.chessgame.repository.entity.BoardDao;
 import com.lazychess.chessgame.repository.entity.PlayersDao;
 import com.lazychess.chessgame.repository.mapper.BoardDaoMapper;
@@ -68,6 +69,7 @@ public class BoardService {
         checkIfPlayerTwoHasJoined(boardDao);
         checkIfPlayerIsPartOfThisGame(boardDao, playersUsername);
         checkIfItIsSubmittingPlayersTurn(boardDao, playersUsername);
+        checkIfPawnPromotionIsNotPending(boardDao);
         Board board = boardDaoMapper.fromBoardDaoObject(boardDao);
         implementMoveOnTheBoard(board, chessMoveDto);
         BoardDao updatedBoardDao = boardDaoMapper.updateBoardDaoObjectAfterMove(board, boardDao);
@@ -95,6 +97,12 @@ public class BoardService {
         updatedBoardDao = boardRepository.saveAndFlush(updatedBoardDao);
 
         return buildJsonObjectBoardResponse(updatedBoardDao);
+    }
+
+    public JsonObjectBoardResponse getBoard(String boardGameId, String username) {
+        BoardDao boardDao = findChessGameById(boardGameId);
+        checkIfPlayerIsPartOfThisGame(boardDao, username);
+        return buildJsonObjectBoardResponse(boardDao);
     }
 
     private BoardDao findChessGameById(String boardGameId) {
@@ -127,6 +135,13 @@ public class BoardService {
         boolean pawnPromotionStatus = boardDao.isPawnPromotionPending();
         if(!pawnPromotionStatus) {
             throw new PawnPromotionStatusNotPendingException("Cannot promote a pawn at this time");
+        }
+    }
+
+    private void checkIfPawnPromotionIsNotPending(BoardDao boardDao) {
+        boolean pawnPromotionStatus = boardDao.isPawnPromotionPending();
+        if(pawnPromotionStatus) {
+            throw new PawnPromotionStatusPendingException("Cannot make a move because pawn promotion is pending");
         }
     }
 

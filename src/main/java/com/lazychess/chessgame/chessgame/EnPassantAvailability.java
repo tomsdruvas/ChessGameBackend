@@ -2,17 +2,17 @@ package com.lazychess.chessgame.chessgame;
 
 public interface EnPassantAvailability {
 
-    boolean enPassantAvailable();
+    boolean getEnPassantAvailable();
 
     void setEnPassantAvailable();
 
-    LegalMoveSquare enPassantMoveToAdd();
+    LegalMoveSquare getEnPassantMoveToAdd();
 
     void setEnPassantMoveToAdd(LegalMoveSquare legalMoveSquare);
 
     void setEnPassantPieceToRemove(LegalMoveSquare legalMoveSquare);
 
-    LegalMoveSquare enPassantPieceToRemove();
+    LegalMoveSquare getEnPassantPieceToRemove();
 
     void clearEnPassant();
 }

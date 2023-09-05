@@ -313,8 +313,8 @@ public class Board implements Serializable {
     }
 
     private void ifMoveIsAnEnPassantMoveRemovePawn(Piece pieceToMove, int newRow, int newColumn) {
-        if(pieceToMove instanceof Pawn pawn && pawn.enPassantAvailable() && pawn.enPassantMoveToAdd().getRow() == newRow && pawn.enPassantMoveToAdd().getColumn() == newColumn) {
-            squares[((Pawn) pieceToMove).enPassantPieceToRemove().getRow()][((Pawn) pieceToMove).enPassantPieceToRemove().getColumn()].setPiece(new EmptyPiece());
+        if(pieceToMove instanceof Pawn pawn && pawn.getEnPassantAvailable() && pawn.getEnPassantMoveToAdd().getRow() == newRow && pawn.getEnPassantMoveToAdd().getColumn() == newColumn) {
+            squares[((Pawn) pieceToMove).getEnPassantPieceToRemove().getRow()][((Pawn) pieceToMove).getEnPassantPieceToRemove().getColumn()].setPiece(new EmptyPiece());
         }
     }
 
@@ -501,9 +501,9 @@ public class Board implements Serializable {
         Piece pieceClone = SerializationUtils.clone(piece);
         Piece enPassantRemovedPiece = null;
 
-        if (pieceClone instanceof Pawn pawn && pawn.enPassantAvailable() && pawn.enPassantMoveToAdd().getRow() == square.getRow() && pawn.enPassantMoveToAdd().getColumn() == square.getColumn()) {
-            enPassantRemovedPiece = SerializationUtils.clone(cloneSquares[pawn.enPassantPieceToRemove().getRow()][pawn.enPassantPieceToRemove().getColumn()].getPiece());
-            cloneSquares[pawn.enPassantPieceToRemove().getRow()][pawn.enPassantPieceToRemove().getColumn()].clearPiece();
+        if (pieceClone instanceof Pawn pawn && pawn.getEnPassantAvailable() && pawn.getEnPassantMoveToAdd().getRow() == square.getRow() && pawn.getEnPassantMoveToAdd().getColumn() == square.getColumn()) {
+            enPassantRemovedPiece = SerializationUtils.clone(cloneSquares[pawn.getEnPassantPieceToRemove().getRow()][pawn.getEnPassantPieceToRemove().getColumn()].getPiece());
+            cloneSquares[pawn.getEnPassantPieceToRemove().getRow()][pawn.getEnPassantPieceToRemove().getColumn()].clearPiece();
         }
 
         int currentPieceRow = pieceClone.getPieceRow();

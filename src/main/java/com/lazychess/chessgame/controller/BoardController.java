@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,6 +54,16 @@ public class BoardController {
         AppUserPrincipal appUserPrincipal = customUserDetailsService.loadUserByUsername(principal.getName());
 
         JsonObjectBoardResponse initialBoardGame = boardService.createInitialBoardGame(appUserPrincipal.getAppUser());
+        return responseEntityFactory.toResponseEntity(initialBoardGame);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = GET_BOARD_PATH)
+    public ResponseEntity<JsonObjectBoardResponse> getBoard(@PathVariable String boardId) {
+        Authentication principal = SecurityContextHolder.getContext().getAuthentication();
+        AppUserPrincipal appUserPrincipal = customUserDetailsService.loadUserByUsername(principal.getName());
+
+        JsonObjectBoardResponse initialBoardGame = boardService.getBoard(boardId, appUserPrincipal.getUsername());
         return responseEntityFactory.toResponseEntity(initialBoardGame);
     }
 

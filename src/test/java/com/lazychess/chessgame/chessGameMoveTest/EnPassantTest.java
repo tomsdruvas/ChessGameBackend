@@ -130,6 +130,29 @@ class EnPassantTest {
     }
 
     @Test
+    void enPassantMoveShouldBeAvailable_andPieceShouldBeRemoved_white2() {
+        board.movePiece(6, 6, 4, 6);
+
+        board.movePiece(1, 2, 2, 2);
+
+        board.movePiece(4, 6, 3, 6);
+
+        board.movePiece(1, 7, 3, 7);
+
+        board.movePiece(3, 6, 2, 7);
+
+        board.movePiece(3, 5, 4, 5);
+
+        Piece piece = board.getSquares()[2][7].getPiece();
+        Piece removedPiece = board.getSquares()[3][7].getPiece();
+
+        assertThat(piece.getColour()).isEqualTo("white");
+        assertThat(piece).isExactlyInstanceOf(Pawn.class);
+
+        assertThat(removedPiece).isExactlyInstanceOf(EmptyPiece.class);
+    }
+
+    @Test
     void enPassantMoveShouldBeAvailable_andPieceShouldBeRemoved_black() {
         board.movePiece(6, 6, 5, 6);
 

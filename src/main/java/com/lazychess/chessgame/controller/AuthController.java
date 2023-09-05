@@ -5,6 +5,8 @@ import static com.lazychess.chessgame.controller.ControllerConstants.LOGIN_PATH;
 import static com.lazychess.chessgame.controller.ControllerConstants.LOGOUT_PATH;
 import static com.lazychess.chessgame.controller.ControllerConstants.REFRESH_TOKEN_PATH;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.lazychess.chessgame.dto.AccessTokenDto;
+import com.lazychess.chessgame.dto.AuthDetailsDto;
 import com.lazychess.chessgame.security.AppUserPrincipal;
 import com.lazychess.chessgame.security.TokenService;
 
@@ -37,7 +39,7 @@ public class AuthController {
 
     @CrossOrigin
     @PostMapping(LOGIN_PATH)
-    public ResponseEntity<AccessTokenDto> login(Authentication authentication) {
+    public ResponseEntity<AuthDetailsDto> login(Authentication authentication) {
         AppUserPrincipal principal = (AppUserPrincipal) authentication.getPrincipal();
         String userId = principal.getAppUser().getId();
         String username = principal.getAppUser().getUsername();
@@ -50,11 +52,11 @@ public class AuthController {
 
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-            .body(new AccessTokenDto(token));
+            .body(new AuthDetailsDto(token, username, List.of("User")));
     }
 
     @GetMapping(REFRESH_TOKEN_PATH)
-    public ResponseEntity<AccessTokenDto> refreshToken(HttpServletRequest request) {
+    public ResponseEntity<AuthDetailsDto> refreshToken(HttpServletRequest request) {
         return tokenService.refreshAccessToken(request);
     }
 

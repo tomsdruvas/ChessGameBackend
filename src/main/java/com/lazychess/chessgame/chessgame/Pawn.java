@@ -82,7 +82,7 @@ public class Pawn extends Piece implements EnPassantAvailability {
     }
 
     private boolean pawnCanMoveDiagonallyToTakePiece(Square square) {
-        return square.getColumn() != getPieceColumn() && !Objects.equals(square.getPiece().getColour(), EMPTY_PIECE);
+        return square.getColumn() != getPieceColumn() && !Objects.equals(square.getPiece().getColour(), EMPTY_PIECE) && square.getRow() != getPieceRow();
     }
 
     private boolean pawnCannotMoveTwoRowsAndOneColumn(Square square) {

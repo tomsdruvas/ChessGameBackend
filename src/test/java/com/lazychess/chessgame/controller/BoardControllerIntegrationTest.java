@@ -613,7 +613,7 @@ class BoardControllerIntegrationTest {
 
         String response = result.getResponse().getContentAsString();
         JacksonJsonParser jsonParser = new JacksonJsonParser();
-        return jsonParser.parseMap(response).get("access_token").toString();
+        return jsonParser.parseMap(response).get("accessToken").toString();
     }
 
     private String getPlayerTwoAccessToken() throws Exception {
@@ -626,7 +626,7 @@ class BoardControllerIntegrationTest {
 
         String response = result.getResponse().getContentAsString();
         JacksonJsonParser jsonParser = new JacksonJsonParser();
-        return jsonParser.parseMap(response).get("access_token").toString();
+        return jsonParser.parseMap(response).get("accessToken").toString();
     }
 
     private String getPlayerThreeAccessToken() throws Exception {
@@ -639,6 +639,6 @@ class BoardControllerIntegrationTest {
 
         String response = result.getResponse().getContentAsString();
         JacksonJsonParser jsonParser = new JacksonJsonParser();
-        return jsonParser.parseMap(response).get("access_token").toString();
+        return jsonParser.parseMap(response).get("accessToken").toString();
     }
 }

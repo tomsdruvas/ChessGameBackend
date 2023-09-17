@@ -22,6 +22,7 @@ import com.lazychess.chessgame.dto.AuthDetailsDto;
 import com.lazychess.chessgame.exception.RefreshTokenException;
 import com.lazychess.chessgame.repository.ApplicationUserRepository;
 import com.lazychess.chessgame.repository.RefreshTokenRepository;
+import com.lazychess.chessgame.repository.entity.ApplicationUser;
 import com.lazychess.chessgame.repository.entity.RefreshToken;
 
 import jakarta.servlet.http.Cookie;
@@ -56,19 +57,21 @@ public class TokenService {
     }
 
     public ResponseEntity<AuthDetailsDto> refreshAccessToken(HttpServletRequest request) {
-        String refreshToken = getJwtRefreshFromCookies(request);
+        String refreshTokenCookie = getJwtRefreshFromCookies(request);
 
-        if(refreshToken != null && !refreshToken.isEmpty()) {
-            return findByToken(refreshToken)
-                .map(this::verifyExpiration)
-                .map(RefreshToken::getApplicationUser)
-                .map(user -> {
-                    String accessToken = generateAccessToken(user.getUsername());
-                    return ResponseEntity.ok()
-                        .body(new AuthDetailsDto(accessToken, user.getUsername(), List.of("User")));
-                })
-                .orElseThrow(() -> new RefreshTokenException(refreshToken +
-                    "Refresh token is not in database!"));
+        if(refreshTokenCookie != null && !refreshTokenCookie.isEmpty()) {
+            Optional<RefreshToken> tokenOptional = findByToken(refreshTokenCookie);
+            if(tokenOptional.isPresent()) {
+                RefreshToken refreshToken = tokenOptional.get();
+                verifyExpiration(refreshToken);
+                ApplicationUser applicationUser = refreshToken.getApplicationUser();
+                String accessToken = generateAccessToken(applicationUser.getUsername());
+                return ResponseEntity.ok()
+                    .body(new AuthDetailsDto(accessToken, applicationUser.getUsername(), List.of("User")));
+            } else {
+                throw new RefreshTokenException(refreshTokenCookie +
+                    "Refresh token is not in database!");
+            }
         }
 
         throw new RefreshTokenException("Refresh Token is empty!");

@@ -16,7 +16,7 @@ import com.lazychess.chessgame.exception.PawnPromotionStatusNotPendingException;
 import com.lazychess.chessgame.exception.PawnPromotionStatusPendingException;
 import com.lazychess.chessgame.exception.PlayerAlreadyPartOfGameException;
 import com.lazychess.chessgame.exception.PlayerNotPartOfGameException;
-import com.lazychess.chessgame.exception.PlayerTwoAlreadyPartOfGame;
+import com.lazychess.chessgame.exception.PlayerTwoAlreadyPartOfGameException;
 import com.lazychess.chessgame.exception.PlayerTwoHasNotJoinedException;
 import com.lazychess.chessgame.exception.WrongPlayerMakingAMoveException;
 import com.lazychess.chessgame.json.JsonObjectBoardResponse;
@@ -222,7 +222,7 @@ public class BoardService {
     private void checkIfPlayerTwoIsAlreadyAdded(PlayersDao playersDao) {
         String playerTwoAppUsername = playersDao.getPlayerTwoAppUsername();
         if(playerTwoAppUsername != null) {
-            throw new PlayerTwoAlreadyPartOfGame("Game already has 2 players");
+            throw new PlayerTwoAlreadyPartOfGameException("Game already has 2 players");
         }
     }
 }

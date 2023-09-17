@@ -278,4 +278,25 @@ class PawnTest {
 
         assertThat(blackPawn.getLegalMoves()).hasSize(1);
     }
+
+    @Test
+    void pawnCannotTakePieceNextToIt() {
+        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
+            new ChessMoveDto(6, 1, 1, 1)
+        );
+        Board board = new Board(preInitChessMoveDtoList);
+        Piece blackPawn = board.getSquares()[1][2].getPiece();
+
+        assertThat(blackPawn).isExactlyInstanceOf(Pawn.class);
+        assertThat(blackPawn.getLegalMoves()).hasSize(2);
+        assertThat(blackPawn.getLegalMoves())
+            .noneMatch(square -> square.getRow() == 1 && square.getColumn() == 1);
+
+        Piece whitePawn = board.getSquares()[6][2].getPiece();
+
+        assertThat(whitePawn).isExactlyInstanceOf(Pawn.class);
+        assertThat(whitePawn.getLegalMoves()).hasSize(2);
+        assertThat(whitePawn.getLegalMoves())
+            .noneMatch(square -> square.getRow() == 6 && square.getColumn() == 1);
+    }
 }

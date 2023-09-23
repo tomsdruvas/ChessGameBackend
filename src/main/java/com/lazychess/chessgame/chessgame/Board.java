@@ -16,7 +16,7 @@ import java.util.Objects;
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.util.SerializationUtils;
 
-import com.lazychess.chessgame.dto.ChessMoveDto;
+import com.lazychess.chessgame.dto.ChessMoveRequest;
 import com.lazychess.chessgame.dto.MovesDto;
 import com.lazychess.chessgame.exception.EmptySourceSquareException;
 import com.lazychess.chessgame.exception.GameIsNotInOnGoingStateException;
@@ -52,11 +52,11 @@ public class Board implements Serializable {
     private boolean pawnPromotionPending = false;
     private LegalMoveSquare latestMove;
 
-    public Board(List<ChessMoveDto> chessMoveDtoList) {
+    public Board(List<ChessMoveRequest> chessMoveRequestList) {
         this.squares = new Square[8][8];
         loadSquares();
         loadPieces();
-        makePreInitialisationMoves(chessMoveDtoList);
+        makePreInitialisationMoves(chessMoveRequestList);
         loadPieceLegalMoves(squares);
     }
 
@@ -683,8 +683,8 @@ public class Board implements Serializable {
         }
     }
 
-    private void makePreInitialisationMoves(List<ChessMoveDto> chessMoveDtoList) {
-        chessMoveDtoList.forEach(chessMoveDto -> {
+    private void makePreInitialisationMoves(List<ChessMoveRequest> chessMoveRequestList) {
+        chessMoveRequestList.forEach(chessMoveDto -> {
             Piece pieceToMove = squares[chessMoveDto.currentRow()][chessMoveDto.currentColumn()].getPiece();
             pieceToMove.setPieceColumn(chessMoveDto.newColumn());
             pieceToMove.setPieceRow(chessMoveDto.newRow());

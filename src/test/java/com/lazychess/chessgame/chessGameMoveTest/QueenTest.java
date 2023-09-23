@@ -13,7 +13,7 @@ import com.lazychess.chessgame.chessgame.Pawn;
 import com.lazychess.chessgame.chessgame.Piece;
 import com.lazychess.chessgame.chessgame.Queen;
 import com.lazychess.chessgame.chessgame.Square;
-import com.lazychess.chessgame.dto.ChessMoveDto;
+import com.lazychess.chessgame.dto.ChessMoveRequest;
 
 class QueenTest {
 
@@ -76,12 +76,12 @@ class QueenTest {
 
     @Test
     void queenShouldBeAbleToTakeOppositePieceDiagonally() {
-        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(1, 5, 5, 6),
-            new ChessMoveDto(6, 5, 2, 6)
+        List<ChessMoveRequest> preInitChessMoveRequestList = List.of(
+            new ChessMoveRequest(1, 5, 5, 6),
+            new ChessMoveRequest(6, 5, 2, 6)
         );
 
-        Board board = new Board(preInitChessMoveDtoList);
+        Board board = new Board(preInitChessMoveRequestList);
 
         Piece blackQueen = board.getSquares()[0][4].getPiece();
         Piece whiteQueen = board.getSquares()[7][4].getPiece();
@@ -116,12 +116,12 @@ class QueenTest {
 
     @Test
     void queenShouldBeAbleToTakeOppositePieceStraight() {
-        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(1, 4, 5, 4),
-            new ChessMoveDto(6, 4, 2, 4)
+        List<ChessMoveRequest> preInitChessMoveRequestList = List.of(
+            new ChessMoveRequest(1, 4, 5, 4),
+            new ChessMoveRequest(6, 4, 2, 4)
         );
 
-        Board board = new Board(preInitChessMoveDtoList);
+        Board board = new Board(preInitChessMoveRequestList);
 
         Piece blackQueen = board.getSquares()[0][4].getPiece();
         Piece whiteQueen = board.getSquares()[7][4].getPiece();

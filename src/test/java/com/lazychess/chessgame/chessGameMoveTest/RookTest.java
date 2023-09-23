@@ -14,7 +14,7 @@ import com.lazychess.chessgame.chessgame.King;
 import com.lazychess.chessgame.chessgame.Piece;
 import com.lazychess.chessgame.chessgame.Rook;
 import com.lazychess.chessgame.chessgame.Square;
-import com.lazychess.chessgame.dto.ChessMoveDto;
+import com.lazychess.chessgame.dto.ChessMoveRequest;
 
 class RookTest {
 
@@ -149,13 +149,13 @@ class RookTest {
 
     @Test
     void rookShouldNotBeAbleToPutOwnKingInCheck() {
-        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(1, 3, 3, 7),
-            new ChessMoveDto(0, 0, 3, 3),
-            new ChessMoveDto(7, 0, 5, 2)
+        List<ChessMoveRequest> preInitChessMoveRequestList = List.of(
+            new ChessMoveRequest(1, 3, 3, 7),
+            new ChessMoveRequest(0, 0, 3, 3),
+            new ChessMoveRequest(7, 0, 5, 2)
         );
 
-        Board board = new Board(preInitChessMoveDtoList);
+        Board board = new Board(preInitChessMoveRequestList);
         board.movePiece(5,2,5,3);
 
         Piece whiteRook = board.getSquares()[5][3].getPiece();

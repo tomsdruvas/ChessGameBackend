@@ -21,7 +21,6 @@ import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.platform.commons.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -44,7 +43,7 @@ import com.lazychess.chessgame.chessgame.Pawn;
 import com.lazychess.chessgame.chessgame.Queen;
 import com.lazychess.chessgame.chessgame.Square;
 import com.lazychess.chessgame.config.SquareListConverter;
-import com.lazychess.chessgame.dto.ChessMoveDto;
+import com.lazychess.chessgame.dto.ChessMoveRequest;
 import com.lazychess.chessgame.repository.BoardRepository;
 import com.lazychess.chessgame.repository.entity.BoardDao;
 import com.lazychess.chessgame.repository.entity.PlayersDao;
@@ -145,7 +144,7 @@ class BoardControllerIntegrationTest {
     void playerTwoOfTheBoardShouldBeAbleToMakeAMove() throws Exception {
         createACustomBoardWithTwoUsersForUserTwoMove(
             List.of(
-                new ChessMoveDto(6, 3, 4, 3)
+                new ChessMoveRequest(6, 3, 4, 3)
             )
         );
         MvcResult mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
@@ -183,10 +182,10 @@ class BoardControllerIntegrationTest {
     void playerTwoOfTheBoardShouldBeAbleToMakeAMoveAndTheResultShouldBeCheckmate() throws Exception {
         createACustomBoardWithTwoUsersForUserOneMove(
             List.of(
-                new ChessMoveDto(6, 3, 4, 3),
-                new ChessMoveDto(1, 2, 2, 2),
-                new ChessMoveDto(6, 4, 4, 4),
-                new ChessMoveDto(1, 1, 3, 1)
+                new ChessMoveRequest(6, 3, 4, 3),
+                new ChessMoveRequest(1, 2, 2, 2),
+                new ChessMoveRequest(6, 4, 4, 4),
+                new ChessMoveRequest(1, 1, 3, 1)
             )
         );
         MvcResult mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
@@ -213,9 +212,9 @@ class BoardControllerIntegrationTest {
     void playerOneOfTheBoardShouldBeAbleToMakeAMoveAndTheResultShouldBePendingPawnPromotion() throws Exception {
         createACustomBoardWithTwoUsersForUserOneMove(
             List.of(
-                new ChessMoveDto(1, 0, 2, 7),
-                new ChessMoveDto(0, 0, 3, 7),
-                new ChessMoveDto(6, 0, 1, 0)
+                new ChessMoveRequest(1, 0, 2, 7),
+                new ChessMoveRequest(0, 0, 3, 7),
+                new ChessMoveRequest(6, 0, 1, 0)
             )
         );
 
@@ -242,9 +241,9 @@ class BoardControllerIntegrationTest {
     void playerOneShouldBeAbleToPickANewPieceForPawnPromotion() throws Exception {
         createACustomBoardWithTwoUsersForUserOneMove(
             List.of(
-                new ChessMoveDto(1, 0, 2, 7),
-                new ChessMoveDto(0, 0, 3, 7),
-                new ChessMoveDto(6, 0, 1, 0)
+                new ChessMoveRequest(1, 0, 2, 7),
+                new ChessMoveRequest(0, 0, 3, 7),
+                new ChessMoveRequest(6, 0, 1, 0)
             )
         );
 
@@ -278,9 +277,9 @@ class BoardControllerIntegrationTest {
     void playerTwoShouldNotBeAbleToPickANewPieceForPawnPromotionWhenItIsPlayerOnesTurn() throws Exception {
         createACustomBoardWithTwoUsersForUserOneMove(
             List.of(
-                new ChessMoveDto(1, 0, 2, 7),
-                new ChessMoveDto(0, 0, 3, 7),
-                new ChessMoveDto(6, 0, 1, 0)
+                new ChessMoveRequest(1, 0, 2, 7),
+                new ChessMoveRequest(0, 0, 3, 7),
+                new ChessMoveRequest(6, 0, 1, 0)
             )
         );
 
@@ -305,9 +304,9 @@ class BoardControllerIntegrationTest {
     void playerTwoShouldNotBeAbleToPickANewPieceForPawnPromotionWhenWrongPieceNameGiven() throws Exception {
         createACustomBoardWithTwoUsersForUserOneMove(
             List.of(
-                new ChessMoveDto(1, 0, 2, 7),
-                new ChessMoveDto(0, 0, 3, 7),
-                new ChessMoveDto(6, 0, 1, 0)
+                new ChessMoveRequest(1, 0, 2, 7),
+                new ChessMoveRequest(0, 0, 3, 7),
+                new ChessMoveRequest(6, 0, 1, 0)
             )
         );
 
@@ -332,9 +331,9 @@ class BoardControllerIntegrationTest {
     void playerOneShouldNotBeAbleToPickANewPieceForPawnPromotion() throws Exception {
         createACustomBoardWithTwoUsersForUserOneMove(
             List.of(
-                new ChessMoveDto(1, 0, 2, 7),
-                new ChessMoveDto(0, 0, 3, 7),
-                new ChessMoveDto(6, 0, 1, 0)
+                new ChessMoveRequest(1, 0, 2, 7),
+                new ChessMoveRequest(0, 0, 3, 7),
+                new ChessMoveRequest(6, 0, 1, 0)
             )
         );
 
@@ -546,11 +545,11 @@ class BoardControllerIntegrationTest {
         savedBoardDao = boardRepository.saveAndFlush(boardDao);
     }
 
-    private void createACustomBoardWithTwoUsersForUserOneMove(List<ChessMoveDto> chessMoveDtoList) {
+    private void createACustomBoardWithTwoUsersForUserOneMove(List<ChessMoveRequest> chessMoveRequestList) {
         createUserOne();
         createUserTwo();
 
-        Board board = new Board(chessMoveDtoList);
+        Board board = new Board(chessMoveRequestList);
         board.setCurrentPlayerColourState("white");
         BoardDao boardDao = new BoardDao();
         boardDao.setStateOfTheGame(board.getStateOfTheGame());
@@ -567,11 +566,11 @@ class BoardControllerIntegrationTest {
         savedBoardDao = boardRepository.saveAndFlush(boardDao);
     }
 
-    private void createACustomBoardWithTwoUsersForUserTwoMove(List<ChessMoveDto> chessMoveDtoList) {
+    private void createACustomBoardWithTwoUsersForUserTwoMove(List<ChessMoveRequest> chessMoveRequestList) {
         createUserOne();
         createUserTwo();
 
-        Board board = new Board(chessMoveDtoList);
+        Board board = new Board(chessMoveRequestList);
         board.setCurrentPlayerColourState("black");
         BoardDao boardDao = new BoardDao();
         boardDao.setStateOfTheGame(board.getStateOfTheGame());

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.lazychess.chessgame.chessgame.Board;
 import com.lazychess.chessgame.chessgame.ChessGameState;
-import com.lazychess.chessgame.dto.ChessMoveDto;
+import com.lazychess.chessgame.dto.ChessMoveRequest;
 import com.lazychess.chessgame.exception.BoardNotFoundException;
 import com.lazychess.chessgame.exception.GameHasFinishedException;
 import com.lazychess.chessgame.exception.PawnPromotionStatusNotPendingException;
@@ -65,7 +65,7 @@ public class BoardService {
         return buildJsonObjectBoardResponse(boardDao);
     }
 
-    public JsonObjectBoardResponse processChessMove(String boardGameId, String playersUsername, ChessMoveDto chessMoveDto) {
+    public JsonObjectBoardResponse processChessMove(String boardGameId, String playersUsername, ChessMoveRequest chessMoveRequest) {
         BoardDao boardDao = findChessGameById(boardGameId);
         checkIfGameIsInACheckMateState(boardDao);
         checkIfPlayerTwoHasJoined(boardDao);
@@ -73,7 +73,7 @@ public class BoardService {
         checkIfItIsSubmittingPlayersTurn(boardDao, playersUsername);
         checkIfPawnPromotionIsNotPending(boardDao);
         Board board = boardDaoMapper.fromBoardDaoObject(boardDao);
-        implementMoveOnTheBoard(board, chessMoveDto);
+        implementMoveOnTheBoard(board, chessMoveRequest);
         BoardDao updatedBoardDao = boardDaoMapper.updateBoardDaoObjectAfterMove(board, boardDao);
         checkIfLastMovePutTheGameInACheckMateState(board, updatedBoardDao, playersUsername);
         changeActivePlayer(updatedBoardDao);
@@ -196,11 +196,11 @@ public class BoardService {
         }
     }
 
-    private void implementMoveOnTheBoard(Board board, ChessMoveDto chessMoveDto) {
-        int currentRow = chessMoveDto.currentRow();
-        int currentColumn = chessMoveDto.currentColumn();
-        int newRow = chessMoveDto.newRow();
-        int newColumn = chessMoveDto.newColumn();
+    private void implementMoveOnTheBoard(Board board, ChessMoveRequest chessMoveRequest) {
+        int currentRow = chessMoveRequest.currentRow();
+        int currentColumn = chessMoveRequest.currentColumn();
+        int newRow = chessMoveRequest.newRow();
+        int newColumn = chessMoveRequest.newColumn();
 
         board.movePiece(currentRow, currentColumn, newRow, newColumn);
     }

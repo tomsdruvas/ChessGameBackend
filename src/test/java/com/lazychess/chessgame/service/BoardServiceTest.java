@@ -20,7 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.lazychess.chessgame.repository.entity.ApplicationUser;
 import com.lazychess.chessgame.chessgame.Board;
 import com.lazychess.chessgame.chessgame.ChessGameState;
-import com.lazychess.chessgame.dto.ChessMoveDto;
+import com.lazychess.chessgame.dto.ChessMoveRequest;
 import com.lazychess.chessgame.exception.BoardNotFoundException;
 import com.lazychess.chessgame.exception.GameHasFinishedException;
 import com.lazychess.chessgame.exception.PawnPromotionStatusNotPendingException;
@@ -150,14 +150,14 @@ class BoardServiceTest {
         playersDao.setPlayerTwoAppUsername(TEST_USER_TWO);
         playersDao.setActivePlayerUsername(TEST_USER_ONE);
         boardDao.setPlayersDao(playersDao);
-        ChessMoveDto chessMoveDto = new ChessMoveDto(6, 0, 5, 0);
+        ChessMoveRequest chessMoveRequest = new ChessMoveRequest(6, 0, 5, 0);
 
         ArgumentCaptor<BoardDao> boardDaoCaptor = ArgumentCaptor.forClass(BoardDao.class);
 
         when(boardRepository.findById(CHESS_BOARD_ID)).thenReturn(Optional.of(boardDao));
         when(boardRepository.saveAndFlush(any(BoardDao.class))).thenReturn(boardDao);
 
-        JsonObjectBoardResponse boardGameJsonResponse = underTest.processChessMove(CHESS_BOARD_ID, TEST_USER_ONE, chessMoveDto);
+        JsonObjectBoardResponse boardGameJsonResponse = underTest.processChessMove(CHESS_BOARD_ID, TEST_USER_ONE, chessMoveRequest);
 
         assertThat(boardGameJsonResponse.getBoardId()).isEqualTo(CHESS_BOARD_ID);
         assertThat(boardGameJsonResponse.getSquares()).isDeepEqualTo(initialBoard.getSquares());
@@ -188,11 +188,11 @@ class BoardServiceTest {
         playersDao.setPlayerTwoAppUsername(TEST_USER_TWO);
         playersDao.setActivePlayerUsername(TEST_USER_ONE);
         boardDao.setPlayersDao(playersDao);
-        ChessMoveDto chessMoveDto = new ChessMoveDto(6, 0, 5, 0);
+        ChessMoveRequest chessMoveRequest = new ChessMoveRequest(6, 0, 5, 0);
 
         when(boardRepository.findById(CHESS_BOARD_ID)).thenReturn(Optional.of(boardDao));
 
-        assertThatThrownBy(() -> underTest.processChessMove(CHESS_BOARD_ID, TEST_USER_ONE, chessMoveDto))
+        assertThatThrownBy(() -> underTest.processChessMove(CHESS_BOARD_ID, TEST_USER_ONE, chessMoveRequest))
             .isExactlyInstanceOf(GameHasFinishedException.class)
             .hasMessage("The game has finished");
     }
@@ -207,11 +207,11 @@ class BoardServiceTest {
         playersDao.setPlayerOneAppUsername(TEST_USER_ONE);
         playersDao.setActivePlayerUsername(TEST_USER_ONE);
         boardDao.setPlayersDao(playersDao);
-        ChessMoveDto chessMoveDto = new ChessMoveDto(6, 0, 5, 0);
+        ChessMoveRequest chessMoveRequest = new ChessMoveRequest(6, 0, 5, 0);
 
         when(boardRepository.findById(CHESS_BOARD_ID)).thenReturn(Optional.of(boardDao));
 
-        assertThatThrownBy(() -> underTest.processChessMove(CHESS_BOARD_ID, TEST_USER_ONE, chessMoveDto))
+        assertThatThrownBy(() -> underTest.processChessMove(CHESS_BOARD_ID, TEST_USER_ONE, chessMoveRequest))
             .isExactlyInstanceOf(PlayerTwoHasNotJoinedException.class)
             .hasMessage("Cannot make a move until player 2 has joined");
     }
@@ -228,11 +228,11 @@ class BoardServiceTest {
         playersDao.setPlayerTwoAppUsername(TEST_USER_TWO);
         playersDao.setActivePlayerUsername(TEST_USER_ONE);
         boardDao.setPlayersDao(playersDao);
-        ChessMoveDto chessMoveDto = new ChessMoveDto(6, 0, 5, 0);
+        ChessMoveRequest chessMoveRequest = new ChessMoveRequest(6, 0, 5, 0);
 
         when(boardRepository.findById(CHESS_BOARD_ID)).thenReturn(Optional.of(boardDao));
 
-        assertThatThrownBy(() -> underTest.processChessMove(CHESS_BOARD_ID, TEST_USER_ONE + "1", chessMoveDto))
+        assertThatThrownBy(() -> underTest.processChessMove(CHESS_BOARD_ID, TEST_USER_ONE + "1", chessMoveRequest))
             .isExactlyInstanceOf(PlayerNotPartOfGameException.class)
             .hasMessage("Submitting player is not part of this game");
     }
@@ -249,11 +249,11 @@ class BoardServiceTest {
         playersDao.setPlayerTwoAppUsername(TEST_USER_TWO);
         playersDao.setActivePlayerUsername(TEST_USER_ONE);
         boardDao.setPlayersDao(playersDao);
-        ChessMoveDto chessMoveDto = new ChessMoveDto(6, 0, 5, 0);
+        ChessMoveRequest chessMoveRequest = new ChessMoveRequest(6, 0, 5, 0);
 
         when(boardRepository.findById(CHESS_BOARD_ID)).thenReturn(Optional.of(boardDao));
 
-        assertThatThrownBy(() -> underTest.processChessMove(CHESS_BOARD_ID, TEST_USER_TWO, chessMoveDto))
+        assertThatThrownBy(() -> underTest.processChessMove(CHESS_BOARD_ID, TEST_USER_TWO, chessMoveRequest))
             .isExactlyInstanceOf(WrongPlayerMakingAMoveException.class)
             .hasMessage("The Player Username does not match active Player Username");
     }
@@ -280,12 +280,12 @@ class BoardServiceTest {
 
     @Test
     void whenPlayerOneMakesAMove_andPawnPromotionIsPending() {
-        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(1, 0, 2, 2),
-            new ChessMoveDto(0, 0, 2, 3),
-            new ChessMoveDto(6, 0, 1, 0)
+        List<ChessMoveRequest> preInitChessMoveRequestList = List.of(
+            new ChessMoveRequest(1, 0, 2, 2),
+            new ChessMoveRequest(0, 0, 2, 3),
+            new ChessMoveRequest(6, 0, 1, 0)
         );
-        Board initialBoard = new Board(preInitChessMoveDtoList);
+        Board initialBoard = new Board(preInitChessMoveRequestList);
 
         BoardDao boardDao = boardDaoMapper.fromBoardObject(initialBoard);
         boardDao.setId(CHESS_BOARD_ID);
@@ -297,14 +297,14 @@ class BoardServiceTest {
         playersDao.setActivePlayerUsername(TEST_USER_ONE);
         boardDao.setPlayersDao(playersDao);
 
-        ChessMoveDto chessMoveDto = new ChessMoveDto(1, 0, 0, 0);
+        ChessMoveRequest chessMoveRequest = new ChessMoveRequest(1, 0, 0, 0);
 
         ArgumentCaptor<BoardDao> boardDaoCaptor = ArgumentCaptor.forClass(BoardDao.class);
 
         when(boardRepository.findById(CHESS_BOARD_ID)).thenReturn(Optional.of(boardDao));
         when(boardRepository.saveAndFlush(any(BoardDao.class))).thenReturn(boardDao);
 
-        JsonObjectBoardResponse boardGameJsonResponse = underTest.processChessMove(CHESS_BOARD_ID, TEST_USER_ONE, chessMoveDto);
+        JsonObjectBoardResponse boardGameJsonResponse = underTest.processChessMove(CHESS_BOARD_ID, TEST_USER_ONE, chessMoveRequest);
 
         assertThat(boardGameJsonResponse.getBoardId()).isEqualTo(CHESS_BOARD_ID);
         assertThat(boardGameJsonResponse.getSquares()).isDeepEqualTo(initialBoard.getSquares());
@@ -324,12 +324,12 @@ class BoardServiceTest {
 
     @Test
     void whenPlayerOneMakesAPawnPromotionCall_andPawnPromotionIsPending_ShouldPromotePawn() {
-        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(1, 0, 2, 2),
-            new ChessMoveDto(0, 0, 2, 3),
-            new ChessMoveDto(6, 0, 1, 0)
+        List<ChessMoveRequest> preInitChessMoveRequestList = List.of(
+            new ChessMoveRequest(1, 0, 2, 2),
+            new ChessMoveRequest(0, 0, 2, 3),
+            new ChessMoveRequest(6, 0, 1, 0)
         );
-        Board initialBoard = new Board(preInitChessMoveDtoList);
+        Board initialBoard = new Board(preInitChessMoveRequestList);
         initialBoard.movePiece(1,0,0,0);
 
         BoardDao boardDao = boardDaoMapper.fromBoardObject(initialBoard);
@@ -367,12 +367,12 @@ class BoardServiceTest {
 
     @Test
     void whenPlayerOneMakesAMove_andPlayerTwoMakesMove_gameShouldEndInCheckmate() {
-        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(0, 4, 5, 2),
-            new ChessMoveDto(6, 2, 2, 3),
-            new ChessMoveDto(6, 0, 2, 7)
+        List<ChessMoveRequest> preInitChessMoveRequestList = List.of(
+            new ChessMoveRequest(0, 4, 5, 2),
+            new ChessMoveRequest(6, 2, 2, 3),
+            new ChessMoveRequest(6, 0, 2, 7)
         );
-        Board initialBoard = new Board(preInitChessMoveDtoList);
+        Board initialBoard = new Board(preInitChessMoveRequestList);
 
         BoardDao boardDao = boardDaoMapper.fromBoardObject(initialBoard);
         boardDao.setId(CHESS_BOARD_ID);
@@ -384,8 +384,8 @@ class BoardServiceTest {
         playersDao.setActivePlayerUsername(TEST_USER_ONE);
         boardDao.setPlayersDao(playersDao);
 
-        ChessMoveDto chessMoveDtoWhite = new ChessMoveDto(6, 7, 5, 7);
-        ChessMoveDto chessMoveDtoBlack = new ChessMoveDto(5, 2, 5, 1);
+        ChessMoveRequest chessMoveRequestWhite = new ChessMoveRequest(6, 7, 5, 7);
+        ChessMoveRequest chessMoveRequestBlack = new ChessMoveRequest(5, 2, 5, 1);
 
 
         ArgumentCaptor<BoardDao> boardDaoCaptor = ArgumentCaptor.forClass(BoardDao.class);
@@ -393,8 +393,8 @@ class BoardServiceTest {
         when(boardRepository.findById(CHESS_BOARD_ID)).thenReturn(Optional.of(boardDao));
         when(boardRepository.saveAndFlush(any(BoardDao.class))).thenReturn(boardDao);
 
-        underTest.processChessMove(CHESS_BOARD_ID, TEST_USER_ONE, chessMoveDtoWhite);
-        JsonObjectBoardResponse boardGameJsonResponse = underTest.processChessMove(CHESS_BOARD_ID, TEST_USER_TWO, chessMoveDtoBlack);
+        underTest.processChessMove(CHESS_BOARD_ID, TEST_USER_ONE, chessMoveRequestWhite);
+        JsonObjectBoardResponse boardGameJsonResponse = underTest.processChessMove(CHESS_BOARD_ID, TEST_USER_TWO, chessMoveRequestBlack);
 
         assertThat(boardGameJsonResponse.getBoardId()).isEqualTo(CHESS_BOARD_ID);
         assertThat(boardGameJsonResponse.getSquares()).isDeepEqualTo(initialBoard.getSquares());

@@ -15,7 +15,7 @@ import com.lazychess.chessgame.chessgame.Knight;
 import com.lazychess.chessgame.chessgame.LegalMoveSquare;
 import com.lazychess.chessgame.chessgame.Piece;
 import com.lazychess.chessgame.chessgame.Square;
-import com.lazychess.chessgame.dto.ChessMoveDto;
+import com.lazychess.chessgame.dto.ChessMoveRequest;
 
 class KnightTest {
 
@@ -157,13 +157,13 @@ class KnightTest {
 
     @Test
     void knightCannotMoveToPutOwnKingInCheck() {
-        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(1, 4, 2, 4),
-            new ChessMoveDto(0, 6, 2, 5),
-            new ChessMoveDto(7, 2, 4, 5)
+        List<ChessMoveRequest> preInitChessMoveRequestList = List.of(
+            new ChessMoveRequest(1, 4, 2, 4),
+            new ChessMoveRequest(0, 6, 2, 5),
+            new ChessMoveRequest(7, 2, 4, 5)
         );
 
-        Board board = new Board(preInitChessMoveDtoList);
+        Board board = new Board(preInitChessMoveRequestList);
         board.movePiece(4,5,3,6);
 
         Piece whiteBishop = board.getSquares()[3][6].getPiece();

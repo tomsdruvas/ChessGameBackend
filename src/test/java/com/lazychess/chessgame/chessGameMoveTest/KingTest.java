@@ -12,7 +12,7 @@ import com.lazychess.chessgame.chessgame.Board;
 import com.lazychess.chessgame.chessgame.King;
 import com.lazychess.chessgame.chessgame.Piece;
 import com.lazychess.chessgame.chessgame.Square;
-import com.lazychess.chessgame.dto.ChessMoveDto;
+import com.lazychess.chessgame.dto.ChessMoveRequest;
 
 class KingTest {
 
@@ -39,11 +39,11 @@ class KingTest {
 
     @Test
     void kingShouldHaveEightLegalMovesWhenItNoPiecesAreSurroundingIt() {
-        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(7, 3, 4, 3)
+        List<ChessMoveRequest> preInitChessMoveRequestList = List.of(
+            new ChessMoveRequest(7, 3, 4, 3)
         );
 
-        Board board = new Board(preInitChessMoveDtoList);
+        Board board = new Board(preInitChessMoveRequestList);
 
         Piece whiteKing = board.getSquares()[4][3].getPiece();
         assertThat(whiteKing).isExactlyInstanceOf(King.class);
@@ -52,13 +52,13 @@ class KingTest {
 
     @Test
     void kingShouldBeAbleToTakeOppositePiece() {
-        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(7, 3, 4, 3),
-            new ChessMoveDto(1, 3, 3, 3)
+        List<ChessMoveRequest> preInitChessMoveRequestList = List.of(
+            new ChessMoveRequest(7, 3, 4, 3),
+            new ChessMoveRequest(1, 3, 3, 3)
 
         );
 
-        Board board = new Board(preInitChessMoveDtoList);
+        Board board = new Board(preInitChessMoveRequestList);
 
         Piece whiteKing = board.getSquares()[4][3].getPiece();
         assertThat(whiteKing).isExactlyInstanceOf(King.class);

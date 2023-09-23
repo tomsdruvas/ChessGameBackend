@@ -11,7 +11,7 @@ import com.lazychess.chessgame.chessgame.Board;
 import com.lazychess.chessgame.chessgame.EmptyPiece;
 import com.lazychess.chessgame.chessgame.Pawn;
 import com.lazychess.chessgame.chessgame.Piece;
-import com.lazychess.chessgame.dto.ChessMoveDto;
+import com.lazychess.chessgame.dto.ChessMoveRequest;
 
 class EnPassantTest {
 
@@ -223,12 +223,12 @@ class EnPassantTest {
 
     @Test
     void enPassantMoveShouldNotBeAvailableIfItPutsOwnKingInCheck_vertical_white() {
-        List<ChessMoveDto> preInitChessMoveDtos = List.of(
-            new ChessMoveDto(7, 3, 3, 0),
-            new ChessMoveDto(7, 7, 4, 6),
-            new ChessMoveDto(0, 7, 4, 7)
+        List<ChessMoveRequest> preInitChessMoveRequests = List.of(
+            new ChessMoveRequest(7, 3, 3, 0),
+            new ChessMoveRequest(7, 7, 4, 6),
+            new ChessMoveRequest(0, 7, 4, 7)
         );
-        Board board = new Board(preInitChessMoveDtos);
+        Board board = new Board(preInitChessMoveRequests);
 
         board.movePiece(6, 2, 4, 2);
 
@@ -247,12 +247,12 @@ class EnPassantTest {
 
     @Test
     void enPassantMoveShouldNotBeAvailableIfItPutsOwnKingInCheck_horizontal_white() {
-        List<ChessMoveDto> preInitChessMoveDtos = List.of(
-            new ChessMoveDto(7, 3, 2, 2),
-            new ChessMoveDto(0, 0, 5, 2),
-            new ChessMoveDto(6, 2, 4, 2)
+        List<ChessMoveRequest> preInitChessMoveRequests = List.of(
+            new ChessMoveRequest(7, 3, 2, 2),
+            new ChessMoveRequest(0, 0, 5, 2),
+            new ChessMoveRequest(6, 2, 4, 2)
         );
-        Board board = new Board(preInitChessMoveDtos);
+        Board board = new Board(preInitChessMoveRequests);
 
         board.movePiece(4, 2, 3, 2);
 
@@ -266,12 +266,12 @@ class EnPassantTest {
 
     @Test
     void enPassantMoveShouldNotBeAvailableIfItPutsOwnKingInCheck_vertical_black() {
-        List<ChessMoveDto> preInitChessMoveDtos = List.of(
-            new ChessMoveDto(0, 3, 4, 0),
-            new ChessMoveDto(7, 7, 4, 7),
-            new ChessMoveDto(1, 2, 3, 2)
+        List<ChessMoveRequest> preInitChessMoveRequests = List.of(
+            new ChessMoveRequest(0, 3, 4, 0),
+            new ChessMoveRequest(7, 7, 4, 7),
+            new ChessMoveRequest(1, 2, 3, 2)
         );
-        Board board = new Board(preInitChessMoveDtos);
+        Board board = new Board(preInitChessMoveRequests);
         board.movePiece(6, 7, 5, 7);
 
         board.movePiece(3, 2, 4, 2);

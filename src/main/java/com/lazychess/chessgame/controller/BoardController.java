@@ -1,13 +1,15 @@
 package com.lazychess.chessgame.controller;
 
-import static com.lazychess.chessgame.controller.ControllerConstants.*;
 import static com.lazychess.chessgame.controller.ControllerConstants.ADD_PLAYER_TWO_TO_BOARD_PATH;
+import static com.lazychess.chessgame.controller.ControllerConstants.BASE_PATH;
+import static com.lazychess.chessgame.controller.ControllerConstants.BOARD_PATH;
+import static com.lazychess.chessgame.controller.ControllerConstants.GET_BOARD_PATH;
 import static com.lazychess.chessgame.controller.ControllerConstants.MAKE_A_MOVE_PATH;
+import static com.lazychess.chessgame.controller.ControllerConstants.PROMOTE_PAWN_PATH;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
@@ -20,7 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lazychess.chessgame.config.ValidUuid;
-import com.lazychess.chessgame.dto.ChessMoveDto;
+import com.lazychess.chessgame.dto.ChessMoveRequest;
 import com.lazychess.chessgame.dto.PawnPromotionDto;
 import com.lazychess.chessgame.factory.ResponseEntityFactory;
 import com.lazychess.chessgame.json.JsonObjectBoardResponse;
@@ -80,11 +82,11 @@ public class BoardController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = MAKE_A_MOVE_PATH)
-    public ResponseEntity<JsonObjectBoardResponse> makeAMove(@PathVariable String boardGameId, @Valid @RequestBody ChessMoveDto chessMoveDto) {
+    public ResponseEntity<JsonObjectBoardResponse> makeAMove(@PathVariable String boardGameId, @Valid @RequestBody ChessMoveRequest chessMoveRequest) {
         Authentication principal = SecurityContextHolder.getContext().getAuthentication();
         AppUserPrincipal appUserPrincipal = customUserDetailsService.loadUserByUsername(principal.getName());
 
-        JsonObjectBoardResponse jsonObjectBoardResponse = boardService.processChessMove(boardGameId, appUserPrincipal.getAppUser().getUsername(), chessMoveDto);
+        JsonObjectBoardResponse jsonObjectBoardResponse = boardService.processChessMove(boardGameId, appUserPrincipal.getAppUser().getUsername(), chessMoveRequest);
         return responseEntityFactory.toResponseEntity(jsonObjectBoardResponse);
     }
 

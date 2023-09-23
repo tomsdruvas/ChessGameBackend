@@ -18,7 +18,7 @@ import com.lazychess.chessgame.chessgame.LegalMoveSquare;
 import com.lazychess.chessgame.chessgame.Pawn;
 import com.lazychess.chessgame.chessgame.Piece;
 import com.lazychess.chessgame.chessgame.Square;
-import com.lazychess.chessgame.dto.ChessMoveDto;
+import com.lazychess.chessgame.dto.ChessMoveRequest;
 
 class PawnTest {
 
@@ -182,11 +182,11 @@ class PawnTest {
 
     @Test
     void pawnCannotMakeAMoveThatPutsOwnKingInCheck() {
-        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(7, 2, 4, 5)
+        List<ChessMoveRequest> preInitChessMoveRequestList = List.of(
+            new ChessMoveRequest(7, 2, 4, 5)
         );
 
-        Board board = new Board(preInitChessMoveDtoList);
+        Board board = new Board(preInitChessMoveRequestList);
         board.movePiece(4,5,3,6);
 
         Piece whiteBishop = board.getSquares()[3][6].getPiece();
@@ -203,10 +203,10 @@ class PawnTest {
 
     @Test
     void pawnCannotMoveIfAPieceIsInFrontOfItWhite() {
-        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(0, 0, 5, 0)
+        List<ChessMoveRequest> preInitChessMoveRequestList = List.of(
+            new ChessMoveRequest(0, 0, 5, 0)
         );
-        Board board = new Board(preInitChessMoveDtoList);
+        Board board = new Board(preInitChessMoveRequestList);
         Piece whitePawn = board.getSquares()[6][0].getPiece();
 
         assertThat(whitePawn).isExactlyInstanceOf(Pawn.class);
@@ -216,10 +216,10 @@ class PawnTest {
 
     @Test
     void pawnCannotMoveIfAOwnPieceIsInFrontOfItWhite() {
-        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(7, 1, 5, 0)
+        List<ChessMoveRequest> preInitChessMoveRequestList = List.of(
+            new ChessMoveRequest(7, 1, 5, 0)
         );
-        Board board = new Board(preInitChessMoveDtoList);
+        Board board = new Board(preInitChessMoveRequestList);
         Piece whitePawn = board.getSquares()[6][0].getPiece();
 
         assertThat(whitePawn).isExactlyInstanceOf(Pawn.class);
@@ -229,10 +229,10 @@ class PawnTest {
 
     @Test
     void pawnCannotMoveIfAPieceIsInFrontOfItBlack() {
-        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(7, 0, 2, 0)
+        List<ChessMoveRequest> preInitChessMoveRequestList = List.of(
+            new ChessMoveRequest(7, 0, 2, 0)
         );
-        Board board = new Board(preInitChessMoveDtoList);
+        Board board = new Board(preInitChessMoveRequestList);
         Piece blackPawn = board.getSquares()[1][0].getPiece();
 
         assertThat(blackPawn).isExactlyInstanceOf(Pawn.class);
@@ -242,10 +242,10 @@ class PawnTest {
 
     @Test
     void pawnCannotMoveIfAOwnPieceIsInFrontOfItBlack() {
-        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(0, 1, 2, 0)
+        List<ChessMoveRequest> preInitChessMoveRequestList = List.of(
+            new ChessMoveRequest(0, 1, 2, 0)
         );
-        Board board = new Board(preInitChessMoveDtoList);
+        Board board = new Board(preInitChessMoveRequestList);
         Piece blackPawn = board.getSquares()[1][0].getPiece();
 
         assertThat(blackPawn).isExactlyInstanceOf(Pawn.class);
@@ -255,10 +255,10 @@ class PawnTest {
 
     @Test
     void pawnCannotMoveTwoSquaresIfItIsPawnsFirstMoveAndOppositePieceIsTwoSquaresInFrontOfItWhite() {
-        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(0, 0, 4, 0)
+        List<ChessMoveRequest> preInitChessMoveRequestList = List.of(
+            new ChessMoveRequest(0, 0, 4, 0)
         );
-        Board board = new Board(preInitChessMoveDtoList);
+        Board board = new Board(preInitChessMoveRequestList);
         Piece whitePawn = board.getSquares()[6][0].getPiece();
 
         assertThat(whitePawn).isExactlyInstanceOf(Pawn.class);
@@ -268,10 +268,10 @@ class PawnTest {
 
     @Test
     void pawnCannotMoveTwoSquaresIfItIsPawnsFirstMoveAndOppositePieceIsTwoSquaresInFrontOfItBlack() {
-        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(7, 0, 3, 0)
+        List<ChessMoveRequest> preInitChessMoveRequestList = List.of(
+            new ChessMoveRequest(7, 0, 3, 0)
         );
-        Board board = new Board(preInitChessMoveDtoList);
+        Board board = new Board(preInitChessMoveRequestList);
         Piece blackPawn = board.getSquares()[1][0].getPiece();
 
         assertThat(blackPawn).isExactlyInstanceOf(Pawn.class);
@@ -281,10 +281,10 @@ class PawnTest {
 
     @Test
     void pawnCannotTakePieceNextToIt() {
-        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(6, 1, 1, 1)
+        List<ChessMoveRequest> preInitChessMoveRequestList = List.of(
+            new ChessMoveRequest(6, 1, 1, 1)
         );
-        Board board = new Board(preInitChessMoveDtoList);
+        Board board = new Board(preInitChessMoveRequestList);
         Piece blackPawn = board.getSquares()[1][2].getPiece();
 
         assertThat(blackPawn).isExactlyInstanceOf(Pawn.class);

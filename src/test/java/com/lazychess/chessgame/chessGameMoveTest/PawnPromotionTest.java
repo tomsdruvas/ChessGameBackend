@@ -17,7 +17,7 @@ import com.lazychess.chessgame.chessgame.Piece;
 import com.lazychess.chessgame.chessgame.Queen;
 import com.lazychess.chessgame.chessgame.Rook;
 import com.lazychess.chessgame.chessgame.Square;
-import com.lazychess.chessgame.dto.ChessMoveDto;
+import com.lazychess.chessgame.dto.ChessMoveRequest;
 import com.lazychess.chessgame.exception.InvalidChessPieceForPawnPromotionException;
 import com.lazychess.chessgame.exception.WrongColourPieceOnSquareException;
 
@@ -29,12 +29,12 @@ class PawnPromotionTest {
 
     @Test
     void pawnPromotionPendingPropertyOnBoardShouldTrue_white() {
-        List<ChessMoveDto> preInitChessMoveDtos = List.of(
-            new ChessMoveDto(0, 0, 2, 7),
-            new ChessMoveDto(1, 0, 3, 7),
-            new ChessMoveDto(6, 0, 1, 0)
+        List<ChessMoveRequest> preInitChessMoveRequests = List.of(
+            new ChessMoveRequest(0, 0, 2, 7),
+            new ChessMoveRequest(1, 0, 3, 7),
+            new ChessMoveRequest(6, 0, 1, 0)
         );
-        Board board = new Board(preInitChessMoveDtos);
+        Board board = new Board(preInitChessMoveRequests);
         board.movePiece(1, 0, 0, 0);
 
         assertThat(board.getCurrentPlayerColourState()).isEqualTo("white");
@@ -46,12 +46,12 @@ class PawnPromotionTest {
 
     @Test
     void pawnPromotionPendingPropertyOnBoardShouldTrue_black() {
-        List<ChessMoveDto> preInitChessMoveDtos = List.of(
-            new ChessMoveDto(7, 0, 2, 7),
-            new ChessMoveDto(6, 0, 3, 7),
-            new ChessMoveDto(1, 0, 6, 0)
+        List<ChessMoveRequest> preInitChessMoveRequests = List.of(
+            new ChessMoveRequest(7, 0, 2, 7),
+            new ChessMoveRequest(6, 0, 3, 7),
+            new ChessMoveRequest(1, 0, 6, 0)
         );
-        Board board = new Board(preInitChessMoveDtos);
+        Board board = new Board(preInitChessMoveRequests);
         board.movePiece(6, 7, 5, 7);
         board.movePiece(6, 0, 7, 0);
 
@@ -64,12 +64,12 @@ class PawnPromotionTest {
 
     @Test
     void pawnPromotionPendingPropertyOnBoardShouldFalse_andHaveExtraQueen_white() {
-        List<ChessMoveDto> preInitChessMoveDtos = List.of(
-            new ChessMoveDto(0, 0, 2, 7),
-            new ChessMoveDto(1, 0, 3, 7),
-            new ChessMoveDto(6, 0, 1, 0)
+        List<ChessMoveRequest> preInitChessMoveRequests = List.of(
+            new ChessMoveRequest(0, 0, 2, 7),
+            new ChessMoveRequest(1, 0, 3, 7),
+            new ChessMoveRequest(6, 0, 1, 0)
         );
-        Board board = new Board(preInitChessMoveDtos);
+        Board board = new Board(preInitChessMoveRequests);
         board.movePiece(1, 0, 0, 0);
 
         board.promoteAPawn("Queen");
@@ -88,12 +88,12 @@ class PawnPromotionTest {
 
     @Test
     void pawnPromotionPendingPropertyOnBoardShouldFalse_andHaveExtraBishop_white() {
-        List<ChessMoveDto> preInitChessMoveDtos = List.of(
-            new ChessMoveDto(0, 0, 2, 7),
-            new ChessMoveDto(1, 0, 3, 7),
-            new ChessMoveDto(6, 0, 1, 0)
+        List<ChessMoveRequest> preInitChessMoveRequests = List.of(
+            new ChessMoveRequest(0, 0, 2, 7),
+            new ChessMoveRequest(1, 0, 3, 7),
+            new ChessMoveRequest(6, 0, 1, 0)
         );
-        Board board = new Board(preInitChessMoveDtos);
+        Board board = new Board(preInitChessMoveRequests);
         board.movePiece(1, 0, 0, 0);
 
         board.promoteAPawn("Bishop");
@@ -112,12 +112,12 @@ class PawnPromotionTest {
 
     @Test
     void pawnPromotionPendingPropertyOnBoardShouldFalse_andHaveExtraRook_white() {
-        List<ChessMoveDto> preInitChessMoveDtos = List.of(
-            new ChessMoveDto(0, 0, 2, 7),
-            new ChessMoveDto(1, 0, 3, 7),
-            new ChessMoveDto(6, 0, 1, 0)
+        List<ChessMoveRequest> preInitChessMoveRequests = List.of(
+            new ChessMoveRequest(0, 0, 2, 7),
+            new ChessMoveRequest(1, 0, 3, 7),
+            new ChessMoveRequest(6, 0, 1, 0)
         );
-        Board board = new Board(preInitChessMoveDtos);
+        Board board = new Board(preInitChessMoveRequests);
         board.movePiece(1, 0, 0, 0);
 
         board.promoteAPawn("Rook");
@@ -136,12 +136,12 @@ class PawnPromotionTest {
 
     @Test
     void pawnPromotionPendingPropertyOnBoardShouldFalse_andHaveExtraKnight_white() {
-        List<ChessMoveDto> preInitChessMoveDtos = List.of(
-            new ChessMoveDto(0, 0, 2, 7),
-            new ChessMoveDto(1, 0, 3, 7),
-            new ChessMoveDto(6, 0, 1, 0)
+        List<ChessMoveRequest> preInitChessMoveRequests = List.of(
+            new ChessMoveRequest(0, 0, 2, 7),
+            new ChessMoveRequest(1, 0, 3, 7),
+            new ChessMoveRequest(6, 0, 1, 0)
         );
-        Board board = new Board(preInitChessMoveDtos);
+        Board board = new Board(preInitChessMoveRequests);
         board.movePiece(1, 0, 0, 0);
 
         board.promoteAPawn("Knight");
@@ -160,12 +160,12 @@ class PawnPromotionTest {
 
     @Test
     void pawnPromotionPendingPropertyOnBoardShouldFalse_andHaveExtraQueen_black() {
-        List<ChessMoveDto> preInitChessMoveDtos = List.of(
-            new ChessMoveDto(7, 0, 2, 7),
-            new ChessMoveDto(6, 0, 3, 7),
-            new ChessMoveDto(1, 0, 6, 0)
+        List<ChessMoveRequest> preInitChessMoveRequests = List.of(
+            new ChessMoveRequest(7, 0, 2, 7),
+            new ChessMoveRequest(6, 0, 3, 7),
+            new ChessMoveRequest(1, 0, 6, 0)
         );
-        Board board = new Board(preInitChessMoveDtos);
+        Board board = new Board(preInitChessMoveRequests);
         board.movePiece(6, 7, 5, 7);
         board.movePiece(6, 0, 7, 0);
 
@@ -185,12 +185,12 @@ class PawnPromotionTest {
 
     @Test
     void pawnPromotionShouldThrowException_invalidPromotionPiece_white() {
-        List<ChessMoveDto> preInitChessMoveDtos = List.of(
-            new ChessMoveDto(0, 0, 2, 7),
-            new ChessMoveDto(1, 0, 3, 7),
-            new ChessMoveDto(6, 0, 1, 0)
+        List<ChessMoveRequest> preInitChessMoveRequests = List.of(
+            new ChessMoveRequest(0, 0, 2, 7),
+            new ChessMoveRequest(1, 0, 3, 7),
+            new ChessMoveRequest(6, 0, 1, 0)
         );
-        Board board = new Board(preInitChessMoveDtos);
+        Board board = new Board(preInitChessMoveRequests);
         board.movePiece(1, 0, 0, 0);
 
         assertThatThrownBy(() -> board.promoteAPawn("testing")).isInstanceOf(InvalidChessPieceForPawnPromotionException.class)
@@ -199,12 +199,12 @@ class PawnPromotionTest {
 
     @Test
     void pawnPromotionShouldThrowException_invalidPromotionPiece_black() {
-        List<ChessMoveDto> preInitChessMoveDtos = List.of(
-            new ChessMoveDto(7, 0, 2, 7),
-            new ChessMoveDto(6, 0, 3, 7),
-            new ChessMoveDto(1, 0, 6, 0)
+        List<ChessMoveRequest> preInitChessMoveRequests = List.of(
+            new ChessMoveRequest(7, 0, 2, 7),
+            new ChessMoveRequest(6, 0, 3, 7),
+            new ChessMoveRequest(1, 0, 6, 0)
         );
-        Board board = new Board(preInitChessMoveDtos);
+        Board board = new Board(preInitChessMoveRequests);
         board.movePiece(6, 7, 5, 7);
         board.movePiece(6, 0, 7, 0);
 

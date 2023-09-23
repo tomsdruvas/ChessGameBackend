@@ -17,7 +17,7 @@ import com.lazychess.chessgame.chessgame.LegalMoveSquare;
 import com.lazychess.chessgame.chessgame.Pawn;
 import com.lazychess.chessgame.chessgame.Piece;
 import com.lazychess.chessgame.chessgame.Square;
-import com.lazychess.chessgame.dto.ChessMoveDto;
+import com.lazychess.chessgame.dto.ChessMoveRequest;
 
 import testUtil.ChessMoveNotion;
 import testUtil.TypeOfMoveEnum;
@@ -141,7 +141,7 @@ class ChessNotationsTest {
         List<ChessMoveNotion> chessMoveNotions = parseChessNotions(chessNotationsString);
 
         chessMoveNotions.forEach(chessMoveNotion -> {
-            ChessMoveDto chessMove;
+            ChessMoveRequest chessMove;
             int numberOfPiecesOnTheBoard = board.getAllPieces().size();
             int numberOfPawnsCurrentPlayer = getAllPawns(chessMoveNotion).size();
             if (chessMoveNotion.getTypeOfMove() == TypeOfMoveEnum.BASIC_PAWN_MOVE || chessMoveNotion.getTypeOfMove() == TypeOfMoveEnum.CASTLING || chessMoveNotion.getTypeOfMove() == TypeOfMoveEnum.PAWN_PROMOTION) {
@@ -168,7 +168,7 @@ class ChessNotationsTest {
         }
     }
 
-    private ChessMoveDto buildMoveWithRowAvailable(ChessMoveNotion chessMoveNotion) {
+    private ChessMoveRequest buildMoveWithRowAvailable(ChessMoveNotion chessMoveNotion) {
         System.out.println(chessMoveNotion);
         List<Square> squares = Arrays.stream(board.getSquares()).flatMap(Arrays::stream)
             .filter(square -> Objects.equals(square.getPiece().getColour(), chessMoveNotion.getPieceColour()) && square.getPiece().getClass() == chessMoveNotion.getPieceClass() && square.getPiece().getPieceRow() == chessMoveNotion.getPieceLocationRow())
@@ -176,11 +176,11 @@ class ChessNotationsTest {
 
         Piece piece = getAndAssertOnePiece(squares);
 
-        return new ChessMoveDto(piece.getPieceRow(),
+        return new ChessMoveRequest(piece.getPieceRow(),
             piece.getPieceColumn(), chessMoveNotion.getRow(), chessMoveNotion.getColumn());
     }
 
-    private ChessMoveDto buildMoveWithColumnAvailable(ChessMoveNotion chessMoveNotion) {
+    private ChessMoveRequest buildMoveWithColumnAvailable(ChessMoveNotion chessMoveNotion) {
         System.out.println(chessMoveNotion);
         List<Square> squares = Arrays.stream(board.getSquares()).flatMap(Arrays::stream)
             .filter(square -> Objects.equals(square.getPiece().getColour(), chessMoveNotion.getPieceColour()) && square.getPiece().getClass() == chessMoveNotion.getPieceClass() && square.getPiece().getPieceColumn() == chessMoveNotion.getPieceLocationColumn())
@@ -188,11 +188,11 @@ class ChessNotationsTest {
 
         Piece piece = getAndAssertOnePiece(squares);
 
-        return new ChessMoveDto(piece.getPieceRow(),
+        return new ChessMoveRequest(piece.getPieceRow(),
             piece.getPieceColumn(), chessMoveNotion.getRow(), chessMoveNotion.getColumn());
     }
 
-    private ChessMoveDto buildBasicMoveWithPieceName(ChessMoveNotion chessMoveNotion) {
+    private ChessMoveRequest buildBasicMoveWithPieceName(ChessMoveNotion chessMoveNotion) {
         System.out.println(chessMoveNotion);
         List<Square> squares = Arrays.stream(board.getSquares()).flatMap(Arrays::stream)
             .filter(square -> Objects.equals(square.getPiece().getColour(), chessMoveNotion.getPieceColour()) && square.getPiece().getClass() == chessMoveNotion.getPieceClass())
@@ -200,11 +200,11 @@ class ChessNotationsTest {
 
         Piece piece = getAndAssertOnePiece(squares);
 
-        return new ChessMoveDto(piece.getPieceRow(),
+        return new ChessMoveRequest(piece.getPieceRow(),
             piece.getPieceColumn(), chessMoveNotion.getRow(), chessMoveNotion.getColumn());
     }
 
-    private ChessMoveDto buildPawnBasicMove(ChessMoveNotion chessMoveNotion) {
+    private ChessMoveRequest buildPawnBasicMove(ChessMoveNotion chessMoveNotion) {
         System.out.println(chessMoveNotion);
         List<Square> squares = Arrays.stream(board.getSquares()).flatMap(Arrays::stream)
             .filter(square -> Objects.equals(square.getPiece().getColour(), chessMoveNotion.getPieceColour()) && square.getPiece().getClass() == chessMoveNotion.getPieceClass())
@@ -212,7 +212,7 @@ class ChessNotationsTest {
 
         Piece piece = getAndAssertOnePiece(squares);
 
-        return new ChessMoveDto(piece.getPieceRow(),
+        return new ChessMoveRequest(piece.getPieceRow(),
             piece.getPieceColumn(), chessMoveNotion.getRow(), chessMoveNotion.getColumn());
     }
 
@@ -254,7 +254,7 @@ class ChessNotationsTest {
             .toList();
     }
 
-    private void moveChessPiece(ChessMoveDto chessMove) {
+    private void moveChessPiece(ChessMoveRequest chessMove) {
         board.movePiece(chessMove.currentRow(), chessMove.currentColumn(), chessMove.newRow(), chessMove.newColumn());
     }
 

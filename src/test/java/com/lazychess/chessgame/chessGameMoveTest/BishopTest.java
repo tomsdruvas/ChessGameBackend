@@ -18,7 +18,7 @@ import com.lazychess.chessgame.chessgame.King;
 import com.lazychess.chessgame.chessgame.Pawn;
 import com.lazychess.chessgame.chessgame.Piece;
 import com.lazychess.chessgame.chessgame.Square;
-import com.lazychess.chessgame.dto.ChessMoveDto;
+import com.lazychess.chessgame.dto.ChessMoveRequest;
 
 class BishopTest {
 
@@ -118,13 +118,13 @@ class BishopTest {
 
     @Test
     void bishopShouldNotBeAbleToPutOwnKingInCheck() {
-        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(1, 4, 2, 4),
-            new ChessMoveDto(0, 5, 2, 5),
-            new ChessMoveDto(7, 2, 4, 5)
+        List<ChessMoveRequest> preInitChessMoveRequestList = List.of(
+            new ChessMoveRequest(1, 4, 2, 4),
+            new ChessMoveRequest(0, 5, 2, 5),
+            new ChessMoveRequest(7, 2, 4, 5)
         );
 
-        Board board = new Board(preInitChessMoveDtoList);
+        Board board = new Board(preInitChessMoveRequestList);
         board.movePiece(4,5,3,6);
 
         Piece whiteBishop = board.getSquares()[3][6].getPiece();
@@ -145,12 +145,12 @@ class BishopTest {
 
     @Test
     void bishopShouldBeAbleToTakeOppositeKingNotCheckMate() {
-        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(7, 5, 5, 5),
-            new ChessMoveDto(0, 3, 2, 4)
+        List<ChessMoveRequest> preInitChessMoveRequestList = List.of(
+            new ChessMoveRequest(7, 5, 5, 5),
+            new ChessMoveRequest(0, 3, 2, 4)
         );
 
-        Board board = new Board(preInitChessMoveDtoList);
+        Board board = new Board(preInitChessMoveRequestList);
         board.movePiece(5,5,4,6);
 
 
@@ -176,16 +176,16 @@ class BishopTest {
 
     @Test
     void bishopShouldBeAbleToTakeOppositeKingCheckMate() {
-        List<ChessMoveDto> preInitChessMoveDtoList = List.of(
-            new ChessMoveDto(0, 3, 4, 0),
-            new ChessMoveDto(7, 7, 4, 7),
-            new ChessMoveDto(6, 0, 5, 7),
-            new ChessMoveDto(7, 5, 5, 3),
-            new ChessMoveDto(6, 2, 2, 7),
-            new ChessMoveDto(7, 2, 6, 2)
+        List<ChessMoveRequest> preInitChessMoveRequestList = List.of(
+            new ChessMoveRequest(0, 3, 4, 0),
+            new ChessMoveRequest(7, 7, 4, 7),
+            new ChessMoveRequest(6, 0, 5, 7),
+            new ChessMoveRequest(7, 5, 5, 3),
+            new ChessMoveRequest(6, 2, 2, 7),
+            new ChessMoveRequest(7, 2, 6, 2)
         );
 
-        Board board = new Board(preInitChessMoveDtoList);
+        Board board = new Board(preInitChessMoveRequestList);
         board.movePiece(6,6,5,6);
 
         List<Piece> allPieces = board.getAllPieces();

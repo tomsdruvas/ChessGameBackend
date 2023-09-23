@@ -10,6 +10,7 @@ import static com.lazychess.chessgame.controller.ControllerConstants.PROMOTE_PAW
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
@@ -41,13 +42,15 @@ public class BoardController {
     private final BoardService boardService;
     private final CustomUserDetailsService customUserDetailsService;
     private final ResponseEntityFactory responseEntityFactory;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     public BoardController(BoardService boardService,
                            CustomUserDetailsService customUserDetailsService,
-                           ResponseEntityFactory responseEntityFactory) {
+                           ResponseEntityFactory responseEntityFactory, SimpMessagingTemplate simpMessagingTemplate) {
         this.boardService = boardService;
         this.customUserDetailsService = customUserDetailsService;
         this.responseEntityFactory = responseEntityFactory;
+        this.simpMessagingTemplate = simpMessagingTemplate;
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -87,6 +90,7 @@ public class BoardController {
         AppUserPrincipal appUserPrincipal = customUserDetailsService.loadUserByUsername(principal.getName());
 
         JsonObjectBoardResponse jsonObjectBoardResponse = boardService.processChessMove(boardGameId, appUserPrincipal.getAppUser().getUsername(), chessMoveRequest);
+        simpMessagingTemplate.convertAndSend("/topic/game-progress/" + jsonObjectBoardResponse.getBoardId(), jsonObjectBoardResponse);
         return responseEntityFactory.toResponseEntity(jsonObjectBoardResponse);
     }
 

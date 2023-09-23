@@ -7,6 +7,7 @@ import static com.lazychess.chessgame.controller.ControllerConstants.MAKE_A_MOVE
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
@@ -63,8 +64,8 @@ public class BoardController {
         Authentication principal = SecurityContextHolder.getContext().getAuthentication();
         AppUserPrincipal appUserPrincipal = customUserDetailsService.loadUserByUsername(principal.getName());
 
-        JsonObjectBoardResponse initialBoardGame = boardService.getBoard(boardId, appUserPrincipal.getUsername());
-        return responseEntityFactory.toResponseEntity(initialBoardGame);
+        JsonObjectBoardResponse boardGame = boardService.getBoard(boardId, appUserPrincipal.getUsername());
+        return responseEntityFactory.toResponseEntity(boardGame);
     }
 
     @ResponseStatus(HttpStatus.CREATED)

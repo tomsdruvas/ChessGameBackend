@@ -56,6 +56,10 @@ public class BoardDao {
     @JsonInclude(Include.NON_NULL)
     private boolean pawnPromotionPending;
 
+    @Type(JsonBinaryType.class)
+    @Column(name = "cgb_latest_move", columnDefinition = "jsonb")
+    private LatestMoveDao latestMove;
+
     @Column(name = "cgb_winner_user_id")
     @JsonInclude(Include.NON_NULL)
     private String winnerUsername;

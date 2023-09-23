@@ -6,11 +6,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.lazychess.chessgame.chessgame.LegalMoveSquare;
 import com.lazychess.chessgame.chessgame.Square;
 
 @JsonDeserialize(builder = JsonObjectBoardResponse.Builder.class)
 @JsonInclude(NON_NULL)
 public class JsonObjectBoardResponse {
+
     private static final String BOARD_ID_JSON_PROPERTY = "BoardId";
     private static final String SQUARES_JSON_PROPERTY = "Squares";
     private static final String GAME_STATE_JSON_PROPERTY = "GameState";
@@ -18,6 +20,7 @@ public class JsonObjectBoardResponse {
     private static final String PLAYERS_JSON_PROPERTY = "Players";
     private static final String PAWN_PROMOTION_PENDING = "PawnPromotionPending";
     private static final String WINNER_JSON_PROPERTY = "WinnerUsername";
+    private static final String LATEST_MOVE_JSON_PROPERTY = "LatestMove";
 
     private final String boardId;
     private final Square[][] squares;
@@ -25,6 +28,7 @@ public class JsonObjectBoardResponse {
     private final String currentPlayerColour;
     private final JsonObjectPlayersResponseData players;
     private final boolean pawnPromotionPending;
+    private final JsonObjectLatestMoveResponseData latestMove;
     private final String winner;
 
     private JsonObjectBoardResponse(Builder builder) {
@@ -34,6 +38,7 @@ public class JsonObjectBoardResponse {
         currentPlayerColour = builder.currentPlayerColour;
         players = builder.players;
         pawnPromotionPending = builder.pawnPromotionPending;
+        latestMove = builder.latestMove;
         winner = builder.winner;
     }
 
@@ -71,6 +76,11 @@ public class JsonObjectBoardResponse {
         return pawnPromotionPending;
     }
 
+    @JsonProperty(LATEST_MOVE_JSON_PROPERTY)
+    public JsonObjectLatestMoveResponseData latestMove() {
+        return latestMove;
+    }
+
     @JsonProperty(WINNER_JSON_PROPERTY)
     public String getWinner() {
         return winner;
@@ -84,6 +94,7 @@ public class JsonObjectBoardResponse {
         private String currentPlayerColour;
         private JsonObjectPlayersResponseData players;
         private boolean pawnPromotionPending;
+        private JsonObjectLatestMoveResponseData latestMove;
         private String winner;
 
         private Builder() {
@@ -122,6 +133,12 @@ public class JsonObjectBoardResponse {
         @JsonProperty(PAWN_PROMOTION_PENDING)
         public Builder pawnPromotionPending(boolean val) {
             pawnPromotionPending = val;
+            return this;
+        }
+
+        @JsonProperty(LATEST_MOVE_JSON_PROPERTY)
+        public Builder latestMove(JsonObjectLatestMoveResponseData val) {
+            latestMove = val;
             return this;
         }
 

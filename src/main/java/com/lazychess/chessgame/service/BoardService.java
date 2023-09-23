@@ -20,10 +20,12 @@ import com.lazychess.chessgame.exception.PlayerTwoAlreadyPartOfGameException;
 import com.lazychess.chessgame.exception.PlayerTwoHasNotJoinedException;
 import com.lazychess.chessgame.exception.WrongPlayerMakingAMoveException;
 import com.lazychess.chessgame.json.JsonObjectBoardResponse;
+import com.lazychess.chessgame.json.JsonObjectLatestMoveResponseData;
 import com.lazychess.chessgame.json.JsonObjectPlayersResponseData;
 import com.lazychess.chessgame.repository.BoardRepository;
 import com.lazychess.chessgame.repository.entity.ApplicationUser;
 import com.lazychess.chessgame.repository.entity.BoardDao;
+import com.lazychess.chessgame.repository.entity.LatestMoveDao;
 import com.lazychess.chessgame.repository.entity.PlayersDao;
 import com.lazychess.chessgame.repository.mapper.BoardDaoMapper;
 
@@ -117,7 +119,15 @@ public class BoardService {
             .currentPlayerColour(boardDao.getCurrentPlayerColour())
             .players(buildJsonObjectPlayersResponseData(boardDao.getPlayersDao()))
             .pawnPromotionPending(boardDao.isPawnPromotionPending())
+            .latestMove(buildJsonObjectLatestMoveResponseData(boardDao.getLatestMove()))
             .winner(boardDao.getWinnerUsername())
+            .build();
+    }
+
+    private JsonObjectLatestMoveResponseData buildJsonObjectLatestMoveResponseData(LatestMoveDao latestMoveDao) {
+        return JsonObjectLatestMoveResponseData.newBuilder()
+            .row(latestMoveDao.getRow())
+            .column(latestMoveDao.getColumn())
             .build();
     }
 

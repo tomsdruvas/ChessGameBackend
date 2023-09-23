@@ -37,7 +37,6 @@ public class Board implements Serializable {
     Piece whiteKing;
     Piece[] whitePawn;
 
-
     Piece blackRook1;
     Piece blackRook2;
     Piece blackKnight1;
@@ -51,6 +50,7 @@ public class Board implements Serializable {
     private ChessGameState stateOfTheGame = ONGOING;
     private String currentPlayerColourState = WHITE;
     private boolean pawnPromotionPending = false;
+    private LegalMoveSquare latestMove;
 
     public Board(List<ChessMoveDto> chessMoveDtoList) {
         this.squares = new Square[8][8];
@@ -65,6 +65,7 @@ public class Board implements Serializable {
         loadSquares();
         loadPieces();
         loadPieceLegalMoves(squares);
+        setLatestMove(new LegalMoveSquare(0,0));
     }
 
     public void loadSquares() {
@@ -133,6 +134,15 @@ public class Board implements Serializable {
         for(int i=0;i<8;i++) {
             squares[1][i].setPiece(blackPawn[i]);
         }
+    }
+
+
+    public LegalMoveSquare getLatestMove() {
+        return latestMove;
+    }
+
+    public void setLatestMove(LegalMoveSquare latestMove) {
+        this.latestMove = latestMove;
     }
 
     public String getCurrentPlayerColourState() {
@@ -249,6 +259,7 @@ public class Board implements Serializable {
         pieceToMove.setPieceColumn(newColumn);
         squares[newRow][newColumn].setPiece(pieceToMove);
         squares[currentRow][currentColumn].setPiece(new EmptyPiece());
+        setLatestMove(new LegalMoveSquare(newRow, newColumn));
     }
 
     private void enPassantAndCastlingActions(int currentRow, int newRow, int newColumn, Piece pieceToMove, String currentPlayersColour) {

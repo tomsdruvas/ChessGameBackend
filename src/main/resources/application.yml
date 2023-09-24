@@ -2,9 +2,9 @@
 db:
     host: localhost
     name: chess_db
-logging:
-    level:
-        root: debug
+
+
+
 spring:
     datasource:
         url: jdbc:postgresql://${db.host}/${db.name}
@@ -33,7 +33,12 @@ server:
         include-exception: true
         include-stacktrace: always
         include-message: always
-debug: true
+#debug: true
+logging:
+    level:
+      org:
+          springframework:
+            security: trace
 ---
 
 spring:

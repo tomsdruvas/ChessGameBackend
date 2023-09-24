@@ -47,6 +47,7 @@ import com.lazychess.chessgame.dto.ChessMoveRequest;
 import com.lazychess.chessgame.repository.BoardRepository;
 import com.lazychess.chessgame.repository.entity.BoardDao;
 import com.lazychess.chessgame.repository.entity.PlayersDao;
+import com.lazychess.chessgame.repository.mapper.BoardDaoMapper;
 
 import wiremock.com.fasterxml.jackson.core.JsonProcessingException;
 import wiremock.com.fasterxml.jackson.databind.ObjectMapper;
@@ -74,6 +75,9 @@ class BoardControllerIntegrationTest {
 
     @Autowired
     private ApplicationUserRepository applicationUserRepository;
+
+    @Autowired
+    private BoardDaoMapper boardDaoMapper;
 
     private ApplicationUser applicationUser;
     private ApplicationUser applicationUser2;
@@ -491,11 +495,7 @@ class BoardControllerIntegrationTest {
         createUserTwo();
 
         Board board = new Board();
-        BoardDao boardDao = new BoardDao();
-        boardDao.setStateOfTheGame(board.getStateOfTheGame());
-        boardDao.setCurrentPlayerColour(board.getCurrentPlayerColourState());
-        boardDao.setPawnPromotionPending(board.isPawnPromotionPending());
-        boardDao.setSquares(board.getSquares());
+        BoardDao boardDao = boardDaoMapper.fromBoardObject(board);
         PlayersDao playersDao = new PlayersDao();
         playersDao.setPlayerOneAppUserId(applicationUser.getId());
         playersDao.setPlayerTwoAppUserId(applicationUser2.getId());
@@ -532,11 +532,7 @@ class BoardControllerIntegrationTest {
         createUserTwo();
 
         Board board = new Board();
-        BoardDao boardDao = new BoardDao();
-        boardDao.setStateOfTheGame(board.getStateOfTheGame());
-        boardDao.setCurrentPlayerColour(board.getCurrentPlayerColourState());
-        boardDao.setPawnPromotionPending(board.isPawnPromotionPending());
-        boardDao.setSquares(board.getSquares());
+        BoardDao boardDao = boardDaoMapper.fromBoardObject(board);
         PlayersDao playersDao = new PlayersDao();
         playersDao.setPlayerOneAppUserId(applicationUser.getId());
         playersDao.setPlayerOneAppUsername(applicationUser.getUsername());
@@ -551,11 +547,7 @@ class BoardControllerIntegrationTest {
 
         Board board = new Board(chessMoveRequestList);
         board.setCurrentPlayerColourState("white");
-        BoardDao boardDao = new BoardDao();
-        boardDao.setStateOfTheGame(board.getStateOfTheGame());
-        boardDao.setCurrentPlayerColour(board.getCurrentPlayerColourState());
-        boardDao.setPawnPromotionPending(board.isPawnPromotionPending());
-        boardDao.setSquares(board.getSquares());
+        BoardDao boardDao = boardDaoMapper.fromBoardObject(board);
         PlayersDao playersDao = new PlayersDao();
         playersDao.setPlayerOneAppUserId(applicationUser.getId());
         playersDao.setPlayerTwoAppUserId(applicationUser2.getId());
@@ -572,11 +564,7 @@ class BoardControllerIntegrationTest {
 
         Board board = new Board(chessMoveRequestList);
         board.setCurrentPlayerColourState("black");
-        BoardDao boardDao = new BoardDao();
-        boardDao.setStateOfTheGame(board.getStateOfTheGame());
-        boardDao.setCurrentPlayerColour(board.getCurrentPlayerColourState());
-        boardDao.setPawnPromotionPending(board.isPawnPromotionPending());
-        boardDao.setSquares(board.getSquares());
+        BoardDao boardDao = boardDaoMapper.fromBoardObject(board);
         PlayersDao playersDao = new PlayersDao();
         playersDao.setPlayerOneAppUserId(applicationUser.getId());
         playersDao.setPlayerTwoAppUserId(applicationUser2.getId());

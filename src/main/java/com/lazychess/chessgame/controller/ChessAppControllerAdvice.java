@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.lazychess.chessgame.json.JsonObjectErrorResponse;
 
-@ControllerAdvice(assignableTypes = BoardController.class)
+@ControllerAdvice(assignableTypes = {BoardController.class, AuthController.class, ApplicationUserController.class})
 @Order(HIGHEST_PRECEDENCE)
-public class BoardControllerAdvice {
+public class ChessAppControllerAdvice {
 
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<JsonObjectErrorResponse> invalidChessMove(RuntimeException e) {
+    public ResponseEntity<JsonObjectErrorResponse> invalidRequest(RuntimeException e) {
         return ResponseEntity.badRequest().body(buildJsonObjectErrorResponse(e.getMessage()));
     }
 

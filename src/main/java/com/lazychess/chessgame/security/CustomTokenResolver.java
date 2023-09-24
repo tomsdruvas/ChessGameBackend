@@ -15,7 +15,7 @@ public class CustomTokenResolver implements BearerTokenResolver {
 
     private static final Pattern authorizationPattern = Pattern.compile("^Bearer (?<token>[A-Z0-9-._~+/]+=*)$", Pattern.CASE_INSENSITIVE);
     private boolean allowFormEncodedBodyParameter = false;
-    private boolean allowUriQueryParameter = false;
+    private boolean allowUriQueryParameter = true;
     private String bearerTokenHeaderName = "Authorization";
 
     public CustomTokenResolver() {

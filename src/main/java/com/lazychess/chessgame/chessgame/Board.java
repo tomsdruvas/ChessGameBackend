@@ -58,6 +58,7 @@ public class Board implements Serializable {
         loadPieces();
         makePreInitialisationMoves(chessMoveRequestList);
         loadPieceLegalMoves(squares);
+        setLatestMove(new LegalMoveSquare(0,0));
     }
 
     public Board() {

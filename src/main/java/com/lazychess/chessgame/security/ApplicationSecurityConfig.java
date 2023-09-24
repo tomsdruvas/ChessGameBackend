@@ -130,7 +130,7 @@ public class ApplicationSecurityConfig {
     @Order(1)
     @Bean
     public SecurityFilterChain registrationsFilterChain(HttpSecurity http) throws Exception {
-        http.securityMatcher("/registration", "/error","/refresh-token", "/ws/**")
+        http.securityMatcher("/registration", "/error","/refresh-token")
             .cors()
             .and()
             .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())

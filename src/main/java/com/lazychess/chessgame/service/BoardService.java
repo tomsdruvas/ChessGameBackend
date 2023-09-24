@@ -107,7 +107,7 @@ public class BoardService {
         return buildJsonObjectBoardResponse(boardDao);
     }
 
-    private BoardDao findChessGameById(String boardGameId) {
+    public BoardDao findChessGameById(String boardGameId) {
         return boardRepository.findById(boardGameId).orElseThrow(() -> new BoardNotFoundException(boardGameId));
     }
 
@@ -179,7 +179,7 @@ public class BoardService {
         }
     }
 
-    private void checkIfPlayerIsPartOfThisGame(BoardDao boardDao, String playersUsername) {
+    public void checkIfPlayerIsPartOfThisGame(BoardDao boardDao, String playersUsername) {
         PlayersDao playersDao = boardDao.getPlayersDao();
         String playerOneAppUsername = playersDao.getPlayerOneAppUsername();
         String playerTwoAppUsername = playersDao.getPlayerTwoAppUsername();

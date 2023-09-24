@@ -19,6 +19,7 @@ import com.lazychess.chessgame.repository.entity.ApplicationUser;
 import com.lazychess.chessgame.chessgame.Board;
 import com.lazychess.chessgame.json.JsonObjectBoardResponse;
 import com.lazychess.chessgame.repository.entity.BoardDao;
+import com.lazychess.chessgame.repository.entity.LatestMoveDao;
 import com.lazychess.chessgame.repository.entity.PlayersDao;
 import com.lazychess.chessgame.repository.mapper.BoardDaoMapper;
 import com.lazychess.chessgame.service.BoardService;
@@ -80,10 +81,15 @@ class BoardDaoRepositoryIntegrationTest {
         Board board = createBoard();
         BoardDao boardDao = new BoardDao();
 
+        LatestMoveDao latestMove = new LatestMoveDao();
+        latestMove.setColumn(0);
+        latestMove.setRow(0);
+
         boardDao.setSquares(board.getSquares());
         boardDao.setStateOfTheGame(board.getStateOfTheGame());
         boardDao.setCurrentPlayerColour(board.getCurrentPlayerColourState());
         boardDao.setPlayersDao(playersDao);
+        boardDao.setLatestMove(latestMove);
 
         return boardDao;
     }

@@ -70,7 +70,7 @@ public class TokenService {
                     .body(new AuthDetailsDto(accessToken, applicationUser.getUsername(), List.of("User")));
             } else {
                 throw new RefreshTokenException(refreshTokenCookie +
-                    "Refresh token is not in database!");
+                    " - Refresh token not found!");
             }
         }
 

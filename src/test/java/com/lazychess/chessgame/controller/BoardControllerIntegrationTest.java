@@ -5,8 +5,15 @@ import static com.lazychess.chessgame.controller.TestConstants.BOARD_PATH;
 import static com.lazychess.chessgame.controller.TestConstants.LOGIN_PATH;
 import static com.lazychess.chessgame.controller.TestConstants.MAKE_A_MOVE_PATH;
 import static com.lazychess.chessgame.controller.TestConstants.PROMOTE_PAWN_PATH;
+import static com.lazychess.chessgame.controller.TestConstants.WEB_SOCKET_BASE_WITH_ID_PATH;
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -21,12 +28,15 @@ import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -34,8 +44,9 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import com.lazychess.chessgame.repository.entity.ApplicationUser;
-import com.lazychess.chessgame.repository.ApplicationUserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.lazychess.chessgame.chessgame.Board;
 import com.lazychess.chessgame.chessgame.ChessGameState;
 import com.lazychess.chessgame.chessgame.EmptyPiece;
@@ -44,16 +55,16 @@ import com.lazychess.chessgame.chessgame.Queen;
 import com.lazychess.chessgame.chessgame.Square;
 import com.lazychess.chessgame.config.SquareListConverter;
 import com.lazychess.chessgame.dto.ChessMoveRequest;
+import com.lazychess.chessgame.json.JsonObjectBoardResponse;
+import com.lazychess.chessgame.repository.ApplicationUserRepository;
 import com.lazychess.chessgame.repository.BoardRepository;
+import com.lazychess.chessgame.repository.entity.ApplicationUser;
 import com.lazychess.chessgame.repository.entity.BoardDao;
 import com.lazychess.chessgame.repository.entity.PlayersDao;
 import com.lazychess.chessgame.repository.mapper.BoardDaoMapper;
 
-import wiremock.com.fasterxml.jackson.core.JsonProcessingException;
-import wiremock.com.fasterxml.jackson.databind.ObjectMapper;
-import wiremock.com.fasterxml.jackson.databind.ObjectWriter;
-import wiremock.com.fasterxml.jackson.databind.SerializationFeature;
 import wiremock.com.jayway.jsonpath.JsonPath;
+
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -66,22 +77,27 @@ class BoardControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
     @Autowired
     private BoardRepository boardRepository;
-
     @Autowired
     private ApplicationUserRepository applicationUserRepository;
-
     @Autowired
     private BoardDaoMapper boardDaoMapper;
+    @MockBean
+    private SimpMessagingTemplate simpMessagingTemplate;
+
+    ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
+    ArgumentCaptor<JsonObjectBoardResponse> jsonObjectBoardResponseArgumentCaptor = ArgumentCaptor.forClass(JsonObjectBoardResponse.class);
 
     private ApplicationUser applicationUser;
     private ApplicationUser applicationUser2;
     private BoardDao savedBoardDao;
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    private MvcResult mvcResult;
 
     @AfterEach
     void tearDown() {
@@ -91,12 +107,12 @@ class BoardControllerIntegrationTest {
     @Test
     void existentUserShouldBeAbleToCreateAChessSession() throws Exception {
         createUserOne();
-        MvcResult mvcResult = mockMvc.perform(post(BOARD_PATH)
+        mvcResult = mockMvc.perform(post(BOARD_PATH)
                 .header("Authorization", "Bearer " + getPlayerOneAccessToken()))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.Players.PlayerOneUsername").value("test_user1")).andReturn();
 
-        Square[][] squaresFromResponseBody = getSquaresFromResponseBody(mvcResult);
+        Square[][] squaresFromResponseBody = getSquaresFromResponseBody();
         Square[][] expected = new Board().getSquares();
         assertArrayEquals(squaresFromResponseBody, expected);
     }
@@ -104,14 +120,14 @@ class BoardControllerIntegrationTest {
     @Test
     void existentUserShouldBeAbleToJoinAChessSession() throws Exception {
         createABoardWithOneUsers();
-        MvcResult mvcResult = mockMvc.perform(post(ADD_PLAYER_TWO_TO_BOARD_PATH + savedBoardDao.getId())
+        mvcResult = mockMvc.perform(post(ADD_PLAYER_TWO_TO_BOARD_PATH + savedBoardDao.getId())
                 .header("Authorization", "Bearer " + getPlayerTwoAccessToken()))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.Players.PlayerOneUsername").value("test_user1"))
             .andExpect(jsonPath("$.Players.PlayerTwoUsername").value("test_user2"))
             .andReturn();
 
-        Square[][] squaresFromResponseBody = getSquaresFromResponseBody(mvcResult);
+        Square[][] squaresFromResponseBody = getSquaresFromResponseBody();
         Square[][] expected = new Board().getSquares();
         assertArrayEquals(squaresFromResponseBody, expected);
     }
@@ -119,7 +135,7 @@ class BoardControllerIntegrationTest {
     @Test
     void playerOneOfTheBoardShouldBeAbleToMakeAMove() throws Exception {
         createABoardWithTwoUsers();
-        MvcResult mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
+        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerOneAccessToken())
                 .content(getMoveJsonRequestBody(6, 3, 4, 3)))
@@ -129,7 +145,7 @@ class BoardControllerIntegrationTest {
             .andExpect(jsonPath("$.Players.ActivePlayerUsername").value("test_user2"))
             .andReturn();
 
-        Square[][] squaresFromResponseBody = getSquaresFromResponseBody(mvcResult);
+        Square[][] squaresFromResponseBody = getSquaresFromResponseBody();
 
         assertThat(squaresFromResponseBody).satisfies(squares1 -> {
             assertThat(squares1[6][3].getPiece()).isExactlyInstanceOf(EmptyPiece.class);
@@ -142,6 +158,8 @@ class BoardControllerIntegrationTest {
         squares[6][3] = null;
         squares[4][3] = null;
         assertArrayEquals(squaresFromResponseBody, squares);
+
+        verifyWebsocketMethodCall();
     }
 
     @Test
@@ -151,7 +169,7 @@ class BoardControllerIntegrationTest {
                 new ChessMoveRequest(6, 3, 4, 3)
             )
         );
-        MvcResult mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
+        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerTwoAccessToken())
                 .content(getMoveJsonRequestBody(1, 2, 2, 2)))
@@ -161,7 +179,7 @@ class BoardControllerIntegrationTest {
             .andExpect(jsonPath("$.Players.ActivePlayerUsername").value("test_user1"))
             .andReturn();
 
-        Square[][] squaresFromResponseBody = getSquaresFromResponseBody(mvcResult);
+        Square[][] squaresFromResponseBody = getSquaresFromResponseBody();
 
         assertThat(squaresFromResponseBody).satisfies(squares1 -> {
             assertThat(squares1[1][2].getPiece()).isExactlyInstanceOf(EmptyPiece.class);
@@ -180,6 +198,7 @@ class BoardControllerIntegrationTest {
         squares[1][2] = null;
         squares[2][2] = null;
         assertArrayEquals(squaresFromResponseBody, squares);
+        verifyWebsocketMethodCall();
     }
 
     @Test
@@ -192,7 +211,7 @@ class BoardControllerIntegrationTest {
                 new ChessMoveRequest(1, 1, 3, 1)
             )
         );
-        MvcResult mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
+        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerOneAccessToken())
                 .content(getMoveJsonRequestBody(7, 4, 3, 0)))
@@ -204,12 +223,14 @@ class BoardControllerIntegrationTest {
             .andExpect(jsonPath("$.GameState").value("CHECKMATE"))
             .andReturn();
 
-        Square[][] squaresFromResponseBody = getSquaresFromResponseBody(mvcResult);
+        Square[][] squaresFromResponseBody = getSquaresFromResponseBody();
 
         assertThat(squaresFromResponseBody).satisfies(squares -> {
             assertThat(squares[7][4].getPiece()).isExactlyInstanceOf(EmptyPiece.class);
             assertThat(squares[3][0].getPiece()).isExactlyInstanceOf(Queen.class);
         });
+
+        verifyWebsocketMethodCall();
     }
 
     @Test
@@ -222,7 +243,7 @@ class BoardControllerIntegrationTest {
             )
         );
 
-        MvcResult mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
+        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerOneAccessToken())
                 .content(getMoveJsonRequestBody(1, 0, 0, 0)))
@@ -233,12 +254,14 @@ class BoardControllerIntegrationTest {
             .andExpect(jsonPath("$.PawnPromotionPending").value("true"))
             .andReturn();
 
-        Square[][] squaresFromResponseBody = getSquaresFromResponseBody(mvcResult);
+        Square[][] squaresFromResponseBody = getSquaresFromResponseBody();
 
         assertThat(squaresFromResponseBody).satisfies(squares -> {
             assertThat(squares[1][0].getPiece()).isExactlyInstanceOf(EmptyPiece.class);
             assertThat(squares[0][0].getPiece()).isExactlyInstanceOf(Pawn.class);
         });
+
+        verifyWebsocketMethodCall();
     }
 
     @Test
@@ -251,18 +274,21 @@ class BoardControllerIntegrationTest {
             )
         );
 
-        mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
+        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
             .contentType(APPLICATION_JSON_UTF8)
             .header("Authorization", "Bearer " + getPlayerOneAccessToken())
-            .content(getMoveJsonRequestBody(1, 0, 0, 0))).andReturn();
+            .content(getMoveJsonRequestBody(1, 0, 0, 0)))
+            .andReturn();
+
+        verifyWebsocketMethodCall();
 
         Map<String, Object> body = new HashMap<>();
         body.put("upgradedPieceName", "Queen");
 
-        MvcResult mvcResult = mockMvc.perform(post(PROMOTE_PAWN_PATH + savedBoardDao.getId())
+        mvcResult = mockMvc.perform(post(PROMOTE_PAWN_PATH + savedBoardDao.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerOneAccessToken())
-                .content(new ObjectMapper().writeValueAsString(body)))
+                .content(OBJECT_MAPPER.writeValueAsString(body)))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.Players.PlayerOneUsername").value("test_user1"))
             .andExpect(jsonPath("$.Players.PlayerTwoUsername").value("test_user2"))
@@ -270,11 +296,13 @@ class BoardControllerIntegrationTest {
             .andExpect(jsonPath("$.PawnPromotionPending").value("false"))
             .andReturn();
 
-        Square[][] squaresFromResponseBody = getSquaresFromResponseBody(mvcResult);
+        Square[][] squaresFromResponseBody = getSquaresFromResponseBody();
 
         assertThat(squaresFromResponseBody).satisfies(squares -> {
             assertThat(squares[0][0].getPiece()).isExactlyInstanceOf(Queen.class);
         });
+
+        verifyWebsocketNotCalled();
     }
 
     @Test
@@ -287,21 +315,25 @@ class BoardControllerIntegrationTest {
             )
         );
 
-        mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
+        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
             .contentType(APPLICATION_JSON_UTF8)
             .header("Authorization", "Bearer " + getPlayerOneAccessToken())
-            .content(getMoveJsonRequestBody(1, 0, 0, 0))).andReturn();
+            .content(getMoveJsonRequestBody(1, 0, 0, 0)))
+            .andReturn();
+        verifyWebsocketMethodCall();
 
         Map<String, Object> body = new HashMap<>();
         body.put("upgradedPieceName", "Queen");
 
-        mockMvc.perform(post(PROMOTE_PAWN_PATH + savedBoardDao.getId())
+        mvcResult = mockMvc.perform(post(PROMOTE_PAWN_PATH + savedBoardDao.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerTwoAccessToken())
-                .content(new ObjectMapper().writeValueAsString(body)))
+                .content(OBJECT_MAPPER.writeValueAsString(body)))
             .andExpect(status().is4xxClientError())
             .andExpect(jsonPath("$.Message").value("The Player Username does not match active Player Username"))
             .andReturn();
+
+        verifyWebsocketNotCalled();
     }
 
     @Test
@@ -314,21 +346,25 @@ class BoardControllerIntegrationTest {
             )
         );
 
-        mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
+        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
             .contentType(APPLICATION_JSON_UTF8)
             .header("Authorization", "Bearer " + getPlayerOneAccessToken())
-            .content(getMoveJsonRequestBody(1, 0, 0, 0))).andReturn();
+            .content(getMoveJsonRequestBody(1, 0, 0, 0)))
+            .andReturn();
+        verifyWebsocketMethodCall();
 
         Map<String, Object> body = new HashMap<>();
         body.put("upgradedPieceName", "test");
 
-        mockMvc.perform(post(PROMOTE_PAWN_PATH + savedBoardDao.getId())
+        mvcResult = mockMvc.perform(post(PROMOTE_PAWN_PATH + savedBoardDao.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerTwoAccessToken())
-                .content(new ObjectMapper().writeValueAsString(body)))
+                .content(OBJECT_MAPPER.writeValueAsString(body)))
             .andExpect(status().is4xxClientError())
             .andExpect(jsonPath("$.Message").value("That is not a valid piece name"))
             .andReturn();
+
+        verifyWebsocketNotCalled();
     }
 
     @Test
@@ -347,10 +383,12 @@ class BoardControllerIntegrationTest {
         mockMvc.perform(post(PROMOTE_PAWN_PATH + savedBoardDao.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerOneAccessToken())
-                .content(new ObjectMapper().writeValueAsString(body)))
+                .content(OBJECT_MAPPER.writeValueAsString(body)))
             .andExpect(status().is4xxClientError())
             .andExpect(jsonPath("$.Message").value("Cannot promote a pawn at this time"))
             .andReturn();
+
+        verifyWebsocketNotCalled();
     }
 
     @Test
@@ -363,6 +401,8 @@ class BoardControllerIntegrationTest {
             .andExpect(status().is4xxClientError())
             .andExpect(jsonPath("$.Message").value("Cannot make a move until player 2 has joined"))
             .andReturn();
+
+        verifyWebsocketNotCalled();
     }
 
     @Test
@@ -375,6 +415,8 @@ class BoardControllerIntegrationTest {
             .andExpect(status().is4xxClientError())
             .andExpect(jsonPath("$.Message").value("The Player Username does not match active Player Username"))
             .andReturn();
+
+        verifyWebsocketNotCalled();
     }
 
     @Test
@@ -387,6 +429,8 @@ class BoardControllerIntegrationTest {
             .andExpect(status().is4xxClientError())
             .andExpect(jsonPath("$.Message").value("Number needs to be between 0 and 7"))
             .andReturn();
+
+        verifyWebsocketNotCalled();
     }
 
     @Test
@@ -399,6 +443,8 @@ class BoardControllerIntegrationTest {
             .andExpect(status().is4xxClientError())
             .andExpect(jsonPath("$.Message").value("That is not a legal move for a Pawn"))
             .andReturn();
+
+        verifyWebsocketNotCalled();
     }
 
     @Test
@@ -411,6 +457,8 @@ class BoardControllerIntegrationTest {
             .andExpect(status().is4xxClientError())
             .andExpect(jsonPath("$.Message").value("Source square does not have your colour piece on it"))
             .andReturn();
+
+        verifyWebsocketNotCalled();
     }
 
     @Test
@@ -424,6 +472,8 @@ class BoardControllerIntegrationTest {
             .andExpect(status().is4xxClientError())
             .andExpect(jsonPath("$.Message").value("Submitting player is not part of this game"))
             .andReturn();
+
+        verifyWebsocketNotCalled();
     }
 
     @Test
@@ -436,6 +486,8 @@ class BoardControllerIntegrationTest {
             .andExpect(status().is4xxClientError())
             .andExpect(jsonPath("$.Message").value("Board with ID: non-existant-board does not exist"))
             .andReturn();
+
+        verifyWebsocketNotCalled();
     }
 
     @Test
@@ -448,6 +500,8 @@ class BoardControllerIntegrationTest {
             .andExpect(status().is4xxClientError())
             .andExpect(jsonPath("$.Message").value("The game has finished"))
             .andReturn();
+
+        verifyWebsocketNotCalled();
     }
 
     @Test
@@ -471,7 +525,7 @@ class BoardControllerIntegrationTest {
             .andReturn();
     }
 
-    private Square[][] getSquaresFromResponseBody(MvcResult mvcResult) throws UnsupportedEncodingException {
+    private Square[][] getSquaresFromResponseBody() throws UnsupportedEncodingException {
         String response = mvcResult.getResponse().getContentAsString();
         String squaresString = JsonPath.parse(response).read("$['Squares']").toString();
         return new SquareListConverter().convertToEntityAttribute(squaresString);
@@ -484,9 +538,7 @@ class BoardControllerIntegrationTest {
         body.put("newRow", newRow);
         body.put("newColumn", newColumn);
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        ObjectWriter ow = OBJECT_MAPPER.writer().withDefaultPrettyPrinter();
         return ow.writeValueAsString(body);
     }
 
@@ -594,11 +646,11 @@ class BoardControllerIntegrationTest {
         String username = "test_user1";
         String password = "admin";
 
-        MvcResult result = mockMvc.perform(post(LOGIN_PATH)
+        mvcResult = mockMvc.perform(post(LOGIN_PATH)
                 .with(httpBasic(username, password)))
             .andExpect(status().isOk()).andReturn();
 
-        String response = result.getResponse().getContentAsString();
+        String response = mvcResult.getResponse().getContentAsString();
         JacksonJsonParser jsonParser = new JacksonJsonParser();
         return jsonParser.parseMap(response).get("accessToken").toString();
     }
@@ -607,11 +659,11 @@ class BoardControllerIntegrationTest {
         String username = "test_user2";
         String password = "admin";
 
-        MvcResult result = mockMvc.perform(post(LOGIN_PATH)
+        mvcResult = mockMvc.perform(post(LOGIN_PATH)
                 .with(httpBasic(username, password)))
             .andExpect(status().isOk()).andReturn();
 
-        String response = result.getResponse().getContentAsString();
+        String response = mvcResult.getResponse().getContentAsString();
         JacksonJsonParser jsonParser = new JacksonJsonParser();
         return jsonParser.parseMap(response).get("accessToken").toString();
     }
@@ -620,12 +672,31 @@ class BoardControllerIntegrationTest {
         String username = "test_user3";
         String password = "admin";
 
-        MvcResult result = mockMvc.perform(post(LOGIN_PATH)
+        mvcResult = mockMvc.perform(post(LOGIN_PATH)
                 .with(httpBasic(username, password)))
             .andExpect(status().isOk()).andReturn();
 
-        String response = result.getResponse().getContentAsString();
+        String response = mvcResult.getResponse().getContentAsString();
         JacksonJsonParser jsonParser = new JacksonJsonParser();
         return jsonParser.parseMap(response).get("accessToken").toString();
+    }
+
+    private void verifyWebsocketMethodCall() throws JsonProcessingException, UnsupportedEncodingException {
+        verify(simpMessagingTemplate).convertAndSend(stringArgumentCaptor.capture(), jsonObjectBoardResponseArgumentCaptor.capture());
+        String webSocketUrl = stringArgumentCaptor.getValue();
+        JsonObjectBoardResponse jsonObjectBoardResponseArgumentCaptorValue = jsonObjectBoardResponseArgumentCaptor.getValue();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        JsonObjectBoardResponse deserializeJsonObjectBoardResponse = deserialize(contentAsString, JsonObjectBoardResponse.class);
+        assertThat(webSocketUrl).isEqualTo(format(WEB_SOCKET_BASE_WITH_ID_PATH, savedBoardDao.getId()));
+        assertThat(jsonObjectBoardResponseArgumentCaptorValue).usingRecursiveComparison().isEqualTo(deserializeJsonObjectBoardResponse);
+    }
+
+    private void verifyWebsocketNotCalled() {
+        reset(simpMessagingTemplate);
+        verify(simpMessagingTemplate, never()).convertAndSend(anyString(), any(JsonObjectBoardResponse.class));
+    }
+
+    private static <T> T deserialize(String response, Class<T> clazz) throws JsonProcessingException {
+        return OBJECT_MAPPER.readValue(response, clazz);
     }
 }

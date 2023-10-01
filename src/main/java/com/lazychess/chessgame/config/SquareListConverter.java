@@ -20,7 +20,7 @@ public class SquareListConverter implements AttributeConverter<Square[][], Strin
     public String convertToDatabaseColumn(Square[][] attribute) {
         try {
             return OBJECT_MAPPER.writeValueAsString(attribute);
-        }catch(JsonProcessingException e) {
+        } catch(JsonProcessingException e) {
             throw new CannotWriteObjectIntoStringException("Cannot write list into string");
         }
     }

@@ -101,6 +101,7 @@ public class BoardController {
         AppUserPrincipal appUserPrincipal = customUserDetailsService.loadUserByUsername(principal.getName());
 
         JsonObjectBoardResponse jsonObjectBoardResponse = boardService.processPawnPromotion(boardGameId, appUserPrincipal.getAppUser().getUsername(), pawnPromotionDto.upgradedPieceName());
+        simpMessagingTemplate.convertAndSend("/topic/game-progress/" + jsonObjectBoardResponse.getBoardId(), jsonObjectBoardResponse);
         return responseEntityFactory.toResponseEntity(jsonObjectBoardResponse);
     }
 }

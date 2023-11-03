@@ -2,7 +2,7 @@ package com.lazychess.chessgame.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.lazychess.chessgame.repository.entity.BoardDao;
+import com.lazychess.chessgame.repository.entity.BoardEntity;
 
-public interface BoardRepository extends JpaRepository<BoardDao, String> {
+public interface BoardRepository extends JpaRepository<BoardEntity, String> {
 }

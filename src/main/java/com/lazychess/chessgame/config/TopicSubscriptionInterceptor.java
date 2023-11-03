@@ -9,7 +9,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
 
-import com.lazychess.chessgame.repository.entity.BoardDao;
+import com.lazychess.chessgame.repository.entity.BoardEntity;
 import com.lazychess.chessgame.service.BoardService;
 
 @Component
@@ -28,9 +28,9 @@ public class TopicSubscriptionInterceptor implements ChannelInterceptor {
         if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand())) {
             String user = Objects.requireNonNull(headerAccessor.getUser()).getName();
             String chessGameId = Objects.requireNonNull(message.getHeaders().get("simpDestination")).toString().replace("/topic/game-progress/", "");
-            BoardDao boardDao = boardService.findChessGameById(chessGameId);
+            BoardEntity boardEntity = boardService.findChessGameById(chessGameId);
 
-            boardService.checkIfPlayerIsPartOfThisGame(boardDao, user);
+            boardService.checkIfPlayerIsPartOfThisGame(boardEntity, user);
         }
         return message;
     }

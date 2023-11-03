@@ -28,7 +28,7 @@ import lombok.Setter;
 @Table(name = "chess_game_board")
 @Getter
 @Setter
-public class BoardDao {
+public class BoardEntity {
 
     @Id
     @Column(name = "cgb_id", nullable = false)
@@ -50,7 +50,7 @@ public class BoardDao {
 
     @Type(JsonBinaryType.class)
     @Column(name = "cgb_current_player_number", columnDefinition = "jsonb")
-    private PlayersDao playersDao;
+    private PlayersEntity playersEntity;
 
     @Column(name = "cgb_pawn_promotion_pending")
     @JsonInclude(Include.NON_NULL)
@@ -58,7 +58,7 @@ public class BoardDao {
 
     @Type(JsonBinaryType.class)
     @Column(name = "cgb_latest_move", columnDefinition = "jsonb")
-    private LatestMoveDao latestMove;
+    private LatestMoveEntity latestMove;
 
     @Column(name = "cgb_winner_user_id")
     @JsonInclude(Include.NON_NULL)

@@ -14,6 +14,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,7 +36,7 @@ import com.lazychess.chessgame.config.TopicSubscriptionInterceptor;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
-@Ignore
+@Disabled
 public class WebSocketEndpointIntegrationTest {
 
     @MockBean

@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public final class LatestMoveDao {
+public final class LatestMoveEntity {
 
     @NotNull
     private int row;

@@ -24,173 +24,173 @@ import com.lazychess.chessgame.json.JsonObjectLatestMoveResponseData;
 import com.lazychess.chessgame.json.JsonObjectPlayersResponseData;
 import com.lazychess.chessgame.repository.BoardRepository;
 import com.lazychess.chessgame.repository.entity.ApplicationUser;
-import com.lazychess.chessgame.repository.entity.BoardDao;
-import com.lazychess.chessgame.repository.entity.LatestMoveDao;
-import com.lazychess.chessgame.repository.entity.PlayersDao;
-import com.lazychess.chessgame.repository.mapper.BoardDaoMapper;
+import com.lazychess.chessgame.repository.entity.BoardEntity;
+import com.lazychess.chessgame.repository.entity.LatestMoveEntity;
+import com.lazychess.chessgame.repository.entity.PlayersEntity;
+import com.lazychess.chessgame.repository.mapper.BoardEntityMapper;
 
 @Service
 public class BoardService {
 
     private final BoardRepository boardRepository;
-    private final BoardDaoMapper boardDaoMapper;
+    private final BoardEntityMapper boardEntityMapper;
 
-    public BoardService(BoardRepository boardRepository, BoardDaoMapper boardDaoMapper) {
+    public BoardService(BoardRepository boardRepository, BoardEntityMapper boardEntityMapper) {
         this.boardRepository = boardRepository;
-        this.boardDaoMapper = boardDaoMapper;
+        this.boardEntityMapper = boardEntityMapper;
     }
 
     public JsonObjectBoardResponse createInitialBoardGame(ApplicationUser appUser) {
-        PlayersDao playersDao = new PlayersDao();
-        playersDao.setPlayerOneAppUserId(appUser.getId());
-        playersDao.setPlayerOneAppUsername(appUser.getUsername());
-        playersDao.setActivePlayerUsername(playersDao.getPlayerOneAppUsername());
-        BoardDao boardDao = boardDaoMapper.fromBoardObject(new Board());
-        boardDao.setPlayersDao(playersDao);
-        boardDao = boardRepository.saveAndFlush(boardDao);
-        return buildJsonObjectBoardResponse(boardDao);
+        PlayersEntity playersEntity = new PlayersEntity();
+        playersEntity.setPlayerOneAppUserId(appUser.getId());
+        playersEntity.setPlayerOneAppUsername(appUser.getUsername());
+        playersEntity.setActivePlayerUsername(playersEntity.getPlayerOneAppUsername());
+        BoardEntity boardEntity = boardEntityMapper.fromBoardObject(new Board());
+        boardEntity.setPlayersEntity(playersEntity);
+        boardEntity = boardRepository.saveAndFlush(boardEntity);
+        return buildJsonObjectBoardResponse(boardEntity);
     }
 
     public JsonObjectBoardResponse playerTwoJoinsGame(String boardGameId, ApplicationUser applicationUser) {
         String playersUsername = applicationUser.getUsername();
         String playerTwoId = applicationUser.getId();
-        BoardDao boardDao = findChessGameById(boardGameId);
-        PlayersDao playersDao = boardDao.getPlayersDao();
-        checkIfPlayerAlreadyPartOfThisGame(playersDao, playersUsername);
-        checkIfPlayerTwoIsAlreadyAdded(playersDao);
-        playersDao.setPlayerTwoAppUsername(playersUsername);
-        playersDao.setPlayerTwoAppUserId(playerTwoId);
-        boardDao.setPlayersDao(playersDao);
-        boardDao = boardRepository.saveAndFlush(boardDao);
-        return buildJsonObjectBoardResponse(boardDao);
+        BoardEntity boardEntity = findChessGameById(boardGameId);
+        PlayersEntity playersEntity = boardEntity.getPlayersEntity();
+        checkIfPlayerAlreadyPartOfThisGame(playersEntity, playersUsername);
+        checkIfPlayerTwoIsAlreadyAdded(playersEntity);
+        playersEntity.setPlayerTwoAppUsername(playersUsername);
+        playersEntity.setPlayerTwoAppUserId(playerTwoId);
+        boardEntity.setPlayersEntity(playersEntity);
+        boardEntity = boardRepository.saveAndFlush(boardEntity);
+        return buildJsonObjectBoardResponse(boardEntity);
     }
 
     public JsonObjectBoardResponse processChessMove(String boardGameId, String playersUsername, ChessMoveRequest chessMoveRequest) {
-        BoardDao boardDao = findChessGameById(boardGameId);
-        checkIfGameIsInACheckMateState(boardDao);
-        checkIfPlayerTwoHasJoined(boardDao);
-        checkIfPlayerIsPartOfThisGame(boardDao, playersUsername);
-        checkIfItIsSubmittingPlayersTurn(boardDao, playersUsername);
-        checkIfPawnPromotionIsNotPending(boardDao);
-        Board board = boardDaoMapper.fromBoardDaoObject(boardDao);
+        BoardEntity boardEntity = findChessGameById(boardGameId);
+        checkIfGameIsInACheckMateState(boardEntity);
+        checkIfPlayerTwoHasJoined(boardEntity);
+        checkIfPlayerIsPartOfThisGame(boardEntity, playersUsername);
+        checkIfItIsSubmittingPlayersTurn(boardEntity, playersUsername);
+        checkIfPawnPromotionIsNotPending(boardEntity);
+        Board board = boardEntityMapper.fromBoardEntityObject(boardEntity);
         implementMoveOnTheBoard(board, chessMoveRequest);
-        BoardDao updatedBoardDao = boardDaoMapper.updateBoardDaoObjectAfterMove(board, boardDao);
-        checkIfLastMovePutTheGameInACheckMateState(board, updatedBoardDao, playersUsername);
-        changeActivePlayer(updatedBoardDao);
+        BoardEntity updatedBoardEntity = boardEntityMapper.updateBoardEntityObjectAfterMove(board, boardEntity);
+        checkIfLastMovePutTheGameInACheckMateState(board, updatedBoardEntity, playersUsername);
+        changeActivePlayer(updatedBoardEntity);
 
-        updatedBoardDao = boardRepository.saveAndFlush(updatedBoardDao);
+        updatedBoardEntity = boardRepository.saveAndFlush(updatedBoardEntity);
 
-        return buildJsonObjectBoardResponse(updatedBoardDao);
+        return buildJsonObjectBoardResponse(updatedBoardEntity);
     }
 
     public JsonObjectBoardResponse processPawnPromotion(String boardGameId, String playersUsername, String promotePawnTo) {
-        BoardDao boardDao = findChessGameById(boardGameId);
-        checkIfGameIsInACheckMateState(boardDao);
-        checkIfPlayerTwoHasJoined(boardDao);
-        checkIfPlayerIsPartOfThisGame(boardDao, playersUsername);
-        checkIfItIsSubmittingPlayersTurn(boardDao, playersUsername);
-        checkIfPawnPromotionIsPending(boardDao);
-        Board board = boardDaoMapper.fromBoardDaoObject(boardDao);
+        BoardEntity boardEntity = findChessGameById(boardGameId);
+        checkIfGameIsInACheckMateState(boardEntity);
+        checkIfPlayerTwoHasJoined(boardEntity);
+        checkIfPlayerIsPartOfThisGame(boardEntity, playersUsername);
+        checkIfItIsSubmittingPlayersTurn(boardEntity, playersUsername);
+        checkIfPawnPromotionIsPending(boardEntity);
+        Board board = boardEntityMapper.fromBoardEntityObject(boardEntity);
         board.promoteAPawn(promotePawnTo);
-        BoardDao updatedBoardDao = boardDaoMapper.updateBoardDaoObjectAfterMove(board, boardDao);
-        checkIfLastMovePutTheGameInACheckMateState(board, updatedBoardDao, playersUsername);
-        changeActivePlayer(updatedBoardDao);
+        BoardEntity updatedBoardEntity = boardEntityMapper.updateBoardEntityObjectAfterMove(board, boardEntity);
+        checkIfLastMovePutTheGameInACheckMateState(board, updatedBoardEntity, playersUsername);
+        changeActivePlayer(updatedBoardEntity);
 
-        updatedBoardDao = boardRepository.saveAndFlush(updatedBoardDao);
+        updatedBoardEntity = boardRepository.saveAndFlush(updatedBoardEntity);
 
-        return buildJsonObjectBoardResponse(updatedBoardDao);
+        return buildJsonObjectBoardResponse(updatedBoardEntity);
     }
 
     public JsonObjectBoardResponse getBoard(String boardGameId, String username) {
-        BoardDao boardDao = findChessGameById(boardGameId);
-        checkIfPlayerIsPartOfThisGame(boardDao, username);
-        return buildJsonObjectBoardResponse(boardDao);
+        BoardEntity boardEntity = findChessGameById(boardGameId);
+        checkIfPlayerIsPartOfThisGame(boardEntity, username);
+        return buildJsonObjectBoardResponse(boardEntity);
     }
 
-    public BoardDao findChessGameById(String boardGameId) {
+    public BoardEntity findChessGameById(String boardGameId) {
         return boardRepository.findById(boardGameId).orElseThrow(() -> new BoardNotFoundException(boardGameId));
     }
 
-    private JsonObjectBoardResponse buildJsonObjectBoardResponse(BoardDao boardDao) {
+    private JsonObjectBoardResponse buildJsonObjectBoardResponse(BoardEntity boardEntity) {
         return JsonObjectBoardResponse.newBuilder()
-            .boardId(boardDao.getId())
-            .squares(boardDao.getSquares())
-            .gameState(boardDao.getStateOfTheGame().toString())
-            .currentPlayerColour(boardDao.getCurrentPlayerColour())
-            .players(buildJsonObjectPlayersResponseData(boardDao.getPlayersDao()))
-            .pawnPromotionPending(boardDao.isPawnPromotionPending())
-            .latestMove(buildJsonObjectLatestMoveResponseData(boardDao.getLatestMove()))
-            .winner(boardDao.getWinnerUsername())
+            .boardId(boardEntity.getId())
+            .squares(boardEntity.getSquares())
+            .gameState(boardEntity.getStateOfTheGame().toString())
+            .currentPlayerColour(boardEntity.getCurrentPlayerColour())
+            .players(buildJsonObjectPlayersResponseData(boardEntity.getPlayersEntity()))
+            .pawnPromotionPending(boardEntity.isPawnPromotionPending())
+            .latestMove(buildJsonObjectLatestMoveResponseData(boardEntity.getLatestMove()))
+            .winner(boardEntity.getWinnerUsername())
             .build();
     }
 
-    private JsonObjectLatestMoveResponseData buildJsonObjectLatestMoveResponseData(LatestMoveDao latestMoveDao) {
+    private JsonObjectLatestMoveResponseData buildJsonObjectLatestMoveResponseData(LatestMoveEntity latestMoveEntity) {
         return JsonObjectLatestMoveResponseData.newBuilder()
-            .row(latestMoveDao.getRow())
-            .column(latestMoveDao.getColumn())
+            .row(latestMoveEntity.getRow())
+            .column(latestMoveEntity.getColumn())
             .build();
     }
 
-    private JsonObjectPlayersResponseData buildJsonObjectPlayersResponseData(PlayersDao playersDao) {
+    private JsonObjectPlayersResponseData buildJsonObjectPlayersResponseData(PlayersEntity playersEntity) {
         return JsonObjectPlayersResponseData.newBuilder()
-            .playerOneAppUserId(playersDao.getPlayerOneAppUserId())
-            .playerOneUsername(playersDao.getPlayerOneAppUsername())
-            .playerTwoAppUserId(playersDao.getPlayerTwoAppUserId())
-            .playerTwoUsername(playersDao.getPlayerTwoAppUsername())
-            .activePlayerUsername(playersDao.getActivePlayerUsername())
+            .playerOneAppUserId(playersEntity.getPlayerOneAppUserId())
+            .playerOneUsername(playersEntity.getPlayerOneAppUsername())
+            .playerTwoAppUserId(playersEntity.getPlayerTwoAppUserId())
+            .playerTwoUsername(playersEntity.getPlayerTwoAppUsername())
+            .activePlayerUsername(playersEntity.getActivePlayerUsername())
             .build();
     }
 
-    private void checkIfPawnPromotionIsPending(BoardDao boardDao) {
-        boolean pawnPromotionStatus = boardDao.isPawnPromotionPending();
+    private void checkIfPawnPromotionIsPending(BoardEntity boardEntity) {
+        boolean pawnPromotionStatus = boardEntity.isPawnPromotionPending();
         if(!pawnPromotionStatus) {
             throw new PawnPromotionStatusNotPendingException("Cannot promote a pawn at this time");
         }
     }
 
-    private void checkIfPawnPromotionIsNotPending(BoardDao boardDao) {
-        boolean pawnPromotionStatus = boardDao.isPawnPromotionPending();
+    private void checkIfPawnPromotionIsNotPending(BoardEntity boardEntity) {
+        boolean pawnPromotionStatus = boardEntity.isPawnPromotionPending();
         if(pawnPromotionStatus) {
             throw new PawnPromotionStatusPendingException("Cannot make a move because pawn promotion is pending");
         }
     }
 
-    private void checkIfGameIsInACheckMateState(BoardDao boardDao) {
-        ChessGameState stateOfTheGame = boardDao.getStateOfTheGame();
+    private void checkIfGameIsInACheckMateState(BoardEntity boardEntity) {
+        ChessGameState stateOfTheGame = boardEntity.getStateOfTheGame();
         if(stateOfTheGame != ChessGameState.ONGOING) {
             throw new GameHasFinishedException("The game has finished");
         }
     }
 
-    private void checkIfLastMovePutTheGameInACheckMateState(Board board, BoardDao updatedBoardDao, String playersUsername) {
+    private void checkIfLastMovePutTheGameInACheckMateState(Board board, BoardEntity updatedBoardEntity, String playersUsername) {
         ChessGameState stateOfTheGame = board.getStateOfTheGame();
         if(stateOfTheGame == ChessGameState.CHECKMATE) {
-            updatedBoardDao.setWinnerUsername(playersUsername);
+            updatedBoardEntity.setWinnerUsername(playersUsername);
         } else if (stateOfTheGame == ChessGameState.STALEMATE) {
-            updatedBoardDao.setWinnerUsername("Draw");
+            updatedBoardEntity.setWinnerUsername("Draw");
         }
     }
 
-    private void checkIfPlayerTwoHasJoined(BoardDao boardDao) {
-        PlayersDao playersDao = boardDao.getPlayersDao();
-        String playerTwoAppUserId = playersDao.getPlayerTwoAppUserId();
+    private void checkIfPlayerTwoHasJoined(BoardEntity boardEntity) {
+        PlayersEntity playersEntity = boardEntity.getPlayersEntity();
+        String playerTwoAppUserId = playersEntity.getPlayerTwoAppUserId();
         if (playerTwoAppUserId == null) {
             throw new PlayerTwoHasNotJoinedException("Cannot make a move until player 2 has joined");
         }
     }
 
-    public void checkIfPlayerIsPartOfThisGame(BoardDao boardDao, String playersUsername) {
-        PlayersDao playersDao = boardDao.getPlayersDao();
-        String playerOneAppUsername = playersDao.getPlayerOneAppUsername();
-        String playerTwoAppUsername = playersDao.getPlayerTwoAppUsername();
+    public void checkIfPlayerIsPartOfThisGame(BoardEntity boardEntity, String playersUsername) {
+        PlayersEntity playersEntity = boardEntity.getPlayersEntity();
+        String playerOneAppUsername = playersEntity.getPlayerOneAppUsername();
+        String playerTwoAppUsername = playersEntity.getPlayerTwoAppUsername();
 
         if(!(Objects.equals(playerOneAppUsername, playersUsername) || Objects.equals(playerTwoAppUsername, playersUsername))) {
             throw new PlayerNotPartOfGameException("Submitting player is not part of this game");
         }
     }
 
-    private void checkIfItIsSubmittingPlayersTurn(BoardDao boardDao, String playersUsername) {
-        String activePlayerUsername = boardDao.getPlayersDao().getActivePlayerUsername();
+    private void checkIfItIsSubmittingPlayersTurn(BoardEntity boardEntity, String playersUsername) {
+        String activePlayerUsername = boardEntity.getPlayersEntity().getActivePlayerUsername();
         if(!Objects.equals(activePlayerUsername, playersUsername)) {
             throw new WrongPlayerMakingAMoveException("The Player Username does not match active Player Username");
         }
@@ -205,32 +205,32 @@ public class BoardService {
         board.movePiece(currentRow, currentColumn, newRow, newColumn);
     }
 
-    private void changeActivePlayer(BoardDao boardDao) {
-        if(!boardDao.isPawnPromotionPending()) {
-            PlayersDao playersDao = boardDao.getPlayersDao();
-            String playerOneAppUsername = playersDao.getPlayerOneAppUsername();
-            String playerTwoAppUsername = playersDao.getPlayerTwoAppUsername();
-            String activePlayerColour = boardDao.getCurrentPlayerColour();
+    private void changeActivePlayer(BoardEntity boardEntity) {
+        if(!boardEntity.isPawnPromotionPending()) {
+            PlayersEntity playersEntity = boardEntity.getPlayersEntity();
+            String playerOneAppUsername = playersEntity.getPlayerOneAppUsername();
+            String playerTwoAppUsername = playersEntity.getPlayerTwoAppUsername();
+            String activePlayerColour = boardEntity.getCurrentPlayerColour();
 
             if (Objects.equals(activePlayerColour, BLACK)) {
-                playersDao.setActivePlayerUsername(playerTwoAppUsername);
+                playersEntity.setActivePlayerUsername(playerTwoAppUsername);
             } else if (Objects.equals(activePlayerColour, WHITE)) {
-                playersDao.setActivePlayerUsername(playerOneAppUsername);
+                playersEntity.setActivePlayerUsername(playerOneAppUsername);
             }
-            boardDao.setPlayersDao(playersDao);
+            boardEntity.setPlayersEntity(playersEntity);
         }
     }
 
-    private void checkIfPlayerAlreadyPartOfThisGame(PlayersDao playersDao, String playersUsername) {
-        String playerOneAppUsername = playersDao.getPlayerOneAppUsername();
-        String playerTwoAppUsername = playersDao.getPlayerTwoAppUsername();
+    private void checkIfPlayerAlreadyPartOfThisGame(PlayersEntity playersEntity, String playersUsername) {
+        String playerOneAppUsername = playersEntity.getPlayerOneAppUsername();
+        String playerTwoAppUsername = playersEntity.getPlayerTwoAppUsername();
         if(Objects.equals(playerOneAppUsername, playersUsername) || Objects.equals(playerTwoAppUsername, playersUsername)) {
             throw new PlayerAlreadyPartOfGameException("Player is already part of the game");
         }
     }
 
-    private void checkIfPlayerTwoIsAlreadyAdded(PlayersDao playersDao) {
-        String playerTwoAppUsername = playersDao.getPlayerTwoAppUsername();
+    private void checkIfPlayerTwoIsAlreadyAdded(PlayersEntity playersEntity) {
+        String playerTwoAppUsername = playersEntity.getPlayerTwoAppUsername();
         if(playerTwoAppUsername != null) {
             throw new PlayerTwoAlreadyPartOfGameException("Game already has 2 players");
         }

@@ -59,9 +59,9 @@ import com.lazychess.chessgame.json.JsonObjectBoardResponse;
 import com.lazychess.chessgame.repository.ApplicationUserRepository;
 import com.lazychess.chessgame.repository.BoardRepository;
 import com.lazychess.chessgame.repository.entity.ApplicationUser;
-import com.lazychess.chessgame.repository.entity.BoardDao;
-import com.lazychess.chessgame.repository.entity.PlayersDao;
-import com.lazychess.chessgame.repository.mapper.BoardDaoMapper;
+import com.lazychess.chessgame.repository.entity.BoardEntity;
+import com.lazychess.chessgame.repository.entity.PlayersEntity;
+import com.lazychess.chessgame.repository.mapper.BoardEntityMapper;
 
 import wiremock.com.jayway.jsonpath.JsonPath;
 
@@ -84,7 +84,7 @@ class BoardControllerIntegrationTest {
     @Autowired
     private ApplicationUserRepository applicationUserRepository;
     @Autowired
-    private BoardDaoMapper boardDaoMapper;
+    private BoardEntityMapper boardEntityMapper;
     @MockBean
     private SimpMessagingTemplate simpMessagingTemplate;
 
@@ -93,7 +93,7 @@ class BoardControllerIntegrationTest {
 
     private ApplicationUser applicationUser;
     private ApplicationUser applicationUser2;
-    private BoardDao savedBoardDao;
+    private BoardEntity savedBoardEntity;
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -120,7 +120,7 @@ class BoardControllerIntegrationTest {
     @Test
     void existentUserShouldBeAbleToJoinAChessSession() throws Exception {
         createABoardWithOneUsers();
-        mvcResult = mockMvc.perform(post(ADD_PLAYER_TWO_TO_BOARD_PATH + savedBoardDao.getId())
+        mvcResult = mockMvc.perform(post(ADD_PLAYER_TWO_TO_BOARD_PATH + savedBoardEntity.getId())
                 .header("Authorization", "Bearer " + getPlayerTwoAccessToken()))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.Players.PlayerOneUsername").value("test_user1"))
@@ -135,7 +135,7 @@ class BoardControllerIntegrationTest {
     @Test
     void playerOneOfTheBoardShouldBeAbleToMakeAMove() throws Exception {
         createABoardWithTwoUsers();
-        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
+        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardEntity.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerOneAccessToken())
                 .content(getMoveJsonRequestBody(6, 3, 4, 3)))
@@ -169,7 +169,7 @@ class BoardControllerIntegrationTest {
                 new ChessMoveRequest(6, 3, 4, 3)
             )
         );
-        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
+        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardEntity.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerTwoAccessToken())
                 .content(getMoveJsonRequestBody(1, 2, 2, 2)))
@@ -211,7 +211,7 @@ class BoardControllerIntegrationTest {
                 new ChessMoveRequest(1, 1, 3, 1)
             )
         );
-        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
+        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardEntity.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerOneAccessToken())
                 .content(getMoveJsonRequestBody(7, 4, 3, 0)))
@@ -243,7 +243,7 @@ class BoardControllerIntegrationTest {
             )
         );
 
-        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
+        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardEntity.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerOneAccessToken())
                 .content(getMoveJsonRequestBody(1, 0, 0, 0)))
@@ -274,7 +274,7 @@ class BoardControllerIntegrationTest {
             )
         );
 
-        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
+        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardEntity.getId())
             .contentType(APPLICATION_JSON_UTF8)
             .header("Authorization", "Bearer " + getPlayerOneAccessToken())
             .content(getMoveJsonRequestBody(1, 0, 0, 0)))
@@ -285,7 +285,7 @@ class BoardControllerIntegrationTest {
         Map<String, Object> body = new HashMap<>();
         body.put("upgradedPieceName", "Queen");
 
-        mvcResult = mockMvc.perform(post(PROMOTE_PAWN_PATH + savedBoardDao.getId())
+        mvcResult = mockMvc.perform(post(PROMOTE_PAWN_PATH + savedBoardEntity.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerOneAccessToken())
                 .content(OBJECT_MAPPER.writeValueAsString(body)))
@@ -315,7 +315,7 @@ class BoardControllerIntegrationTest {
             )
         );
 
-        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
+        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardEntity.getId())
             .contentType(APPLICATION_JSON_UTF8)
             .header("Authorization", "Bearer " + getPlayerOneAccessToken())
             .content(getMoveJsonRequestBody(1, 0, 0, 0)))
@@ -325,7 +325,7 @@ class BoardControllerIntegrationTest {
         Map<String, Object> body = new HashMap<>();
         body.put("upgradedPieceName", "Queen");
 
-        mvcResult = mockMvc.perform(post(PROMOTE_PAWN_PATH + savedBoardDao.getId())
+        mvcResult = mockMvc.perform(post(PROMOTE_PAWN_PATH + savedBoardEntity.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerTwoAccessToken())
                 .content(OBJECT_MAPPER.writeValueAsString(body)))
@@ -346,7 +346,7 @@ class BoardControllerIntegrationTest {
             )
         );
 
-        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
+        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardEntity.getId())
             .contentType(APPLICATION_JSON_UTF8)
             .header("Authorization", "Bearer " + getPlayerOneAccessToken())
             .content(getMoveJsonRequestBody(1, 0, 0, 0)))
@@ -356,7 +356,7 @@ class BoardControllerIntegrationTest {
         Map<String, Object> body = new HashMap<>();
         body.put("upgradedPieceName", "test");
 
-        mvcResult = mockMvc.perform(post(PROMOTE_PAWN_PATH + savedBoardDao.getId())
+        mvcResult = mockMvc.perform(post(PROMOTE_PAWN_PATH + savedBoardEntity.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerTwoAccessToken())
                 .content(OBJECT_MAPPER.writeValueAsString(body)))
@@ -380,7 +380,7 @@ class BoardControllerIntegrationTest {
         Map<String, Object> body = new HashMap<>();
         body.put("upgradedPieceName", "Bishop");
 
-        mockMvc.perform(post(PROMOTE_PAWN_PATH + savedBoardDao.getId())
+        mockMvc.perform(post(PROMOTE_PAWN_PATH + savedBoardEntity.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerOneAccessToken())
                 .content(OBJECT_MAPPER.writeValueAsString(body)))
@@ -394,7 +394,7 @@ class BoardControllerIntegrationTest {
     @Test
     void playerOneCannotMakeAMoveUntilPlayerTwoHasJoined() throws Exception {
         createABoardWithOneUsers();
-        mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
+        mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardEntity.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerOneAccessToken())
                 .content(getMoveJsonRequestBody(6, 3, 4, 3)))
@@ -408,7 +408,7 @@ class BoardControllerIntegrationTest {
     @Test
     void playerTwoCannotMakeAMoveWhenItIsPlayerOnesTurn() throws Exception {
         createABoardWithTwoUsers();
-        mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
+        mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardEntity.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerTwoAccessToken())
                 .content(getMoveJsonRequestBody(6, 3, 4, 3)))
@@ -422,7 +422,7 @@ class BoardControllerIntegrationTest {
     @Test
     void playerOneCannotMakeAMoveWithOutOfBoundLocation() throws Exception {
         createABoardWithTwoUsers();
-        mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
+        mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardEntity.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerOneAccessToken())
                 .content(getMoveJsonRequestBody(9, 9, 9, 9)))
@@ -436,7 +436,7 @@ class BoardControllerIntegrationTest {
     @Test
     void playerOneCannotMakeAnIllegalMove() throws Exception {
         createABoardWithTwoUsers();
-        mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
+        mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardEntity.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerOneAccessToken())
                 .content(getMoveJsonRequestBody(6, 0, 5, 1)))
@@ -450,7 +450,7 @@ class BoardControllerIntegrationTest {
     @Test
     void playerOneCannotMakeAMoveWithPlayerTwoPiece() throws Exception {
         createABoardWithTwoUsers();
-        mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
+        mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardEntity.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerOneAccessToken())
                 .content(getMoveJsonRequestBody(1, 0, 2, 0)))
@@ -465,7 +465,7 @@ class BoardControllerIntegrationTest {
     void playerThreeShouldNotBeAbleToMakeAMove() throws Exception {
         createABoardWithTwoUsers();
         createUserThree();
-        mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
+        mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardEntity.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerThreeAccessToken())
                 .content(getMoveJsonRequestBody(1, 0, 2, 0)))
@@ -493,7 +493,7 @@ class BoardControllerIntegrationTest {
     @Test
     void playerOneCannotMakeAMoveWhenGameStateIsCheckMate() throws Exception {
         createABoardWithTwoUsersWithCheckmateState();
-        mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardDao.getId())
+        mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardEntity.getId())
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerOneAccessToken())
                 .content(getMoveJsonRequestBody(1, 0, 2, 0)))
@@ -507,7 +507,7 @@ class BoardControllerIntegrationTest {
     @Test
     void playerOneShouldNotBeAbleToJoinAGameAsPlayerTwoThatTheyArePlayerOneAlready() throws Exception {
         createABoardWithOneUsers();
-        mockMvc.perform(post(ADD_PLAYER_TWO_TO_BOARD_PATH + savedBoardDao.getId())
+        mockMvc.perform(post(ADD_PLAYER_TWO_TO_BOARD_PATH + savedBoardEntity.getId())
                 .header("Authorization", "Bearer " + getPlayerOneAccessToken()))
             .andExpect(status().is4xxClientError())
             .andExpect(jsonPath("$.Message").value("Player is already part of the game"))
@@ -518,7 +518,7 @@ class BoardControllerIntegrationTest {
     void playerThreeShouldNotBeAbleToJoinAGameThatAlreadyHasTwoPlayers() throws Exception {
         createABoardWithTwoUsers();
         createUserThree();
-        mockMvc.perform(post(ADD_PLAYER_TWO_TO_BOARD_PATH + savedBoardDao.getId())
+        mockMvc.perform(post(ADD_PLAYER_TWO_TO_BOARD_PATH + savedBoardEntity.getId())
                 .header("Authorization", "Bearer " + getPlayerThreeAccessToken()))
             .andExpect(status().is4xxClientError())
             .andExpect(jsonPath("$.Message").value("Game already has 2 players"))
@@ -547,15 +547,15 @@ class BoardControllerIntegrationTest {
         createUserTwo();
 
         Board board = new Board();
-        BoardDao boardDao = boardDaoMapper.fromBoardObject(board);
-        PlayersDao playersDao = new PlayersDao();
-        playersDao.setPlayerOneAppUserId(applicationUser.getId());
-        playersDao.setPlayerTwoAppUserId(applicationUser2.getId());
-        playersDao.setPlayerOneAppUsername(applicationUser.getUsername());
-        playersDao.setPlayerTwoAppUsername(applicationUser2.getUsername());
-        playersDao.setActivePlayerUsername(applicationUser.getUsername());
-        boardDao.setPlayersDao(playersDao);
-        savedBoardDao = boardRepository.saveAndFlush(boardDao);
+        BoardEntity boardEntity = boardEntityMapper.fromBoardObject(board);
+        PlayersEntity playersEntity = new PlayersEntity();
+        playersEntity.setPlayerOneAppUserId(applicationUser.getId());
+        playersEntity.setPlayerTwoAppUserId(applicationUser2.getId());
+        playersEntity.setPlayerOneAppUsername(applicationUser.getUsername());
+        playersEntity.setPlayerTwoAppUsername(applicationUser2.getUsername());
+        playersEntity.setActivePlayerUsername(applicationUser.getUsername());
+        boardEntity.setPlayersEntity(playersEntity);
+        savedBoardEntity = boardRepository.saveAndFlush(boardEntity);
     }
 
     private void createABoardWithTwoUsersWithCheckmateState() {
@@ -564,19 +564,19 @@ class BoardControllerIntegrationTest {
 
         Board board = new Board();
         board.setStateOfTheGame(ChessGameState.CHECKMATE);
-        BoardDao boardDao = new BoardDao();
-        boardDao.setStateOfTheGame(board.getStateOfTheGame());
-        boardDao.setCurrentPlayerColour(board.getCurrentPlayerColourState());
-        boardDao.setPawnPromotionPending(board.isPawnPromotionPending());
-        boardDao.setSquares(board.getSquares());
-        PlayersDao playersDao = new PlayersDao();
-        playersDao.setPlayerOneAppUserId(applicationUser.getId());
-        playersDao.setPlayerTwoAppUserId(applicationUser2.getId());
-        playersDao.setPlayerOneAppUsername(applicationUser.getUsername());
-        playersDao.setPlayerTwoAppUsername(applicationUser2.getUsername());
-        playersDao.setActivePlayerUsername(applicationUser.getUsername());
-        boardDao.setPlayersDao(playersDao);
-        savedBoardDao = boardRepository.saveAndFlush(boardDao);
+        BoardEntity boardEntity = new BoardEntity();
+        boardEntity.setStateOfTheGame(board.getStateOfTheGame());
+        boardEntity.setCurrentPlayerColour(board.getCurrentPlayerColourState());
+        boardEntity.setPawnPromotionPending(board.isPawnPromotionPending());
+        boardEntity.setSquares(board.getSquares());
+        PlayersEntity playersEntity = new PlayersEntity();
+        playersEntity.setPlayerOneAppUserId(applicationUser.getId());
+        playersEntity.setPlayerTwoAppUserId(applicationUser2.getId());
+        playersEntity.setPlayerOneAppUsername(applicationUser.getUsername());
+        playersEntity.setPlayerTwoAppUsername(applicationUser2.getUsername());
+        playersEntity.setActivePlayerUsername(applicationUser.getUsername());
+        boardEntity.setPlayersEntity(playersEntity);
+        savedBoardEntity = boardRepository.saveAndFlush(boardEntity);
     }
 
     private void createABoardWithOneUsers() {
@@ -584,13 +584,13 @@ class BoardControllerIntegrationTest {
         createUserTwo();
 
         Board board = new Board();
-        BoardDao boardDao = boardDaoMapper.fromBoardObject(board);
-        PlayersDao playersDao = new PlayersDao();
-        playersDao.setPlayerOneAppUserId(applicationUser.getId());
-        playersDao.setPlayerOneAppUsername(applicationUser.getUsername());
-        playersDao.setActivePlayerUsername(applicationUser.getUsername());
-        boardDao.setPlayersDao(playersDao);
-        savedBoardDao = boardRepository.saveAndFlush(boardDao);
+        BoardEntity boardEntity = boardEntityMapper.fromBoardObject(board);
+        PlayersEntity playersEntity = new PlayersEntity();
+        playersEntity.setPlayerOneAppUserId(applicationUser.getId());
+        playersEntity.setPlayerOneAppUsername(applicationUser.getUsername());
+        playersEntity.setActivePlayerUsername(applicationUser.getUsername());
+        boardEntity.setPlayersEntity(playersEntity);
+        savedBoardEntity = boardRepository.saveAndFlush(boardEntity);
     }
 
     private void createACustomBoardWithTwoUsersForUserOneMove(List<ChessMoveRequest> chessMoveRequestList) {
@@ -599,15 +599,15 @@ class BoardControllerIntegrationTest {
 
         Board board = new Board(chessMoveRequestList);
         board.setCurrentPlayerColourState("white");
-        BoardDao boardDao = boardDaoMapper.fromBoardObject(board);
-        PlayersDao playersDao = new PlayersDao();
-        playersDao.setPlayerOneAppUserId(applicationUser.getId());
-        playersDao.setPlayerTwoAppUserId(applicationUser2.getId());
-        playersDao.setPlayerOneAppUsername(applicationUser.getUsername());
-        playersDao.setPlayerTwoAppUsername(applicationUser2.getUsername());
-        playersDao.setActivePlayerUsername(applicationUser.getUsername());
-        boardDao.setPlayersDao(playersDao);
-        savedBoardDao = boardRepository.saveAndFlush(boardDao);
+        BoardEntity boardEntity = boardEntityMapper.fromBoardObject(board);
+        PlayersEntity playersEntity = new PlayersEntity();
+        playersEntity.setPlayerOneAppUserId(applicationUser.getId());
+        playersEntity.setPlayerTwoAppUserId(applicationUser2.getId());
+        playersEntity.setPlayerOneAppUsername(applicationUser.getUsername());
+        playersEntity.setPlayerTwoAppUsername(applicationUser2.getUsername());
+        playersEntity.setActivePlayerUsername(applicationUser.getUsername());
+        boardEntity.setPlayersEntity(playersEntity);
+        savedBoardEntity = boardRepository.saveAndFlush(boardEntity);
     }
 
     private void createACustomBoardWithTwoUsersForUserTwoMove(List<ChessMoveRequest> chessMoveRequestList) {
@@ -616,15 +616,15 @@ class BoardControllerIntegrationTest {
 
         Board board = new Board(chessMoveRequestList);
         board.setCurrentPlayerColourState("black");
-        BoardDao boardDao = boardDaoMapper.fromBoardObject(board);
-        PlayersDao playersDao = new PlayersDao();
-        playersDao.setPlayerOneAppUserId(applicationUser.getId());
-        playersDao.setPlayerTwoAppUserId(applicationUser2.getId());
-        playersDao.setPlayerOneAppUsername(applicationUser.getUsername());
-        playersDao.setPlayerTwoAppUsername(applicationUser2.getUsername());
-        playersDao.setActivePlayerUsername(applicationUser2.getUsername());
-        boardDao.setPlayersDao(playersDao);
-        savedBoardDao = boardRepository.saveAndFlush(boardDao);
+        BoardEntity boardEntity = boardEntityMapper.fromBoardObject(board);
+        PlayersEntity playersEntity = new PlayersEntity();
+        playersEntity.setPlayerOneAppUserId(applicationUser.getId());
+        playersEntity.setPlayerTwoAppUserId(applicationUser2.getId());
+        playersEntity.setPlayerOneAppUsername(applicationUser.getUsername());
+        playersEntity.setPlayerTwoAppUsername(applicationUser2.getUsername());
+        playersEntity.setActivePlayerUsername(applicationUser2.getUsername());
+        boardEntity.setPlayersEntity(playersEntity);
+        savedBoardEntity = boardRepository.saveAndFlush(boardEntity);
     }
 
     private void createUserOne() {
@@ -687,7 +687,7 @@ class BoardControllerIntegrationTest {
         JsonObjectBoardResponse jsonObjectBoardResponseArgumentCaptorValue = jsonObjectBoardResponseArgumentCaptor.getValue();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         JsonObjectBoardResponse deserializeJsonObjectBoardResponse = deserialize(contentAsString, JsonObjectBoardResponse.class);
-        assertThat(webSocketUrl).isEqualTo(format(WEB_SOCKET_BASE_WITH_ID_PATH, savedBoardDao.getId()));
+        assertThat(webSocketUrl).isEqualTo(format(WEB_SOCKET_BASE_WITH_ID_PATH, savedBoardEntity.getId()));
         assertThat(jsonObjectBoardResponseArgumentCaptorValue).usingRecursiveComparison().isEqualTo(deserializeJsonObjectBoardResponse);
     }
 

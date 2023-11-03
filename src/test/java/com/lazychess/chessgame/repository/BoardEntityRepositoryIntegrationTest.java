@@ -18,17 +18,17 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.lazychess.chessgame.repository.entity.ApplicationUser;
 import com.lazychess.chessgame.chessgame.Board;
 import com.lazychess.chessgame.json.JsonObjectBoardResponse;
-import com.lazychess.chessgame.repository.entity.BoardDao;
-import com.lazychess.chessgame.repository.entity.LatestMoveDao;
-import com.lazychess.chessgame.repository.entity.PlayersDao;
-import com.lazychess.chessgame.repository.mapper.BoardDaoMapper;
+import com.lazychess.chessgame.repository.entity.BoardEntity;
+import com.lazychess.chessgame.repository.entity.LatestMoveEntity;
+import com.lazychess.chessgame.repository.entity.PlayersEntity;
+import com.lazychess.chessgame.repository.mapper.BoardEntityMapper;
 import com.lazychess.chessgame.service.BoardService;
 
 @RunWith(SpringRunner.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ImportAutoConfiguration(classes = SecurityAutoConfiguration.class)
 @DataJpaTest(properties = "spring.main.web-application-type=servlet")
-class BoardDaoRepositoryIntegrationTest {
+class BoardEntityRepositoryIntegrationTest {
 
     private static final String[] DYNAMIC_FIELDS = {
         "id"
@@ -40,57 +40,57 @@ class BoardDaoRepositoryIntegrationTest {
 
     @BeforeEach
     public void setup() {
-        boardService = new BoardService(boardRepository, new BoardDaoMapper());
+        boardService = new BoardService(boardRepository, new BoardEntityMapper());
     }
 
     @Test
     void insertBoardRecord() {
-        BoardDao boardDao = new BoardDao();
-        boardDao = boardRepository.saveAndFlush(boardDao);
+        BoardEntity boardEntity = new BoardEntity();
+        boardEntity = boardRepository.saveAndFlush(boardEntity);
 
-        assertThat(boardDao).isNotNull();
-        assertThat(boardDao.getId()).isNotBlank();
+        assertThat(boardEntity).isNotNull();
+        assertThat(boardEntity.getId()).isNotBlank();
     }
 
     @Test
     void insertBoardUsingBoardService() {
-        JsonObjectBoardResponse boardDao = boardService.createInitialBoardGame(new ApplicationUser("Player1Id", "Player1Username", "Test"));
+        JsonObjectBoardResponse boardEntity = boardService.createInitialBoardGame(new ApplicationUser("Player1Id", "Player1Username", "Test"));
 
-        assertThat(boardDao.getBoardId()).isNotBlank();
+        assertThat(boardEntity.getBoardId()).isNotBlank();
 
-        Optional<BoardDao> retrievedOptional = boardRepository.findById(boardDao.getBoardId());
+        Optional<BoardEntity> retrievedOptional = boardRepository.findById(boardEntity.getBoardId());
 
         assertThat(retrievedOptional.get()).isNotNull();
-        BoardDao retrievedBoardDao = retrievedOptional.get();
+        BoardEntity retrievedBoardEntity = retrievedOptional.get();
 
-        assertThat(retrievedBoardDao)
+        assertThat(retrievedBoardEntity)
             .usingRecursiveComparison()
             .withComparatorForFields(notNullComparator(), DYNAMIC_FIELDS)
-            .isEqualTo(createBoardDaoEntity());
+            .isEqualTo(createBoardEntity());
     }
 
     private Board createBoard() {
         return new Board();
     }
 
-    private BoardDao createBoardDaoEntity() {
-        PlayersDao playersDao = new PlayersDao();
-        playersDao.setPlayerOneAppUserId("Player1Id");
-        playersDao.setPlayerOneAppUsername("Player1Username");
-        playersDao.setActivePlayerUsername(playersDao.getPlayerOneAppUsername());
+    private BoardEntity createBoardEntity() {
+        PlayersEntity playersEntity = new PlayersEntity();
+        playersEntity.setPlayerOneAppUserId("Player1Id");
+        playersEntity.setPlayerOneAppUsername("Player1Username");
+        playersEntity.setActivePlayerUsername(playersEntity.getPlayerOneAppUsername());
         Board board = createBoard();
-        BoardDao boardDao = new BoardDao();
+        BoardEntity boardEntity = new BoardEntity();
 
-        LatestMoveDao latestMove = new LatestMoveDao();
+        LatestMoveEntity latestMove = new LatestMoveEntity();
         latestMove.setColumn(0);
         latestMove.setRow(0);
 
-        boardDao.setSquares(board.getSquares());
-        boardDao.setStateOfTheGame(board.getStateOfTheGame());
-        boardDao.setCurrentPlayerColour(board.getCurrentPlayerColourState());
-        boardDao.setPlayersDao(playersDao);
-        boardDao.setLatestMove(latestMove);
+        boardEntity.setSquares(board.getSquares());
+        boardEntity.setStateOfTheGame(board.getStateOfTheGame());
+        boardEntity.setCurrentPlayerColour(board.getCurrentPlayerColourState());
+        boardEntity.setPlayersEntity(playersEntity);
+        boardEntity.setLatestMove(latestMove);
 
-        return boardDao;
+        return boardEntity;
     }
 }

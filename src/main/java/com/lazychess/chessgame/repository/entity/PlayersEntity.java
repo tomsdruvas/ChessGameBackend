@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public final class PlayersDao {
+public final class PlayersEntity {
 
     @NotNull
     private String playerOneAppUserId;

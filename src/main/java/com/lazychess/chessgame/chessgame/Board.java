@@ -499,7 +499,7 @@ public class Board implements Serializable {
 
     private List<LegalMoveSquare> findLegalOwnMovesThatCheckKing(Piece piece, String colour) {
 
-        return piece.getLegalMoves().stream().filter(square -> {
+        return piece.getLegalMoves().parallelStream().filter(square -> {
 
             List<LegalMoveSquare> listOfSquaresWhereKingIsInDanger = simulateAMoveOnTheBoard(piece, colour, square);
 
@@ -588,7 +588,7 @@ public class Board implements Serializable {
 
     private List<LegalMoveSquare> findLegalOppositePlayerMovesThatSaveKing(Piece piece, String colour) {
 
-        return piece.getLegalMoves().stream().filter(square -> {
+        return piece.getLegalMoves().parallelStream().filter(square -> {
 
             List<LegalMoveSquare> listOfSquaresWhereKingIsInDanger = simulateAMoveOnTheBoard(piece, colour, square);
 

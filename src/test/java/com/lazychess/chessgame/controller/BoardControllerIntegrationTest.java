@@ -306,6 +306,64 @@ class BoardControllerIntegrationTest {
     }
 
     @Test
+    void playerOneShouldNotBeAbleToMakeAMoveWhilePlayerOneHasPawnPromotionPending() throws Exception {
+        createACustomBoardWithTwoUsersForUserOneMove(
+            List.of(
+                new ChessMoveRequest(1, 0, 2, 7),
+                new ChessMoveRequest(0, 0, 3, 7),
+                new ChessMoveRequest(6, 0, 1, 0)
+            )
+        );
+
+        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardEntity.getId())
+                .contentType(APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + getPlayerOneAccessToken())
+                .content(getMoveJsonRequestBody(1, 0, 0, 0)))
+            .andExpect(jsonPath("$.PawnPromotionPending").value("true"))
+            .andReturn();
+        verifyWebsocketMethodCall();
+
+        mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardEntity.getId())
+                .contentType(APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + getPlayerOneAccessToken())
+                .content(getMoveJsonRequestBody(6, 3, 4, 3)))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.Message").value("Cannot make a move because pawn promotion is pending"))
+            .andReturn();
+
+        verifyWebsocketNotCalled();
+    }
+
+    @Test
+    void playerTwoShouldNotBeAbleToMakeAMoveWhilePlayerOneHasPawnPromotionPending() throws Exception {
+        createACustomBoardWithTwoUsersForUserOneMove(
+            List.of(
+                new ChessMoveRequest(1, 0, 2, 7),
+                new ChessMoveRequest(0, 0, 3, 7),
+                new ChessMoveRequest(6, 0, 1, 0)
+            )
+        );
+
+        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardEntity.getId())
+                .contentType(APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + getPlayerOneAccessToken())
+                .content(getMoveJsonRequestBody(1, 0, 0, 0)))
+                .andExpect(jsonPath("$.PawnPromotionPending").value("true"))
+            .andReturn();
+        verifyWebsocketMethodCall();
+
+        mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardEntity.getId())
+                .contentType(APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + getPlayerTwoAccessToken())
+                .content(getMoveJsonRequestBody(6, 3, 4, 3)))
+            .andExpect(status().is4xxClientError())
+            .andExpect(jsonPath("$.Message").value("The Player Username does not match active Player Username"))
+            .andReturn();
+
+        verifyWebsocketNotCalled();
+    }
+
+    @Test
     void playerTwoShouldNotBeAbleToPickANewPieceForPawnPromotionWhenItIsPlayerOnesTurn() throws Exception {
         createACustomBoardWithTwoUsersForUserOneMove(
             List.of(

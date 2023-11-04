@@ -47,10 +47,8 @@ import com.lazychess.chessgame.repository.mapper.BoardEntityMapper;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
-
 @AutoConfigureMockMvc
 @ContextConfiguration
-//@WebAppConfiguration
 public class WebSocketEndpointIntegrationTest {
 
 //    @MockBean

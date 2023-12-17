@@ -15,4 +15,5 @@ public class ControllerConstants {
     public static final String LOGIN_PATH = "login";
     public static final String REFRESH_TOKEN_PATH = "refresh-token";
     public static final String LOGOUT_PATH = "logout";
+    public static final String TOPIC_GAME_PROGRESS_PATH = "/topic/game-progress/";
 }

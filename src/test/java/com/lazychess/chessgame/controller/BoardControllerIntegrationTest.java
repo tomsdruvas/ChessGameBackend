@@ -88,8 +88,8 @@ class BoardControllerIntegrationTest {
     @MockBean
     private SimpMessagingTemplate simpMessagingTemplate;
 
-    ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
-    ArgumentCaptor<JsonObjectBoardResponse> jsonObjectBoardResponseArgumentCaptor = ArgumentCaptor.forClass(JsonObjectBoardResponse.class);
+    private final ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
+    private final ArgumentCaptor<JsonObjectBoardResponse> jsonObjectBoardResponseArgumentCaptor = ArgumentCaptor.forClass(JsonObjectBoardResponse.class);
 
     private ApplicationUser applicationUser;
     private ApplicationUser applicationUser2;

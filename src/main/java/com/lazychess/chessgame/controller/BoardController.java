@@ -10,7 +10,6 @@ import static com.lazychess.chessgame.controller.ControllerConstants.PROMOTE_PAW
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
@@ -30,6 +29,7 @@ import com.lazychess.chessgame.json.JsonObjectBoardResponse;
 import com.lazychess.chessgame.security.AppUserPrincipal;
 import com.lazychess.chessgame.security.CustomUserDetailsService;
 import com.lazychess.chessgame.service.BoardService;
+import com.lazychess.chessgame.service.WebSocketMessagingService;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -42,15 +42,16 @@ public class BoardController {
     private final BoardService boardService;
     private final CustomUserDetailsService customUserDetailsService;
     private final ResponseEntityFactory responseEntityFactory;
-    private final SimpMessagingTemplate simpMessagingTemplate;
+    private final WebSocketMessagingService webSocketMessagingService;
 
     public BoardController(BoardService boardService,
                            CustomUserDetailsService customUserDetailsService,
-                           ResponseEntityFactory responseEntityFactory, SimpMessagingTemplate simpMessagingTemplate) {
+                           ResponseEntityFactory responseEntityFactory,
+                           WebSocketMessagingService webSocketMessagingService) {
         this.boardService = boardService;
         this.customUserDetailsService = customUserDetailsService;
         this.responseEntityFactory = responseEntityFactory;
-        this.simpMessagingTemplate = simpMessagingTemplate;
+        this.webSocketMessagingService = webSocketMessagingService;
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -77,9 +78,11 @@ public class BoardController {
     @PostMapping(value = ADD_PLAYER_TWO_TO_BOARD_PATH)
     public ResponseEntity<JsonObjectBoardResponse> playerTwoJoinsBoard(@PathVariable @NotBlank @ValidUuid String boardGameId) {
         Authentication principal = SecurityContextHolder.getContext().getAuthentication();
-        AppUserPrincipal appUserPrincipal = customUserDetailsService.loadUserByUsername(principal.getName());
+        String username = principal.getName();
+        AppUserPrincipal appUserPrincipal = customUserDetailsService.loadUserByUsername(username);
 
         JsonObjectBoardResponse jsonObjectBoardResponse = boardService.playerTwoJoinsGame(boardGameId, appUserPrincipal.getAppUser());
+        webSocketMessagingService.sendPlayerTwoJoinsGameNotification(jsonObjectBoardResponse.getBoardId(), username);
         return responseEntityFactory.toResponseEntity(jsonObjectBoardResponse);
     }
 
@@ -90,7 +93,7 @@ public class BoardController {
         AppUserPrincipal appUserPrincipal = customUserDetailsService.loadUserByUsername(principal.getName());
 
         JsonObjectBoardResponse jsonObjectBoardResponse = boardService.processChessMove(boardGameId, appUserPrincipal.getAppUser().getUsername(), chessMoveRequest);
-        simpMessagingTemplate.convertAndSend("/topic/game-progress/" + jsonObjectBoardResponse.getBoardId(), jsonObjectBoardResponse);
+        webSocketMessagingService.sendGameState(jsonObjectBoardResponse.getBoardId(), jsonObjectBoardResponse);
         return responseEntityFactory.toResponseEntity(jsonObjectBoardResponse);
     }
 
@@ -101,7 +104,7 @@ public class BoardController {
         AppUserPrincipal appUserPrincipal = customUserDetailsService.loadUserByUsername(principal.getName());
 
         JsonObjectBoardResponse jsonObjectBoardResponse = boardService.processPawnPromotion(boardGameId, appUserPrincipal.getAppUser().getUsername(), pawnPromotionDto.upgradedPieceName());
-        simpMessagingTemplate.convertAndSend("/topic/game-progress/" + jsonObjectBoardResponse.getBoardId(), jsonObjectBoardResponse);
+        webSocketMessagingService.sendGameState(jsonObjectBoardResponse.getBoardId(), jsonObjectBoardResponse);
         return responseEntityFactory.toResponseEntity(jsonObjectBoardResponse);
     }
 }

@@ -1,6 +1,7 @@
 package com.lazychess.chessgame.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static testUtil.GenericComparators.DYNAMIC_FIELDS;
 import static testUtil.GenericComparators.notNullComparator;
 
 import java.util.Optional;
@@ -29,10 +30,6 @@ import com.lazychess.chessgame.service.BoardService;
 @ImportAutoConfiguration(classes = SecurityAutoConfiguration.class)
 @DataJpaTest(properties = "spring.main.web-application-type=servlet")
 class BoardEntityRepositoryIntegrationTest {
-
-    private static final String[] DYNAMIC_FIELDS = {
-        "id"
-    };
 
     @Autowired
     private BoardRepository boardRepository;

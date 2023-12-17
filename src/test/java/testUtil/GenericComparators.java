@@ -4,6 +4,11 @@ import java.util.Comparator;
 
 public final class GenericComparators {
 
+    public static final String[] DYNAMIC_FIELDS = {
+        "id"
+    };
+
+
     private GenericComparators() {
     }
 

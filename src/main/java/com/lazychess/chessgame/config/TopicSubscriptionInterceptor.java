@@ -4,11 +4,13 @@ import java.util.Objects;
 
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
 
+import com.lazychess.chessgame.exception.PlayerNotPartOfGameException;
 import com.lazychess.chessgame.repository.entity.BoardEntity;
 import com.lazychess.chessgame.service.BoardService;
 
@@ -30,7 +32,11 @@ public class TopicSubscriptionInterceptor implements ChannelInterceptor {
             String chessGameId = Objects.requireNonNull(message.getHeaders().get("simpDestination")).toString().replace("/topic/game-progress/", "");
             BoardEntity boardEntity = boardService.findChessGameById(chessGameId);
 
-            boardService.checkIfPlayerIsPartOfThisGame(boardEntity, user);
+            try {
+                boardService.checkIfPlayerIsPartOfThisGame(boardEntity, user);
+            } catch (PlayerNotPartOfGameException e) {
+                throw new MessagingException("User not part of this chess game");
+            }
         }
         return message;
     }

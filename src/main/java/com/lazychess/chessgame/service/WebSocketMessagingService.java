@@ -27,16 +27,19 @@ public class WebSocketMessagingService {
     }
 
     public void sendGameState(String chessGameId, JsonObjectBoardResponse jsonObjectBoardResponse) {
+        handleGameStateMessage(chessGameId, jsonObjectBoardResponse);
+        handlePawnPromotionNotification(chessGameId, jsonObjectBoardResponse);
+    }
+
+    private void handleGameStateMessage(String chessGameId, JsonObjectBoardResponse jsonObjectBoardResponse) {
         ChessGameWebsocketMessage gameStateMessage = ChessGameWebsocketMessage.Builder.builder()
             .type(WebsocketMessageType.GAME_STATE)
             .jsonObjectBoardResponse(jsonObjectBoardResponse)
             .build();
         simpMessagingTemplate.convertAndSend(TOPIC_GAME_PROGRESS_PATH + chessGameId, gameStateMessage);
-
-        handlePawnPromotionMessage(chessGameId, jsonObjectBoardResponse);
     }
 
-    private void handlePawnPromotionMessage(String chessGameId, JsonObjectBoardResponse jsonObjectBoardResponse) {
+    private void handlePawnPromotionNotification(String chessGameId, JsonObjectBoardResponse jsonObjectBoardResponse) {
         if (jsonObjectBoardResponse.getPawnPromotionPending()) {
             ChessGameWebsocketMessage message = ChessGameWebsocketMessage.Builder.builder()
                 .type(WebsocketMessageType.NOTIFICATION)

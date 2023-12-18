@@ -39,7 +39,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.messaging.converter.StringMessageConverter;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
@@ -110,7 +109,7 @@ public class WebSocketEndpointIntegrationTest {
     private BoardEntity savedBoardEntity;
     private JsonObjectBoardResponse jsonObjectBoardResponse;
     private WebSocketStompClient stompClient;
-    private BlockingQueue<String> blockingQueue;
+    private BlockingQueue<ChessGameWebsocketMessage> blockingQueue;
     private StompSession stompSession;
     private SimpSession simpSession;
     private MvcResult mvcResult;
@@ -131,7 +130,7 @@ public class WebSocketEndpointIntegrationTest {
         givenWeHaveABoardWithOneUser();
         andWeHaveWsUrlWithAccessTokenForUser(getPlayerOneAccessToken());
         andWeHaveAStompClient();
-        andWeSetBlockingQueueAndConverterTypeToString();
+        andWeSetBlockingQueueAndConverterType();
         andWeAsyncConnectToWebSocket();
         andWeSubscribeToChessBoardAndExpectAStringPayload();
         whenWeSendMessageUsingStompSession();
@@ -140,7 +139,9 @@ public class WebSocketEndpointIntegrationTest {
         await()
             .atMost(2, SECONDS)
             .untilAsserted(() -> {
-                assertEquals("Test Message", blockingQueue.poll());
+                ChessGameWebsocketMessage chessGameWebsocketMessage = blockingQueue.take();
+                assertEquals(WebsocketMessageType.NOTIFICATION, chessGameWebsocketMessage.getType());
+                assertEquals("Test Message", chessGameWebsocketMessage.getMessage());
                 assertEquals(1, simpUserRegistry.getUserCount());
                 assertEquals(1, simpSession.getSubscriptions().size());
             });
@@ -151,7 +152,7 @@ public class WebSocketEndpointIntegrationTest {
         givenWeHaveABoardWithOneUser();
         andWeHaveWsUrlWithAccessTokenForUser(getPlayerOneAccessToken());
         andWeHaveAStompClient();
-        andWeSetBlockingQueueAndConverterTypeToString();
+        andWeSetBlockingQueueAndConverterType();
         andWeAsyncConnectToWebSocket();
         andWeSubscribeToChessBoardAndExpectAStringPayload();
         andWeFindSimpSessionForUser(applicationUser);
@@ -161,7 +162,9 @@ public class WebSocketEndpointIntegrationTest {
         await()
             .atMost(2, SECONDS)
             .untilAsserted(() -> {
-                assertEquals("test_user2 has joined the game", blockingQueue.poll());
+                ChessGameWebsocketMessage chessGameWebsocketMessage = blockingQueue.take();
+                assertEquals(WebsocketMessageType.NOTIFICATION, chessGameWebsocketMessage.getType());
+                assertEquals("test_user2 has joined the game", chessGameWebsocketMessage.getMessage());
                 assertEquals(1, simpSession.getSubscriptions().size());
                 assertEquals(1, simpUserRegistry.getUserCount());
             });
@@ -174,7 +177,7 @@ public class WebSocketEndpointIntegrationTest {
         andWeHaveUserTwo();
         andWeHaveWsUrlWithAccessTokenForUser(getPlayerTwoAccessToken());
         andWeHaveAStompClient();
-        andWeSetBlockingQueueAndConverterTypeToString();
+        andWeSetBlockingQueueAndConverterType();
         andWeAsyncConnectToWebSocket();
         andWeSubscribeToChessBoardAndExpectAStringPayload();
         andWeFindSimpSessionForUser(applicationUser2);
@@ -189,32 +192,14 @@ public class WebSocketEndpointIntegrationTest {
 
     @Test
     void shouldReceiveMessageAboutPlayerOneMakingAMove() throws Exception {
-        createABoardWithTwoUsers();
+        givenWeHaveABoardWithTwoUsers();
         andWeHaveWsUrlWithAccessTokenForUser(getPlayerOneAccessToken());
         andWeHaveAStompClient();
-
-        BlockingQueue<ChessGameWebsocketMessage> blockingQueue = new ArrayBlockingQueue<>(1);
-        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
-
+        andWeSetBlockingQueueAndConverterType();
         andWeAsyncConnectToWebSocket();
-        
-        stompSession.subscribe(SUBSCRIBE_BOARD_ENDPOINT + savedBoardEntity.getId(), new StompFrameHandler() {
-
-            @Override
-            public Type getPayloadType(StompHeaders headers) {
-                return ChessGameWebsocketMessage.class;
-            }
-
-            @Override
-            public void handleFrame(StompHeaders headers, Object payload) {
-                blockingQueue.add((ChessGameWebsocketMessage) payload);
-            }
-        });
-
+        andWeSubscribeToChessBoardAndExpectAStringPayload();
         andWeFindSimpSessionForUser(applicationUser);
-
         whenPlayerOneMakeAMove();
-
         await()
             .atMost(5, SECONDS)
             .untilAsserted(() -> {
@@ -232,50 +217,39 @@ public class WebSocketEndpointIntegrationTest {
     
     @Test
     void shouldReceiveMessageAboutPawnPromotion() throws Exception {
-        createACustomBoardWithTwoUsersForUserOneMove(
+        givenWeHaveACustomBoardWithTwoUsersForUserOneMove(
             List.of(
                 new ChessMoveRequest(1, 0, 2, 7),
                 new ChessMoveRequest(0, 0, 3, 7),
                 new ChessMoveRequest(6, 0, 1, 0)
             )
         );
-
         andWeHaveWsUrlWithAccessTokenForUser(getPlayerOneAccessToken());
-        andPlayerOnesMakesAMoveThatPutsPawnPromotionPendingAsTrue();
         andWeHaveAStompClient();
-
-        BlockingQueue<JsonObjectBoardResponse> blockingQueue = new ArrayBlockingQueue<>(1);
-        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
-
+        andWeSetBlockingQueueAndConverterType();
         andWeAsyncConnectToWebSocket();
-
-        stompSession.subscribe(SUBSCRIBE_BOARD_ENDPOINT + savedBoardEntity.getId(), new StompFrameHandler() {
-
-            @Override
-            public Type getPayloadType(StompHeaders headers) {
-                return JsonObjectBoardResponse.class;
-            }
-
-            @Override
-            public void handleFrame(StompHeaders headers, Object payload) {
-                blockingQueue.add((JsonObjectBoardResponse) payload);
-            }
-        });
-
+        andWeSubscribeToChessBoardAndExpectAStringPayload();
         andWeFindSimpSessionForUser(applicationUser);
-
+        andPlayerOnesMakesAMoveThatPutsPawnPromotionPendingAsTrue();
         whenUserOneMakesPawnPromotionRequest();
 
         await()
             .atMost(5, SECONDS)
             .untilAsserted(() -> {
-                assertEquals(1, blockingQueue.size());
+                assertEquals(3, blockingQueue.size());
                 assertEquals(1, simpSession.getSubscriptions().size());
                 assertEquals(1, simpUserRegistry.getUserCount());
+                ChessGameWebsocketMessage chessGameWebsocketMessage1 = blockingQueue.take();
+                ChessGameWebsocketMessage chessGameWebsocketMessage2 = blockingQueue.take();
+                ChessGameWebsocketMessage chessGameWebsocketMessage3 = blockingQueue.take();
+                assertEquals(WebsocketMessageType.GAME_STATE, chessGameWebsocketMessage1.getType());
+                assertEquals(WebsocketMessageType.NOTIFICATION, chessGameWebsocketMessage2.getType());
+                assertEquals("Pawn promotion pending", chessGameWebsocketMessage2.getMessage());
+                assertEquals(WebsocketMessageType.GAME_STATE, chessGameWebsocketMessage3.getType());
                 assertThat(jsonObjectBoardResponse)
                     .usingRecursiveComparison()
                     .withComparatorForFields(notNullComparator(), DYNAMIC_FIELDS)
-                    .isEqualTo(blockingQueue.take());
+                    .isEqualTo(chessGameWebsocketMessage3.getJsonObjectBoardResponse());
             });
     }
 
@@ -284,7 +258,10 @@ public class WebSocketEndpointIntegrationTest {
                 .contentType(APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + getPlayerOneAccessToken())
                 .content(getMoveJsonRequestBody(1, 0, 0, 0)))
+            .andExpect(jsonPath("$.PawnPromotionPending").value(true))
+            .andExpect(status().isCreated())
             .andReturn();
+        jsonObjectBoardResponse = deserialize(mvcResult.getResponse().getContentAsString(), JsonObjectBoardResponse.class);
     }
 
     private void whenUserOneMakesPawnPromotionRequest() throws Exception {
@@ -304,68 +281,26 @@ public class WebSocketEndpointIntegrationTest {
         jsonObjectBoardResponse = deserialize(mvcResult.getResponse().getContentAsString(), JsonObjectBoardResponse.class);
     }
 
-    private void andWeHaveWsUrlWithAccessTokenForUser(String accessToken) throws Exception {
-        URL = "ws://localhost:" + port + "/ws?access_token=" + accessToken;
+    private void whenPlayerTwoJoinsGame() throws Exception {
+        mockMvc.perform(post(ADD_PLAYER_TWO_TO_BOARD_PATH + savedBoardEntity.getId())
+                .header("Authorization", "Bearer " + getPlayerTwoAccessToken()))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.Players.PlayerOneUsername").value("test_user1"))
+            .andExpect(jsonPath("$.Players.PlayerTwoUsername").value("test_user2"))
+            .andReturn();
     }
 
-    private void andWeFindSimpSessionForUser(ApplicationUser applicationUser) {
-        SimpUser user = simpUserRegistry.getUser(applicationUser.getUsername());
-        assert user != null;
-        Set<SimpSession> sessions = user.getSessions();
-        simpSession = sessions.stream().findFirst().orElseThrow();
-    }
-
-    private void whenWeSendMessageUsingStompSession() {
-        stompSession.send("/topic/game-progress/" + savedBoardEntity.getId(), "Test Message");
-    }
-
-    private void andWeSubscribeToChessBoardAndExpectAStringPayload() {
-        stompSession.subscribe(SUBSCRIBE_BOARD_ENDPOINT + savedBoardEntity.getId(), new StompFrameHandler() {
-
-            @Override
-            @Nonnull
-            public Type getPayloadType(@Nonnull StompHeaders headers) {
-                return String.class;
-            }
-
-            @Override
-            public void handleFrame(@Nonnull StompHeaders headers, Object payload) {
-                blockingQueue.add((String) payload);
-            }
-        });
-    }
-
-    private void andWeAsyncConnectToWebSocket() throws InterruptedException, ExecutionException, TimeoutException {
-        stompSession = stompClient.connectAsync(URL, new StompSessionHandlerAdapter() {
-        }).get(1, SECONDS);
-    }
-
-    private void andWeSetBlockingQueueAndConverterTypeToString() {
-        blockingQueue = new ArrayBlockingQueue<>(1);
-        stompClient.setMessageConverter(new StringMessageConverter());
-    }
-
-    private void andWeHaveAStompClient() {
-        stompClient = new WebSocketStompClient(new SockJsClient(createTransportClient()));
-    }
-
-    private List<Transport> createTransportClient() {
-        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-        container.setDefaultMaxBinaryMessageBufferSize(1024 * 1024);
-        container.setDefaultMaxTextMessageBufferSize(1024 * 1024);
-        List<Transport> transports = new ArrayList<>(1);
-        transports.add(new WebSocketTransport(new StandardWebSocketClient(container)));
-        return transports;
-    }
-
-    private void createUserOne() {
-        ApplicationUser testUser1 = new ApplicationUser("test-user-data-id1", "test_user1", "$2a$10$0gJXCjduBg9FgnvFm8E7I.VWOejHp7J/Xpa/DMLu9xENiOm61FUxS");
-        applicationUser = applicationUserRepository.saveAndFlush(testUser1);
-    }
-
-    private void andWeHaveUserTwo() {
-        ApplicationUser testUser2 = new ApplicationUser("test-user-data-id2", "test_user2", "$2a$10$0gJXCjduBg9FgnvFm8E7I.VWOejHp7J/Xpa/DMLu9xENiOm61FUxS");
-        applicationUser2 = applicationUserRepository.saveAndFlush(testUser2);
+    private void whenPlayerOneMakeAMove() throws Exception {
+        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardEntity.getId())
+                .contentType(APPLICATION_JSON_UTF8)
+                .header("Authorization", "Bearer " + getPlayerOneAccessToken())
+                .content(getMoveJsonRequestBody(6, 3, 4, 3)))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.Players.PlayerOneUsername").value("test_user1"))
+            .andExpect(jsonPath("$.Players.PlayerTwoUsername").value("test_user2"))
+            .andExpect(jsonPath("$.Players.ActivePlayerUsername").value("test_user2"))
+            .andReturn();
+        jsonObjectBoardResponse = deserialize(mvcResult.getResponse().getContentAsString(), JsonObjectBoardResponse.class);
     }
 
     private String getPlayerOneAccessToken() throws Exception {
@@ -394,6 +329,70 @@ public class WebSocketEndpointIntegrationTest {
         return jsonParser.parseMap(response).get("accessToken").toString();
     }
 
+    private void andWeHaveWsUrlWithAccessTokenForUser(String accessToken) {
+        URL = "ws://localhost:" + port + "/ws?access_token=" + accessToken;
+    }
+
+    private void andWeFindSimpSessionForUser(ApplicationUser applicationUser) {
+        SimpUser user = simpUserRegistry.getUser(applicationUser.getUsername());
+        assert user != null;
+        Set<SimpSession> sessions = user.getSessions();
+        simpSession = sessions.stream().findFirst().orElseThrow();
+    }
+
+    private void whenWeSendMessageUsingStompSession() {
+        stompSession.send("/topic/game-progress/" + savedBoardEntity.getId(), ChessGameWebsocketMessage.Builder.builder().message("Test Message").type(WebsocketMessageType.NOTIFICATION).build());
+    }
+
+    private void andWeSubscribeToChessBoardAndExpectAStringPayload() {
+        stompSession.subscribe(SUBSCRIBE_BOARD_ENDPOINT + savedBoardEntity.getId(), new StompFrameHandler() {
+
+            @Override
+            @Nonnull
+            public Type getPayloadType(@Nonnull StompHeaders headers) {
+                return ChessGameWebsocketMessage.class;
+            }
+
+            @Override
+            public void handleFrame(@Nonnull StompHeaders headers, Object payload) {
+                blockingQueue.add((ChessGameWebsocketMessage) payload);
+            }
+        });
+    }
+
+    private void andWeAsyncConnectToWebSocket() throws InterruptedException, ExecutionException, TimeoutException {
+        stompSession = stompClient.connectAsync(URL, new StompSessionHandlerAdapter() {
+        }).get(1, SECONDS);
+    }
+
+    private void andWeSetBlockingQueueAndConverterType() {
+        blockingQueue = new ArrayBlockingQueue<>(3);
+        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+    }
+
+    private void andWeHaveAStompClient() {
+        stompClient = new WebSocketStompClient(new SockJsClient(createTransportClient()));
+    }
+
+    private List<Transport> createTransportClient() {
+        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+        container.setDefaultMaxBinaryMessageBufferSize(1024 * 1024);
+        container.setDefaultMaxTextMessageBufferSize(1024 * 1024);
+        List<Transport> transports = new ArrayList<>(1);
+        transports.add(new WebSocketTransport(new StandardWebSocketClient(container)));
+        return transports;
+    }
+
+    private void createUserOne() {
+        ApplicationUser testUser1 = new ApplicationUser("test-user-data-id1", "test_user1", "$2a$10$0gJXCjduBg9FgnvFm8E7I.VWOejHp7J/Xpa/DMLu9xENiOm61FUxS");
+        applicationUser = applicationUserRepository.saveAndFlush(testUser1);
+    }
+
+    private void andWeHaveUserTwo() {
+        ApplicationUser testUser2 = new ApplicationUser("test-user-data-id2", "test_user2", "$2a$10$0gJXCjduBg9FgnvFm8E7I.VWOejHp7J/Xpa/DMLu9xENiOm61FUxS");
+        applicationUser2 = applicationUserRepository.saveAndFlush(testUser2);
+    }
+
     private void givenWeHaveABoardWithOneUser() {
         createUserOne();
 
@@ -407,7 +406,7 @@ public class WebSocketEndpointIntegrationTest {
         savedBoardEntity = boardRepository.saveAndFlush(boardEntity);
     }
 
-    private void createABoardWithTwoUsers() {
+    private void givenWeHaveABoardWithTwoUsers() {
         createUserOne();
         andWeHaveUserTwo();
 
@@ -423,7 +422,7 @@ public class WebSocketEndpointIntegrationTest {
         savedBoardEntity = boardRepository.saveAndFlush(boardEntity);
     }
 
-    private void createACustomBoardWithTwoUsersForUserOneMove(List<ChessMoveRequest> chessMoveRequestList) {
+    private void givenWeHaveACustomBoardWithTwoUsersForUserOneMove(List<ChessMoveRequest> chessMoveRequestList) {
         createUserOne();
         andWeHaveUserTwo();
 
@@ -438,28 +437,6 @@ public class WebSocketEndpointIntegrationTest {
         playersEntity.setActivePlayerUsername(applicationUser.getUsername());
         boardEntity.setPlayersEntity(playersEntity);
         savedBoardEntity = boardRepository.saveAndFlush(boardEntity);
-    }
-
-    private void whenPlayerTwoJoinsGame() throws Exception {
-        mockMvc.perform(post(ADD_PLAYER_TWO_TO_BOARD_PATH + savedBoardEntity.getId())
-                .header("Authorization", "Bearer " + getPlayerTwoAccessToken()))
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.Players.PlayerOneUsername").value("test_user1"))
-            .andExpect(jsonPath("$.Players.PlayerTwoUsername").value("test_user2"))
-            .andReturn();
-    }
-
-    private void whenPlayerOneMakeAMove() throws Exception {
-        mvcResult = mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardEntity.getId())
-                .contentType(APPLICATION_JSON_UTF8)
-                .header("Authorization", "Bearer " + getPlayerOneAccessToken())
-                .content(getMoveJsonRequestBody(6, 3, 4, 3)))
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.Players.PlayerOneUsername").value("test_user1"))
-            .andExpect(jsonPath("$.Players.PlayerTwoUsername").value("test_user2"))
-            .andExpect(jsonPath("$.Players.ActivePlayerUsername").value("test_user2"))
-            .andReturn();
-        jsonObjectBoardResponse = deserialize(mvcResult.getResponse().getContentAsString(), JsonObjectBoardResponse.class);
     }
 
     private String getMoveJsonRequestBody(int currentRow, int currentColumn, int newRow, int newColumn) throws JsonProcessingException {

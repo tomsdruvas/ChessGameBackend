@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -53,7 +54,9 @@ import com.lazychess.chessgame.chessgame.EmptyPiece;
 import com.lazychess.chessgame.chessgame.Pawn;
 import com.lazychess.chessgame.chessgame.Queen;
 import com.lazychess.chessgame.chessgame.Square;
+import com.lazychess.chessgame.config.ChessGameWebsocketMessage;
 import com.lazychess.chessgame.config.SquareListConverter;
+import com.lazychess.chessgame.config.WebsocketMessageType;
 import com.lazychess.chessgame.dto.ChessMoveRequest;
 import com.lazychess.chessgame.json.JsonObjectBoardResponse;
 import com.lazychess.chessgame.repository.ApplicationUserRepository;
@@ -89,7 +92,7 @@ class BoardControllerIntegrationTest {
     private SimpMessagingTemplate simpMessagingTemplate;
 
     private final ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
-    private final ArgumentCaptor<JsonObjectBoardResponse> jsonObjectBoardResponseArgumentCaptor = ArgumentCaptor.forClass(JsonObjectBoardResponse.class);
+    private final ArgumentCaptor<ChessGameWebsocketMessage> chessGameWebsocketMessageArgumentCaptor = ArgumentCaptor.forClass(ChessGameWebsocketMessage.class);
 
     private ApplicationUser applicationUser;
     private ApplicationUser applicationUser2;
@@ -261,7 +264,7 @@ class BoardControllerIntegrationTest {
             assertThat(squares[0][0].getPiece()).isExactlyInstanceOf(Pawn.class);
         });
 
-        verifyWebsocketMethodCall();
+        verifyWebsocketMethodCall(2);
     }
 
     @Test
@@ -280,7 +283,7 @@ class BoardControllerIntegrationTest {
             .content(getMoveJsonRequestBody(1, 0, 0, 0)))
             .andReturn();
 
-        verifyWebsocketMethodCall();
+        verifyWebsocketMethodCall(2);
 
         Map<String, Object> body = new HashMap<>();
         body.put("upgradedPieceName", "Queen");
@@ -321,7 +324,7 @@ class BoardControllerIntegrationTest {
                 .content(getMoveJsonRequestBody(1, 0, 0, 0)))
             .andExpect(jsonPath("$.PawnPromotionPending").value("true"))
             .andReturn();
-        verifyWebsocketMethodCall();
+        verifyWebsocketMethodCall(2);
 
         mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardEntity.getId())
                 .contentType(APPLICATION_JSON_UTF8)
@@ -350,7 +353,7 @@ class BoardControllerIntegrationTest {
                 .content(getMoveJsonRequestBody(1, 0, 0, 0)))
                 .andExpect(jsonPath("$.PawnPromotionPending").value("true"))
             .andReturn();
-        verifyWebsocketMethodCall();
+        verifyWebsocketMethodCall(2);
 
         mockMvc.perform(post(MAKE_A_MOVE_PATH + savedBoardEntity.getId())
                 .contentType(APPLICATION_JSON_UTF8)
@@ -378,7 +381,7 @@ class BoardControllerIntegrationTest {
             .header("Authorization", "Bearer " + getPlayerOneAccessToken())
             .content(getMoveJsonRequestBody(1, 0, 0, 0)))
             .andReturn();
-        verifyWebsocketMethodCall();
+        verifyWebsocketMethodCall(2);
 
         Map<String, Object> body = new HashMap<>();
         body.put("upgradedPieceName", "Queen");
@@ -409,7 +412,7 @@ class BoardControllerIntegrationTest {
             .header("Authorization", "Bearer " + getPlayerOneAccessToken())
             .content(getMoveJsonRequestBody(1, 0, 0, 0)))
             .andReturn();
-        verifyWebsocketMethodCall();
+        verifyWebsocketMethodCall(2);
 
         Map<String, Object> body = new HashMap<>();
         body.put("upgradedPieceName", "test");
@@ -740,13 +743,27 @@ class BoardControllerIntegrationTest {
     }
 
     private void verifyWebsocketMethodCall() throws JsonProcessingException, UnsupportedEncodingException {
-        verify(simpMessagingTemplate).convertAndSend(stringArgumentCaptor.capture(), jsonObjectBoardResponseArgumentCaptor.capture());
+        verify(simpMessagingTemplate).convertAndSend(stringArgumentCaptor.capture(), chessGameWebsocketMessageArgumentCaptor.capture());
         String webSocketUrl = stringArgumentCaptor.getValue();
-        JsonObjectBoardResponse jsonObjectBoardResponseArgumentCaptorValue = jsonObjectBoardResponseArgumentCaptor.getValue();
+        JsonObjectBoardResponse jsonObjectBoardResponseArgumentCaptorValue = chessGameWebsocketMessageArgumentCaptor.getValue().getJsonObjectBoardResponse();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         JsonObjectBoardResponse deserializeJsonObjectBoardResponse = deserialize(contentAsString, JsonObjectBoardResponse.class);
         assertThat(webSocketUrl).isEqualTo(format(WEB_SOCKET_BASE_WITH_ID_PATH, savedBoardEntity.getId()));
         assertThat(jsonObjectBoardResponseArgumentCaptorValue).usingRecursiveComparison().isEqualTo(deserializeJsonObjectBoardResponse);
+    }
+
+    private void verifyWebsocketMethodCall(int times) throws JsonProcessingException, UnsupportedEncodingException {
+        verify(simpMessagingTemplate, times(times)).convertAndSend(stringArgumentCaptor.capture(), chessGameWebsocketMessageArgumentCaptor.capture());
+        String webSocketUrl = stringArgumentCaptor.getValue();
+        List<ChessGameWebsocketMessage> chessGameWebsocketMessageArgumentCaptorGameState = chessGameWebsocketMessageArgumentCaptor
+            .getAllValues().stream().filter(element -> element.getType() == WebsocketMessageType.GAME_STATE).toList();
+        List<ChessGameWebsocketMessage> chessGameWebsocketMessageArgumentCaptorNotification = chessGameWebsocketMessageArgumentCaptor
+            .getAllValues().stream().filter(element -> element.getType() == WebsocketMessageType.NOTIFICATION).toList();
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        JsonObjectBoardResponse deserializeJsonObjectBoardResponse = deserialize(contentAsString, JsonObjectBoardResponse.class);
+        assertThat(webSocketUrl).isEqualTo(format(WEB_SOCKET_BASE_WITH_ID_PATH, savedBoardEntity.getId()));
+        assertThat(chessGameWebsocketMessageArgumentCaptorGameState.get(0).getJsonObjectBoardResponse()).usingRecursiveComparison().isEqualTo(deserializeJsonObjectBoardResponse);
+        assertThat(chessGameWebsocketMessageArgumentCaptorNotification.get(0).getMessage()).isEqualTo("Pawn promotion pending");
     }
 
     private void verifyWebsocketNotCalled() {
